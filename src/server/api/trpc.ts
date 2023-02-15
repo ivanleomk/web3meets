@@ -21,7 +21,9 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
  * Replace this with an object if you want to pass things to
  * `createContextInner`.
  */
-type CreateContextOptions = Record<string, never>;
+type CreateContextOptions = {
+  supabase: SupabaseClient;
+};
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use
@@ -34,7 +36,7 @@ type CreateContextOptions = Record<string, never>;
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {};
+  return _opts;
 };
 
 /**
@@ -44,7 +46,12 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+  const supabase = createServerSupabaseClient({
+    req: _opts.req,
+    res: _opts.res,
+  });
+
+  return createInnerTRPCContext({ supabase });
 };
 
 /**
@@ -53,8 +60,12 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  * This is where the tRPC API is initialized, connecting the context and
  * transformer.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import {
+  createServerSupabaseClient,
+  SupabaseClient,
+} from "@supabase/auth-helpers-nextjs";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -85,3 +96,29 @@ export const createTRPCRouter = t.router;
  * can still access user session data if they are logged in.
  */
 export const publicProcedure = t.procedure;
+
+export const isSupabaseAuthed = t.middleware(async (res) => {
+  const { next, ctx } = res;
+  const { supabase } = ctx;
+  const { data: session } = await supabase.auth.getSession();
+
+  if (!session) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Unauthorized Request",
+    });
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id as string;
+  const userEmail = user?.email as string;
+  const new_ctx = { ...ctx, userId, userEmail, supabase };
+
+  return next({
+    ctx: new_ctx,
+  });
+});
+
+export const supabaseProtectedProcedure = t.procedure.use(isSupabaseAuthed);

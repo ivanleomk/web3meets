@@ -1,6 +1,7 @@
 CREATE TABLE "User" (
   "user_id" uuid PRIMARY KEY,
-  "email" varchar
+  "email" varchar,
+  "admin" boolean
 );
 
 CREATE TABLE "UserPartnerOwnership" (

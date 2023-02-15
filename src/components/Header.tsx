@@ -4,8 +4,15 @@ import { LINKS } from "../config/links";
 import MobileDropdownMenu from "./MobileDropdownMenu";
 
 import Logo from "./Logo";
+import { useUser } from "@supabase/auth-helpers-react";
+import UserAvatar from "./UserAvatarDropdown";
+import UserAvatarDropdown from "./UserAvatarDropdown";
+import { useUserContext } from "../context/UserContext";
 
 export function Header() {
+  const { isAuthenticated } = useUserContext();
+  const user = useUser();
+  console.log(user);
   return (
     <header>
       <nav className="mx-auto max-w-7xl">
@@ -18,20 +25,27 @@ export function Header() {
           </div>
           <div className="flex items-center gap-6">
             <MobileDropdownMenu />
-
-            <Button
-              text="Log In"
-              variant="outline"
-              href="/login"
-              additionalStyling="hidden lg:block"
-            />
-            <Button
-              text="Sign Up"
-              variant="solid"
-              color="gray"
-              href="/signup"
-              additionalStyling="hidden lg:block"
-            />
+            {isAuthenticated ? (
+              <>
+                <UserAvatarDropdown />
+              </>
+            ) : (
+              <>
+                <Button
+                  text="Log In"
+                  variant="outline"
+                  href="/login"
+                  additionalStyling="hidden lg:block"
+                />
+                <Button
+                  text="Sign Up"
+                  variant="solid"
+                  color="gray"
+                  href="/signup"
+                  additionalStyling="hidden lg:block"
+                />
+              </>
+            )}
           </div>
         </div>
       </nav>

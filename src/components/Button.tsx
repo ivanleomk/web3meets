@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import clsx from "clsx";
 import Link from "next/link";
 
 const baseStyles = {
