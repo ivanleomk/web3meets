@@ -1,20 +1,22 @@
 import { Menu, Transition } from "@headlessui/react";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+
 import React, { Fragment } from "react";
+import { toast } from "react-toastify";
+import { PROFILE_LINKS } from "../config/links";
 import { joinClassNames } from "../utils/string";
+import UserAvatarImage from "./UserAvatarImage";
+import UserProfileDropdownItem from "./UserProfileDropdownItem";
 
 const UserAvatarDropdown = () => {
+  const supabaseClient = useSupabaseClient();
   return (
     <>
-      <Menu as="div" className="relative ml-3 hidden lg:block">
+      <Menu as="div" className="relative ml-3 hidden md:block">
         <div>
           <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
             <span className="sr-only">Open user menu</span>
-            <img
-              className="h-8 w-8 rounded-full"
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              alt=""
-            />
+            <UserAvatarImage />
           </Menu.Button>
         </div>
         <Transition
@@ -27,43 +29,39 @@ const UserAvatarDropdown = () => {
           leaveTo="transform opacity-0 scale-95"
         >
           <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <>
+              {PROFILE_LINKS.map((item) => {
+                return (
+                  <UserProfileDropdownItem
+                    key={item.href}
+                    linkMetadata={item}
+                  />
+                );
+              })}
+            </>
+
             <Menu.Item>
               {({ active }) => (
-                <a
-                  href="#"
-                  className={joinClassNames(
-                    active ? "bg-gray-100" : "",
-                    "block px-4 py-2 text-sm text-gray-700"
-                  )}
-                >
-                  Your Profile
-                </a>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <a
-                  href="#"
-                  className={joinClassNames(
-                    active ? "bg-gray-100" : "",
-                    "block px-4 py-2 text-sm text-gray-700"
-                  )}
-                >
-                  Settings
-                </a>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <a
-                  href="#"
+                <button
+                  onClick={() => {
+                    supabaseClient.auth
+                      .signOut()
+                      .then(() => {
+                        toast.success("Succesfully signed out of account");
+                      })
+                      .catch(() => {
+                        toast.warning(
+                          "Unable to sign user out. Unexpected error encountered."
+                        );
+                      });
+                  }}
                   className={joinClassNames(
                     active ? "bg-gray-100" : "",
                     "block px-4 py-2 text-sm text-gray-700"
                   )}
                 >
                   Sign out
-                </a>
+                </button>
               )}
             </Menu.Item>
           </Menu.Items>

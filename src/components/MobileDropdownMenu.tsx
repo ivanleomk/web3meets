@@ -3,12 +3,17 @@ import { Popover } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import MobileNavLink from "./MobileNavLink";
 import { ChevronUpIcon, Bars3Icon } from "@heroicons/react/24/outline";
-import { LINKS } from "../config/links";
+import { LINKS, PROFILE_LINKS } from "../config/links";
 import { Button } from "./Button";
+import { useUserContext } from "../context/UserContext";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { toast } from "react-toastify";
 
 const MobileDropdownMenu = () => {
+  const { isAuthenticated } = useUserContext();
+  const supabaseClient = useSupabaseClient();
   return (
-    <Popover className="lg:hidden">
+    <Popover className="md:hidden">
       {({ open }) => (
         <>
           <Popover.Button
@@ -50,15 +55,43 @@ const MobileDropdownMenu = () => {
                     {LINKS.map((item, idx) => {
                       return <MobileNavLink key={idx} {...item} />;
                     })}
-                  </div>
-                  <div className="mt-8 flex flex-col gap-4">
-                    <Button text="Log In" variant="outline" href="/login" />
-                    <Button
-                      text="Sign Up"
-                      variant="solid"
-                      color="gray"
-                      href="/signup"
-                    />
+                    <div className="border-b-2"></div>
+                    {isAuthenticated ? (
+                      <>
+                        {PROFILE_LINKS.map((item, idx) => {
+                          return <MobileNavLink key={idx} {...item} />;
+                        })}
+
+                        <Button
+                          text="Sign Out"
+                          variant="solid"
+                          color="gray"
+                          additionalStyling="w-full"
+                          onClickHandler={() => {
+                            supabaseClient.auth
+                              .signOut()
+                              .then(() => {
+                                toast.success(
+                                  "Succesfully signed out of account"
+                                );
+                              })
+                              .catch(() => {
+                                toast.warning("Unexpected error encountered");
+                              });
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Button text="Log In" variant="outline" href="/login" />
+                        <Button
+                          text="Sign Up"
+                          variant="solid"
+                          color="gray"
+                          href="/signup"
+                        />
+                      </>
+                    )}
                   </div>
                 </Popover.Panel>
               </>

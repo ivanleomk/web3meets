@@ -1,13 +1,13 @@
 // src/context/state.js
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { SupabaseClient, User } from "@supabase/supabase-js";
+import { useRouter } from "next/router";
 import {
   createContext,
-  ReactNode,
+  type ReactNode,
   useContext,
-  useEffect,
   useState,
+  useEffect,
 } from "react";
 import { api } from "../utils/api";
 
@@ -38,12 +38,15 @@ export function UserWrapper({ children }: UserContextProps) {
     UserContextMetadata | undefined
   >(undefined);
   const user = useUser();
+  const router = useRouter();
   const supabaseClient = useSupabaseClient();
 
   supabaseClient.auth.onAuthStateChange((evt) => {
+    //
     if (evt == "SIGNED_OUT") {
       setUserMetadata(undefined);
       setIsAuthenticated(false);
+      void router.push("/");
     }
   });
 

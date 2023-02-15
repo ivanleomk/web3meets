@@ -22,7 +22,7 @@ const variantStyles = {
 
 type ButtonProps = {
   href?: string;
-  variant?: string;
+  variant?: "solid" | "outline";
   color?: string;
   additionalStyling?: string;
   onClickHandler?: () => void;
@@ -68,5 +68,9 @@ export const Button = ({
     throw new Error("Please supply an on-click handler");
   }
 
-  return <button className={styling}>{text}</button>;
+  return (
+    <button onClick={() => onClickHandler()} className={styling}>
+      {text}
+    </button>
+  );
 };

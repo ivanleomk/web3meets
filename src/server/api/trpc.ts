@@ -22,7 +22,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
  * `createContextInner`.
  */
 type CreateContextOptions = {
-  supabase: SupabaseClient;
+  supabase: SupabaseClient<Database>;
 };
 
 /**
@@ -66,6 +66,7 @@ import {
   createServerSupabaseClient,
   SupabaseClient,
 } from "@supabase/auth-helpers-nextjs";
+import { Database } from "../../types/database-raw";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,

@@ -44,6 +44,6 @@ export const userRouter = createTRPCRouter({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return newUserData;
     }
-    return data as User;
+    return data;
   }),
 });

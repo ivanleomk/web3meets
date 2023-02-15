@@ -11,6 +11,17 @@ export const LINKS: LinkMetadata[] = [
   },
   {
     href: "/add-event",
-    label: "Add an Event",
+    label: "Submit an Event",
+  },
+];
+
+export const PROFILE_LINKS: LinkMetadata[] = [
+  {
+    href: "/settings",
+    label: "Settings",
+  },
+  {
+    href: "/dashboard",
+    label: "Dashboard",
   },
 ];

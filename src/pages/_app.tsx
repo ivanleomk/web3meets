@@ -32,14 +32,12 @@ function MyApp({
   return (
     // We do a bit of typescript errors here since this is an external package so we can't really perform strong type assertions without breaking the auto-complete
     <SessionContextProvider
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       supabaseClient={supabaseClient}
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       initialSession={pageProps.initialSession}
     >
       <UserWrapper>
         <Header />
-        <div className="mx-auto mb-20 max-w-7xl px-2">
+        <div className="mx-auto mb-20 max-w-6xl px-10">
           <Component {...pageProps} />
           <ToastContainer />
         </div>

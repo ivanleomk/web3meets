@@ -14,3 +14,6 @@ export type City = DatabaseTables["City"]["Row"];
 export type Location = DatabaseTables["Location"]["Row"];
 
 // Operation-Specific Types are here
+export type UserPartnerOwnershipWithPartner = UserPartnerOwnership & {
+  Partner: Partner;
+};
