@@ -1,8 +1,15 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import LoginPassword from "../components/LoginPassword";
+import useAuthCheck from "../hooks/use-auth-check";
 import { signInUserWithPassword } from "../utils/auth";
 
 const LoginPage = () => {
+  const router = useRouter();
+  const { redirectedFrom } = router.query;
+
+  useAuthCheck(redirectedFrom as string);
+
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">

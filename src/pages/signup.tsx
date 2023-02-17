@@ -1,15 +1,18 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { type SupabaseClient } from "@supabase/supabase-js";
 import Link from "next/link";
-import { NextRouter } from "next/router";
+import { type NextRouter } from "next/router";
 import React from "react";
 import { toast } from "react-toastify";
 import LoginPassword from "../components/LoginPassword";
-import { userAuthEmailAndPasswordType } from "../types/auth";
+import useAuthCheck from "../hooks/use-auth-check";
+import { type userAuthEmailAndPasswordType } from "../types/auth";
 import { api } from "../utils/api";
 import { signUpUserWithPassword } from "../utils/auth";
 
 const SignUp = () => {
   const isExistingUser = api.user.isExistingUser.useMutation();
+  const router = useRouter();
+  const { redirectedFrom } = router.query;
 
   const handleUserSignup = async (
     credentials: userAuthEmailAndPasswordType,
@@ -38,6 +41,8 @@ const SignUp = () => {
         );
       });
   };
+
+  useAuthCheck(redirectedFrom as string);
 
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
