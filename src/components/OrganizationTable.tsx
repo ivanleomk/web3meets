@@ -22,8 +22,10 @@ const OrganizationTable = ({ isFetching, data }: Props) => {
 
   if (data?.length == 0) {
     return (
-      <div className="mt-6">
-        <EmptyOrganizationState />
+      <div className="my-20 text-center">
+        <div className="center inline-block min-w-full py-2 align-middle text-sm sm:px-6 lg:px-8">
+          No organization memberships found
+        </div>
       </div>
     );
   }
