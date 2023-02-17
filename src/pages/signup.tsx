@@ -1,6 +1,6 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
 import Link from "next/link";
-import { type NextRouter } from "next/router";
+import { useRouter, type NextRouter } from "next/router";
 import React from "react";
 import { toast } from "react-toastify";
 import LoginPassword from "../components/LoginPassword";
