@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  publicProcedure,
-  supabaseProtectedProcedure,
-} from "../trpc";
+import { createTRPCRouter } from "../trpc";
 
 export const eventRouter = createTRPCRouter({});

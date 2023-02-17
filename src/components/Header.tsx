@@ -4,19 +4,16 @@ import { LINKS } from "../config/links";
 import MobileDropdownMenu from "./MobileDropdownMenu";
 
 import Logo from "./Logo";
-import { useUser } from "@supabase/auth-helpers-react";
 
 import UserAvatarDropdown from "./UserAvatarDropdown";
 import { useUserContext } from "../context/UserContext";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export function Header() {
   const { isAuthenticated } = useUserContext();
-  const user = useUser();
 
   return (
     <header>
-      <nav className="mx-auto max-w-6xl">
+      <nav className="mx-auto max-w-7xl">
         <div className="relative z-50 flex justify-between py-8 px-10">
           <div className="relative z-10 flex items-center gap-16">
             <Logo />

@@ -13,7 +13,7 @@ const OrganizationStatus = ({ active }: Props) => {
         "inline-flex rounded-full px-2 text-xs font-semibold leading-5"
       )}
     >
-      {active ? "Active" : "Pending"}
+      {active ? "Active" : "Pending Approval"}
     </span>
   );
 };

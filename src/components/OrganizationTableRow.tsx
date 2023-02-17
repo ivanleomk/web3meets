@@ -1,5 +1,6 @@
 import React from "react";
 import { UserPartnerOwnershipWithPartner } from "../types/database";
+import { Button } from "./Button";
 import OrganizationStatus from "./OrganizationStatus";
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
 const OrganizationTableRow = ({ data }: Props) => {
   const {
     approved,
-    Partner: { name, website, telegram_handle, twitter_id },
+    Partner: { name, website, telegram_handle, twitter_id, active },
   } = data;
   return (
     <tr key={name}>
@@ -26,17 +27,31 @@ const OrganizationTableRow = ({ data }: Props) => {
         {twitter_id}
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+        <OrganizationStatus active={active ? active : false} />
+      </td>
+      <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         <OrganizationStatus active={approved ? approved : false} />
       </td>
+
       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
-        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-          Edit
-        </a>
-      </td>
-      <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
-        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-          Delete
-        </a>
+        <div className="flex flex-col space-y-4 text-left">
+          <Button
+            variant="outline"
+            color="gray"
+            onClickHandler={() => {
+              alert("Deleting Membership");
+            }}
+            text="Delete Membership"
+          />
+          <Button
+            variant="solid"
+            color="gray"
+            onClickHandler={() => {
+              alert("Deleting Membership");
+            }}
+            text="Update Org"
+          />
+        </div>
       </td>
     </tr>
   );

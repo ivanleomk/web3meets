@@ -1,28 +1,17 @@
 import React from "react";
 import { ClipLoader } from "react-spinners";
 import { ORGANIZATION_FIELDS } from "../config/organization";
-import { UserPartnerOwnershipWithPartner } from "../types/database";
-import { api } from "../utils/api";
+import { type UserPartnerOwnershipWithPartner } from "../types/database";
 import { joinClassNames } from "../utils/string";
 import EmptyOrganizationState from "./EmptyOrganizationState";
 import OrganizationTableRow from "./OrganizationTableRow";
 
-const people = [
-  {
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    status: "approval",
-    role: "Member",
-  },
-];
+type Props = {
+  data: UserPartnerOwnershipWithPartner[];
+  isFetching: boolean;
+};
 
-const OrganizationTable = () => {
-  const { data, isFetching } = api.partner.getAllPartners.useQuery(undefined, {
-    refetchInterval: 30000,
-    refetchOnWindowFocus: false,
-  });
-
+const OrganizationTable = ({ isFetching, data }: Props) => {
   if (isFetching) {
     return (
       <div className="mt-20 flex items-center justify-center">
@@ -73,10 +62,7 @@ const OrganizationTable = () => {
             <tbody className="divide-y divide-gray-200 bg-white">
               {data?.map((item) => {
                 return (
-                  <OrganizationTableRow
-                    key={item.partner_id}
-                    data={item as UserPartnerOwnershipWithPartner}
-                  />
+                  <OrganizationTableRow key={item.partner_id} data={item} />
                 );
               })}
             </tbody>

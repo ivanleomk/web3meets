@@ -3,5 +3,6 @@ export const ORGANIZATION_FIELDS = [
   "Website",
   "Telegram Handle",
   "Twitter ID",
-  "Status",
+  "Membership",
+  "Organization",
 ];
