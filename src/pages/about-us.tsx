@@ -1,12 +1,20 @@
+import Image from "next/image";
 import React from "react";
 
 const people = [
   {
     name: "Ivan",
-    role: "Software Engineer",
-    imageUrl:
-      "https://media.licdn.com/dms/image/C4E03AQGOj0r-9JpN1w/profile-displayphoto-shrink_400_400/0/1653642630546?e=1681948800&v=beta&t=rzSczFhKtMOOZhXOqC_9Skg0QLmv5Zmye8I3YYnbJZE",
-    bio: "I built the site - exploring a new interest in web3 and looking for funky projects to work on in my spare time. I also write occasionally at ivanleo.com.",
+    role: "Tech Lead",
+    imageUrl: "/ivan.jpeg",
+    bio: "Exploring a new interest in web3 and looking for funky projects such as these to work on in my spare time.",
+    twitterUrl: "https://twitter.com/ivanleomk",
+    linkedinUrl: "https://www.linkedin.com/in/ivanleo/",
+  },
+  {
+    name: "Alan",
+    role: "Co Tech-Lead",
+    imageUrl: "/alan.jpeg",
+    bio: "Computer Science @ Yale-NUS College - I like learning new things. ",
     twitterUrl: "https://twitter.com/ivanleomk",
     linkedinUrl: "https://www.linkedin.com/in/ivanleo/",
   },
@@ -32,18 +40,17 @@ const AboutUs = () => {
         >
           {people.map((person) => (
             <li key={person.name}>
-              <img
+              <Image
                 className="aspect-[3/3] w-full rounded-2xl object-cover"
                 src={person.imageUrl}
                 alt={`${person.name} profile picture`}
+                width={200}
+                height={200}
               />
               <h3 className="mt-6 text-lg font-semibold leading-8 text-gray-900">
                 {person.name}
               </h3>
               <p className="text-base leading-7 text-gray-600">{person.role}</p>
-              <p className="mt-4 text-base leading-7 text-gray-600">
-                {person.bio}
-              </p>
               <ul role="list" className="mt-6 flex gap-x-6">
                 <li>
                   <a
@@ -82,6 +89,9 @@ const AboutUs = () => {
                   </a>
                 </li>
               </ul>
+              <p className="mt-4 text-base leading-7 text-gray-600">
+                {person.bio}
+              </p>
             </li>
           ))}
         </ul>
