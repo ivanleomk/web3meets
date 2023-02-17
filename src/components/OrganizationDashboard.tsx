@@ -45,10 +45,6 @@ const OrganizationDashboard = () => {
             />
           </div>
         </div>
-        <InfoComponent
-          key={"Membership Header"}
-          message="Organizations that have not been approved are grayed out at the momment"
-        />
         <div className="">
           {mode === "Create" ? (
             <CreateOrganizationForm />
