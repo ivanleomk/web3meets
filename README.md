@@ -19,7 +19,7 @@ ivanleo@Ivans-MacBook-Pro web3meets % supabase link --project-ref <project ref> 
 Finished supabase link.
 ```
 
-3. Make sure you are using latest types by pulling from db
+1. Make sure you are using latest types by pulling from db
 
 ```bash
 ivanleo@Ivans-MacBook-Pro web3meets % make update-types
