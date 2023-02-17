@@ -1,7 +1,10 @@
 import React from "react";
+import { toast } from "react-toastify";
 import { UserPartnerOwnershipWithPartner } from "../types/database";
+import { api } from "../utils/api";
 import { Button } from "./Button";
 import OrganizationStatus from "./OrganizationStatus";
+import WarningModal from "./WarningModal";
 
 type Props = {
   data: UserPartnerOwnershipWithPartner;
@@ -10,12 +13,23 @@ type Props = {
 const OrganizationTableRow = ({ data }: Props) => {
   const {
     approved,
-    Partner: { name, website, telegram_handle, twitter_id, active },
+    Partner: { partner_name, website, telegram_handle, twitter_id, active },
   } = data;
+
+  const { mutate: deletePartner } = api.partner.deletePartner.useMutation({
+    onSuccess: () => {
+      toast.success(`Succesfully deleted ${partner_name}`);
+    },
+    onError: () => {
+      toast.warning(`Error encountered when trying to delete ${partner_name}`);
+    },
+  });
+  const utils = api.useContext();
+
   return (
-    <tr key={name}>
+    <tr key={partner_name}>
       <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-        {name}
+        {partner_name}
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         {website}
@@ -35,20 +49,27 @@ const OrganizationTableRow = ({ data }: Props) => {
 
       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
         <div className="flex flex-col space-y-4 text-left">
-          <Button
+          <WarningModal
             variant="outline"
             color="gray"
             onClickHandler={() => {
-              alert("Deleting Membership");
+              deletePartner({ partner_name });
+              // Optimistic Updates set here
+              utils.partner.getAllPartners.setData(undefined, (old) =>
+                old?.filter((item) => {
+                  item.partner_name !== partner_name;
+                })
+              );
             }}
-            text="Delete Membership"
+            userActionText="Confirm"
+            buttonText="Delete Membership"
+            title="Delete Membership "
+            subtitle={`Are you sure you wish to delete your membership from the ${partner_name} organization? This action is non-reversible and only an administrator will be able to add you back in the future.`}
           />
           <Button
             variant="solid"
             color="gray"
-            onClickHandler={() => {
-              alert("Deleting Membership");
-            }}
+            href={`/partners/${partner_name}`}
             text="Update Org"
           />
         </div>

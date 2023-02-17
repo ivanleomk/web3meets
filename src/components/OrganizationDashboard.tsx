@@ -9,7 +9,7 @@ import OrganizationTable from "./OrganizationTable";
 const OrganizationDashboard = () => {
   const [mode, setMode] = useState<"Create" | "View">("View");
 
-  const { data, isFetching } = api.partner.getAllPartners.useQuery(undefined, {
+  const { data, isLoading } = api.partner.getAllPartners.useQuery(undefined, {
     refetchInterval: 30000,
     refetchOnWindowFocus: false,
   });
@@ -47,11 +47,11 @@ const OrganizationDashboard = () => {
         </div>
         <div className="">
           {mode === "Create" ? (
-            <CreateOrganizationForm />
+            <CreateOrganizationForm postFormHook={() => setMode("View")} />
           ) : (
             <OrganizationTable
               data={data ? (data as UserPartnerOwnershipWithPartner[]) : []}
-              isFetching={isFetching}
+              isLoading={isLoading}
             />
           )}
         </div>

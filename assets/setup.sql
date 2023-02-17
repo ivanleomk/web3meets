@@ -1,83 +1,93 @@
-CREATE TABLE "User" (
-  "user_id" uuid PRIMARY KEY,
-  "email" varchar,
-  "admin" boolean
-);
+table User {
+  // Derived from Supabase
+  user_id uuid  [pk]
+  email text
+  admin boolean
+}
 
-CREATE TABLE "UserPartnerOwnership" (
-  "user_id" uuid,
-  "partner_id" int,
-  "approved" boolean
-);
+table UserPartnerOwnership {
+  user_id uuid
+  partner_name text 
+  approved boolean
+  
+  Indexes {
+    (user_id, partner_id) [unique]
+  }
+}
 
-CREATE TABLE "Partner" (
-  "partner_id" serial PRIMARY KEY,
-  "name" varchar,
-  "website" varchar,
-  "telegram_handle" varchar,
-  "twitter_id" varchar,
-  "open_to_sponsor" boolean,
-  "stripe_account_id" varchar,
-  "active" bool
-);
 
-CREATE TABLE "Event" (
-  "event_id" serial PRIMARY KEY,
-  "user_id" uuid,
-  "starts_at" timestamptz,
-  "ends_at" timestamptz,
-  "title" varchar,
-  "featured" bool,
-  "our_pick" bool,
-  "location_id" serial,
-  "paid" bool,
-  "stripe_event_id" varchar,
-  "remarks" varchar,
-  "partnered" bool,
-  "event_series_id" serial,
-  "partner_id" serial,
-  "scheduled_post" timestamptz,
-  "poster_link" varchar
-);
+Ref:  UserPartnerOwnership.user_id > User.user_id [delete:cascade]
+Ref:  UserPartnerOwnership.partner_name > Partner.partner_name [delete:cascade]
 
-CREATE TABLE "EventSeries" (
-  "event_series_id" serial PRIMARY KEY,
-  "recurring" varchar,
-  "start_date" timestamptz,
-  "end_date" timestamptz
-);
 
-CREATE TABLE "Location" (
-  "location_id" serial PRIMARY KEY,
-  "address" varchar,
-  "google_maps_link" varchar,
-  "city_id" serial
-);
+table Partner {
+  parter_name text [not null, unique]
+  website text [null, unique]
+  telegram_handle text [null, unique]
+  twitter_id text [null,unique]
+  // Internal Flag here
+  stripe_account_id text [null,unique]
+  // When a Partner wants to delete their acc - we indicate that it is inactive instead
+  active bool [not null,default:false]
+  open_to_sponsor boolean [not null,default:false]
+  approved bool [not null,default:false]
+}
 
-CREATE TABLE "City" (
-  "city_id" serial PRIMARY KEY,
-  "country_id" serial
-);
+table Event {
+  event_id serial [pk]
+  user_id uuid [not null]
+  starts_at timestamptz [not null]
+  ends_at timestamptz [not null]
+  title text [not null]
+  featured bool [not null,default:false]
+  our_pick bool [not null,default:false]
+  location_id serial [null]
+  paid bool [not null,default:false]
+  // In case we ever want to accept event $$
+  stripe_event_id text [null]
+  remarks text [not null, default:""]
+  partnered bool  [not null,default:false]
+  event_series_id serial  [not null]
+  partner_id serial [ref: > Partner.partner_id]
+  scheduled_post timestamptz [null]
+}
 
-CREATE TABLE "Country" (
-  "country_id" serial PRIMARY KEY,
-  "country_name" varchar
-);
 
-CREATE UNIQUE INDEX ON "UserPartnerOwnership" ("user_id", "partner_id");
+Ref: Event.location_id > Location.location_id
+Ref: Event.event_series_id > EventSeries.event_series_id [delete:cascade]
+Ref: Event.user_id > User.user_id
 
-ALTER TABLE "UserPartnerOwnership" ADD FOREIGN KEY ("user_id") REFERENCES "User" ("user_id") ON DELETE CASCADE;
 
-ALTER TABLE "UserPartnerOwnership" ADD FOREIGN KEY ("partner_id") REFERENCES "Partner" ("partner_id") ON DELETE CASCADE;
+table PromotionalMaterial {
+  event_id serial 
+  image_url text
+}
 
-ALTER TABLE "Event" ADD FOREIGN KEY ("partner_id") REFERENCES "Partner" ("partner_id");
+Ref: PromotionalMaterial.event_id > Event.event_id
 
-ALTER TABLE "Event" ADD FOREIGN KEY ("location_id") REFERENCES "Location" ("location_id");
+// Useful to help track recurring events - we specify end and start date
+table EventSeries {
+  event_series_id serial [pk] 
+  recurring text // Support basic stuff like weekly, monthly,bi monthly
+  //Thse can be null if recurring is set to null
+  start_date timestamptz [null]
+  end_date timestamptz  [null]
+}
 
-ALTER TABLE "Event" ADD FOREIGN KEY ("event_series_id") REFERENCES "EventSeries" ("event_series_id") ON DELETE CASCADE;
+table Location {
+  location_id serial [pk]
+  address text 
+  google_maps_link text
+  city_id serial [ref: > City.city_id]
+}
 
-ALTER TABLE "Event" ADD FOREIGN KEY ("user_id") REFERENCES "User" ("user_id");
+table City {
+  city_id serial [pk]
+  country_id serial [ref: > Country.country_id]
+}
 
-ALTER TABLE "Location" ADD FOREIGN KEY ("city_id") REFERENCES "City" ("city_id");
-
-ALTER TABLE "City" ADD FOREIGN KEY ("country_id") REFERENCES "Country" ("country_id");
+table Country {
+  country_id serial [pk]
+  country_name text 
+}
+   

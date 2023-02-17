@@ -1,15 +1,17 @@
+import { serverSupabaseInstance } from "./../../supabase/sharedInstance";
 import { TRPCError } from "@trpc/server";
-import { supabaseProtectedProcedure } from "./../trpc";
+import { publicProcedure, supabaseProtectedProcedure } from "./../trpc";
 
 import { createTRPCRouter } from "../trpc";
 import { adminServerSupabaseInstance } from "../../supabase/sharedInstance";
 import { type User } from "../../../types/database";
+import { z } from "zod";
 
 export const userRouter = createTRPCRouter({
   user: supabaseProtectedProcedure.query(async ({ ctx }) => {
-    const { userId, userEmail, supabase } = ctx;
+    const { userId, userEmail } = ctx;
 
-    const { data, error } = await supabase
+    const { data, error } = await adminServerSupabaseInstance
       .from("User")
       .select("*")
       .eq("user_id", userId)
@@ -46,4 +48,22 @@ export const userRouter = createTRPCRouter({
     }
     return data;
   }),
+  isExistingUser: publicProcedure
+    .input(
+      z.object({
+        userEmail: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { data } = await adminServerSupabaseInstance
+        .from("User")
+        .select("*")
+        .eq("email", input.userEmail)
+        .maybeSingle();
+
+      if (!data) {
+        return false;
+      }
+      return true;
+    }),
 });

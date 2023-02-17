@@ -64,58 +64,55 @@ export interface Database {
       }
       Event: {
         Row: {
-          ends_at: string | null
+          ends_at: string
           event_id: number
           event_series_id: number
-          featured: boolean | null
+          featured: boolean
           location_id: number
-          our_pick: boolean | null
-          paid: boolean | null
-          partner_id: number
-          partnered: boolean | null
-          poster_link: string | null
-          remarks: string | null
+          our_pick: boolean
+          paid: boolean
+          partner_name: string | null
+          partnered: boolean
+          remarks: string
           scheduled_post: string | null
-          starts_at: string | null
+          starts_at: string
           stripe_event_id: string | null
-          title: string | null
-          user_id: string | null
+          title: string
+          user_id: string
         }
         Insert: {
-          ends_at?: string | null
+          ends_at: string
           event_id?: number
           event_series_id?: number
-          featured?: boolean | null
+          featured?: boolean
           location_id?: number
-          our_pick?: boolean | null
-          paid?: boolean | null
-          partner_id?: number
-          partnered?: boolean | null
-          poster_link?: string | null
-          remarks?: string | null
+          our_pick?: boolean
+          paid?: boolean
+          partner_name?: string | null
+          partnered?: boolean
+          remarks?: string
           scheduled_post?: string | null
-          starts_at?: string | null
+          starts_at: string
           stripe_event_id?: string | null
-          title?: string | null
-          user_id?: string | null
+          title: string
+          user_id: string
         }
         Update: {
-          ends_at?: string | null
+          ends_at?: string
           event_id?: number
           event_series_id?: number
-          featured?: boolean | null
+          featured?: boolean
           location_id?: number
-          our_pick?: boolean | null
-          paid?: boolean | null
-          partner_id?: number
-          partnered?: boolean | null
-          poster_link?: string | null
-          remarks?: string | null
+          our_pick?: boolean
+          paid?: boolean
+          partner_name?: string | null
+          partnered?: boolean
+          remarks?: string
           scheduled_post?: string | null
-          starts_at?: string | null
+          starts_at?: string
           stripe_event_id?: string | null
-          title?: string | null
-          user_id?: string | null
+          title?: string
+          user_id?: string
         }
       }
       EventSeries: {
@@ -160,68 +157,85 @@ export interface Database {
       }
       Partner: {
         Row: {
-          active: boolean | null
-          name: string | null
-          open_to_sponsor: boolean | null
-          partner_id: number
+          active: boolean
+          approved: boolean
+          open_to_sponsor: boolean
+          partner_name: string
           stripe_account_id: string | null
           telegram_handle: string | null
           twitter_id: string | null
           website: string | null
         }
         Insert: {
-          active?: boolean | null
-          name?: string | null
-          open_to_sponsor?: boolean | null
-          partner_id?: number
+          active?: boolean
+          approved?: boolean
+          open_to_sponsor?: boolean
+          partner_name: string
           stripe_account_id?: string | null
           telegram_handle?: string | null
           twitter_id?: string | null
           website?: string | null
         }
         Update: {
-          active?: boolean | null
-          name?: string | null
-          open_to_sponsor?: boolean | null
-          partner_id?: number
+          active?: boolean
+          approved?: boolean
+          open_to_sponsor?: boolean
+          partner_name?: string
           stripe_account_id?: string | null
           telegram_handle?: string | null
           twitter_id?: string | null
           website?: string | null
+        }
+      }
+      PromotionalMaterial: {
+        Row: {
+          event_id: number
+          image_url: string
+          material_id: number
+        }
+        Insert: {
+          event_id?: number
+          image_url: string
+          material_id?: number
+        }
+        Update: {
+          event_id?: number
+          image_url?: string
+          material_id?: number
         }
       }
       User: {
         Row: {
           admin: boolean
-          email: string | null
+          email: string
           user_id: string
         }
         Insert: {
           admin?: boolean
-          email?: string | null
+          email: string
           user_id: string
         }
         Update: {
           admin?: boolean
-          email?: string | null
+          email?: string
           user_id?: string
         }
       }
       UserPartnerOwnership: {
         Row: {
-          approved: boolean | null
-          partner_id: number | null
-          user_id: string | null
+          approved: boolean
+          partner_name: string
+          user_id: string
         }
         Insert: {
-          approved?: boolean | null
-          partner_id?: number | null
-          user_id?: string | null
+          approved?: boolean
+          partner_name: string
+          user_id: string
         }
         Update: {
-          approved?: boolean | null
-          partner_id?: number | null
-          user_id?: string | null
+          approved?: boolean
+          partner_name?: string
+          user_id?: string
         }
       }
     }

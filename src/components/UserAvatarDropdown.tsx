@@ -4,12 +4,14 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import React, { Fragment } from "react";
 import { toast } from "react-toastify";
 import { PROFILE_LINKS } from "../config/links";
+import { useUserContext } from "../context/UserContext";
 import { joinClassNames } from "../utils/string";
 import UserAvatarImage from "./UserAvatarImage";
 import UserProfileDropdownItem from "./UserProfileDropdownItem";
 
 const UserAvatarDropdown = () => {
   const supabaseClient = useSupabaseClient();
+  const { userMetadata } = useUserContext();
   return (
     <>
       <Menu as="div" className="relative ml-3 hidden md:block">

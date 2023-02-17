@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { type UserPartnerOwnership } from "../../../types/database";
 import { adminServerSupabaseInstance } from "../../supabase/sharedInstance";
 
 import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
@@ -9,21 +8,21 @@ export const partnerRouter = createTRPCRouter({
   createPartner: supabaseProtectedProcedure
     .input(
       z.object({
-        name: z.string(),
+        partner_name: z.string(),
         website: z.string(),
-        telegram_handle: z.string(),
-        twitter_id: z.string(),
+        telegram_handle: z.string().nullish(),
+        twitter_id: z.string().nullish(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { name, website, telegram_handle, twitter_id } = input;
-      const { userId } = ctx;
+      const { partner_name, website, telegram_handle, twitter_id } = input;
+      const { userId: user_id } = ctx;
 
       // First We try to create the partner org. if it already exists, then we throw an error. We use the name of the organisation as a unique key ( So people cannot create two partner orgs with the same name)
       const { data, error } = await adminServerSupabaseInstance
         .from("Partner")
         .insert({
-          name,
+          partner_name,
           website,
           telegram_handle,
           twitter_id,
@@ -47,8 +46,8 @@ export const partnerRouter = createTRPCRouter({
         await adminServerSupabaseInstance
           .from("UserPartnerOwnership")
           .insert({
-            user_id: userId,
-            partner_id: data?.partner_id,
+            user_id,
+            partner_name,
             approved: false,
           })
           .select("*")
@@ -65,15 +64,46 @@ export const partnerRouter = createTRPCRouter({
       return newPartnerOwnership;
     }),
   getAllPartners: supabaseProtectedProcedure.query(async ({ ctx }) => {
-    const { userId, supabase } = ctx;
+    const { userId } = ctx;
 
-    const { data, error } = await supabase
+    const { data, error } = await adminServerSupabaseInstance
       .from("UserPartnerOwnership")
       .select("*, Partner(*)")
       .eq("user_id", userId);
 
-    console.log(data);
+    if (error) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: error.message,
+      });
+    }
 
     return data;
   }),
+  deletePartner: supabaseProtectedProcedure
+    .input(
+      z.object({
+        partner_name: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { partner_name } = input;
+
+      const { data, error } = await adminServerSupabaseInstance
+        .from("UserPartnerOwnership")
+        .delete()
+        .eq("user_id", userId)
+        .eq("partner_name", partner_name)
+        .select("*");
+
+      if (error || data?.length == 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unable to delete item",
+        });
+      }
+
+      return data;
+    }),
 });

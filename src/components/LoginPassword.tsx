@@ -1,3 +1,4 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   type SupabaseClient,
   useSupabaseClient,
@@ -6,7 +7,10 @@ import { useRouter, type NextRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
-import { type USER_AUTH_EMAIL_AND_PASSWORD } from "../types/auth";
+import {
+  userAuthEmailAndPasswordSchema,
+  type userAuthEmailAndPasswordType,
+} from "../types/auth";
 import { type Database } from "../types/database-raw";
 import Input from "./Input";
 
@@ -14,7 +18,7 @@ type Props = {
   redirectTo?: string | undefined;
   buttonText?: string;
   onSubmitHandler: (
-    credentials: USER_AUTH_EMAIL_AND_PASSWORD,
+    credentials: userAuthEmailAndPasswordType,
     supabaseClient: SupabaseClient,
     router: NextRouter,
     redirectTo: undefined | string
@@ -27,10 +31,12 @@ const LoginPassword = ({ redirectTo, buttonText, onSubmitHandler }: Props) => {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<USER_AUTH_EMAIL_AND_PASSWORD>();
+  } = useForm<userAuthEmailAndPasswordType>({
+    resolver: zodResolver(userAuthEmailAndPasswordSchema),
+  });
   const router = useRouter();
 
-  const onSubmit = async (credentials: USER_AUTH_EMAIL_AND_PASSWORD) => {
+  const onSubmit = async (credentials: userAuthEmailAndPasswordType) => {
     await onSubmitHandler(credentials, supabaseClient, router, redirectTo);
   };
 
@@ -38,28 +44,19 @@ const LoginPassword = ({ redirectTo, buttonText, onSubmitHandler }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <Input
         label="Email"
-        errorMessage={
-          errors?.email ? "Please enter a valid email address" : undefined
-        }
+        errorMessage={errors?.email}
         htmlFor="email"
         autocomplete="email"
         type="email"
-        {...register("email", { required: true })}
+        {...register("email")}
       />
       <Input
         label="Password"
-        errorMessage={
-          errors?.password
-            ? "Password must have a minimum length of 6 characters"
-            : undefined
-        }
+        errorMessage={errors?.password}
         htmlFor="password"
         autocomplete="password"
         type="password"
-        {...register("password", {
-          required: "Password is required",
-          minLength: 6,
-        })}
+        {...register("password")}
       />
       <div className="mt-4">
         <button

@@ -1,22 +1,21 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-
-import { useState } from "react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import { USER_AUTH_EMAIL_AND_PASSWORD } from "../types/auth";
-import { Database } from "../types/database-raw";
+import { z } from "zod";
 import { api } from "../utils/api";
 import Input from "./Input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  type CreateOrganizationInput,
+  createOrganizationSchema,
+} from "../types/partner";
 
-type CreateOrganizationInput = {
-  name: string;
-  website: string;
-  telegram_handle: string;
-  twitter_id: string;
+type Props = {
+  postFormHook: () => void;
 };
 
-const CreateOrganizationForm = () => {
+const CreateOrganizationForm = ({ postFormHook }: Props) => {
   const newPartnerMutation = api.partner.createPartner.useMutation({
     onError: (err) => {
       console.log(err);
@@ -24,7 +23,7 @@ const CreateOrganizationForm = () => {
     },
     onSuccess: () => {
       toast.success(
-        "Succesfully created New Organization. Please wait for an email from our team to confirm your ownership of the Organization."
+        "New organization succesfully created. Please wait for confirmation from our team for changes to reflect."
       );
     },
   });
@@ -32,17 +31,46 @@ const CreateOrganizationForm = () => {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<CreateOrganizationInput>();
+  } = useForm<CreateOrganizationInput>({
+    resolver: zodResolver(createOrganizationSchema),
+  });
+  const utils = api.useContext();
+  const user = useUser();
 
   const onSubmit = async (data: CreateOrganizationInput) => {
     const { name, website, twitter_id, telegram_handle } = data;
-    await newPartnerMutation.mutateAsync({
-      name,
+    const newMut = newPartnerMutation.mutateAsync({
+      partner_name: name,
       website,
       twitter_id,
       telegram_handle,
     });
+    utils.partner.getAllPartners.setData(undefined, (old) => {
+      const newObj = {
+        approved: false,
+        partner_name: name,
+        user_id: user?.id as string,
+        Partner: {
+          partner_name: name,
+          website,
+          twitter_id: twitter_id ? twitter_id : "",
+          telegram_handle: telegram_handle ? telegram_handle : "",
+          open_to_sponsor: false,
+          active: false,
+          approved: false,
+          stripe_account_id: "",
+        },
+      };
+
+      if (!old) {
+        return [newObj];
+      }
+      return [...old, newObj];
+    });
+    postFormHook();
+    await newMut;
   };
+
   return (
     <>
       <form
@@ -51,45 +79,35 @@ const CreateOrganizationForm = () => {
       >
         <Input
           label="Name"
-          errorMessage={
-            errors?.name
-              ? "Please enter a valid name for the new organization"
-              : undefined
-          }
+          errorMessage={errors?.name}
           htmlFor="Name"
           autocomplete=""
           type="text"
-          {...register("name", { required: true })}
+          {...register("name")}
         />
         <Input
           label="Website Address"
-          errorMessage={
-            errors?.name ? "Please enter a valid website address" : undefined
-          }
+          errorMessage={errors?.website}
           htmlFor="Website Address"
           autocomplete=""
           type="text"
-          {...register("website", { required: true })}
+          {...register("website")}
         />
         <Input
           label="Telegram Handle"
-          errorMessage={
-            errors?.name ? "Please enter a valid Telegram handle" : undefined
-          }
+          errorMessage={errors?.telegram_handle}
           htmlFor="Telegram Handle"
           autocomplete=""
           type="text"
-          {...register("telegram_handle", { required: true })}
+          {...register("telegram_handle")}
         />
         <Input
           label="Twitter Handle"
-          errorMessage={
-            errors?.name ? "Please enter a valid Twitter Handle" : undefined
-          }
+          errorMessage={errors?.twitter_id}
           htmlFor="Twitter Handle"
           autocomplete=""
           type="text"
-          {...register("twitter_id", { required: true })}
+          {...register("twitter_id")}
         />
         <div className="col-span-2 flex items-center justify-center">
           <button

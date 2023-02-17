@@ -1,10 +1,10 @@
 import { type SupabaseClient } from "@supabase/supabase-js";
 import { type NextRouter } from "next/router";
 import { toast } from "react-toastify";
-import { type USER_AUTH_EMAIL_AND_PASSWORD } from "../types/auth";
+import { type userAuthEmailAndPasswordType } from "../types/auth";
 
 export const signInUserWithPassword = async (
-  credentials: USER_AUTH_EMAIL_AND_PASSWORD,
+  credentials: userAuthEmailAndPasswordType,
   supabaseClient: SupabaseClient,
   router: NextRouter,
   redirectTo: undefined | string
@@ -24,7 +24,7 @@ export const signInUserWithPassword = async (
 };
 
 export const signUpUserWithPassword = async (
-  credentials: USER_AUTH_EMAIL_AND_PASSWORD,
+  credentials: userAuthEmailAndPasswordType,
   supabaseClient: SupabaseClient,
   router: NextRouter,
   redirectTo: undefined | string
@@ -34,6 +34,7 @@ export const signUpUserWithPassword = async (
     email,
     password,
   });
+
   if (error) {
     toast.error(error?.message ? error?.message : "Error Encountered");
   } else {

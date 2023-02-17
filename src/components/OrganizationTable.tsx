@@ -8,11 +8,11 @@ import OrganizationTableRow from "./OrganizationTableRow";
 
 type Props = {
   data: UserPartnerOwnershipWithPartner[];
-  isFetching: boolean;
+  isLoading: boolean;
 };
 
-const OrganizationTable = ({ isFetching, data }: Props) => {
-  if (isFetching) {
+const OrganizationTable = ({ isLoading, data }: Props) => {
+  if (isLoading) {
     return (
       <div className="mt-20 flex items-center justify-center">
         <ClipLoader color="black" size={30} />
@@ -64,7 +64,7 @@ const OrganizationTable = ({ isFetching, data }: Props) => {
             <tbody className="divide-y divide-gray-200 bg-white">
               {data?.map((item) => {
                 return (
-                  <OrganizationTableRow key={item.partner_id} data={item} />
+                  <OrganizationTableRow key={item.partner_name} data={item} />
                 );
               })}
             </tbody>

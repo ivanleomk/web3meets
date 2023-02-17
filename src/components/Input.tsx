@@ -1,9 +1,10 @@
 import { type ForwardedRef, forwardRef } from "react";
+import { FieldError } from "react-hook-form";
 
 type Props = {
   label?: string;
   helpText?: string | undefined;
-  errorMessage?: string | undefined;
+  errorMessage?: FieldError | undefined;
   htmlFor: string;
   type: string;
   autocomplete: string;
@@ -40,7 +41,7 @@ const Input = forwardRef(
           />
           {errorMessage ? (
             <p className="mt-2 text-sm text-red-600" id="email-error">
-              {errorMessage}
+              {errorMessage.message}
             </p>
           ) : null}
           {helpText && !errorMessage ? (

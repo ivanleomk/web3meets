@@ -55,7 +55,7 @@ export function UserWrapper({ children }: UserContextProps) {
       const { admin, email } = data;
       setIsAuthenticated(true);
       setUserMetadata({
-        email: email as string,
+        email: email,
         isAdmin: admin,
         profile_image: null,
       });

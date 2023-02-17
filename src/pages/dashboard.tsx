@@ -1,3 +1,12 @@
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+  NextPageContext,
+  PreviewData,
+} from "next";
+import { ParsedUrlQuery } from "querystring";
 import React from "react";
 import UserDashboard from "../components/UserDashboardContainer";
 
@@ -10,6 +19,29 @@ const Dashboard = () => {
       <UserDashboard />
     </div>
   );
+};
+
+export const getServerSideProps = async (
+  ctx: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
+) => {
+  // Create authenticated Supabase Client
+  const supabase = createServerSupabaseClient(ctx);
+  // Check if we have a session
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session)
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+
+  return {
+    props: {},
+  };
 };
 
 export default Dashboard;
