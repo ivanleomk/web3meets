@@ -5,6 +5,36 @@ import { adminServerSupabaseInstance } from "../../supabase/sharedInstance";
 import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
 
 export const partnerRouter = createTRPCRouter({
+  updatePartnerDetails: supabaseProtectedProcedure
+    .input(
+      z.object({
+        partner_name: z.string(),
+        website: z.string().url(),
+        telegram_handle: z.string().nullish(),
+        twitter_id: z.string().nullish(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // TODO: Figure out a way to deal with naming updates --> We should use an internal id to track all of the various partners....
+      const { partner_name, website, telegram_handle, twitter_id } = input;
+      const { error } = await adminServerSupabaseInstance
+        .from("Partner")
+        .update({
+          partner_name,
+          website,
+          telegram_handle,
+          twitter_id,
+        })
+        .eq("partner_name", partner_name);
+
+      if (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Unable to create new organization - please try again and contact support if this problem persists",
+        });
+      }
+    }),
   createPartner: supabaseProtectedProcedure
     .input(
       z.object({
@@ -62,6 +92,33 @@ export const partnerRouter = createTRPCRouter({
       }
 
       return newPartnerOwnership;
+    }),
+  getPartnerInformation: supabaseProtectedProcedure
+    .input(
+      z.object({
+        partner_name: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId: user_id } = ctx;
+      const { partner_name } = input;
+
+      const { data, error } = await adminServerSupabaseInstance
+        .from("UserPartnerOwnership")
+        .select("*,Partner(*)")
+        .eq("partner_name", partner_name)
+        .eq("user_id", user_id)
+        .maybeSingle();
+
+      if (!data || error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Unable to get information on Organization. Please try again later",
+        });
+      }
+
+      return data;
     }),
   getAllPartners: supabaseProtectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;

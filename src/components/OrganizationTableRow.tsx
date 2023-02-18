@@ -55,11 +55,11 @@ const OrganizationTableRow = ({ data }: Props) => {
             onClickHandler={() => {
               deletePartner({ partner_name });
               // Optimistic Updates set here
-              utils.partner.getAllPartners.setData(undefined, (old) =>
-                old?.filter((item) => {
+              utils.partner.getAllPartners.setData(undefined, (old) => {
+                return old?.filter((item) => {
                   item.partner_name !== partner_name;
-                })
-              );
+                });
+              });
             }}
             userActionText="Confirm"
             buttonText="Delete Membership"
@@ -69,7 +69,7 @@ const OrganizationTableRow = ({ data }: Props) => {
           <Button
             variant="solid"
             color="gray"
-            href={`/partners/${partner_name}`}
+            href={`/dashboard/partner?partner_name=${partner_name}`}
             text="Update Org"
           />
         </div>

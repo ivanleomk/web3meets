@@ -12,64 +12,26 @@ import {
 } from "../types/partner";
 
 type Props = {
-  postFormHook: () => void;
+  initialValue?: CreateOrganizationInput | undefined;
+  onSubmit: (data: CreateOrganizationInput) => void;
+  buttonText: string;
 };
 
-const CreateOrganizationForm = ({ postFormHook }: Props) => {
-  const newPartnerMutation = api.partner.createPartner.useMutation({
-    onError: (err) => {
-      console.log(err);
-      toast.warning("Unable to add new organization. Please try again later");
-    },
-    onSuccess: () => {
-      toast.success(
-        "New organization succesfully created. Please wait for confirmation from our team for changes to reflect."
-      );
-    },
-  });
+const CreateOrganizationForm = ({
+  onSubmit,
+  initialValue,
+  buttonText,
+}: Props) => {
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = useForm<CreateOrganizationInput>({
     resolver: zodResolver(createOrganizationSchema),
+    defaultValues: initialValue ? initialValue : undefined,
   });
   const utils = api.useContext();
   const user = useUser();
-
-  const onSubmit = async (data: CreateOrganizationInput) => {
-    const { name, website, twitter_id, telegram_handle } = data;
-    const newMut = newPartnerMutation.mutateAsync({
-      partner_name: name,
-      website,
-      twitter_id,
-      telegram_handle,
-    });
-    utils.partner.getAllPartners.setData(undefined, (old) => {
-      const newObj = {
-        approved: false,
-        partner_name: name,
-        user_id: user?.id as string,
-        Partner: {
-          partner_name: name,
-          website,
-          twitter_id: twitter_id ? twitter_id : "",
-          telegram_handle: telegram_handle ? telegram_handle : "",
-          open_to_sponsor: false,
-          active: false,
-          approved: false,
-          stripe_account_id: "",
-        },
-      };
-
-      if (!old) {
-        return [newObj];
-      }
-      return [...old, newObj];
-    });
-    postFormHook();
-    await newMut;
-  };
 
   return (
     <>
@@ -120,7 +82,7 @@ const CreateOrganizationForm = ({ postFormHook }: Props) => {
                 <ClipLoader color="white" size={20} />
               </>
             ) : (
-              <>Create New Organization</>
+              <>{buttonText}</>
             )}
           </button>
         </div>

@@ -164,7 +164,7 @@ export interface Database {
           stripe_account_id: string | null
           telegram_handle: string | null
           twitter_id: string | null
-          website: string | null
+          website: string
         }
         Insert: {
           active?: boolean
@@ -174,7 +174,7 @@ export interface Database {
           stripe_account_id?: string | null
           telegram_handle?: string | null
           twitter_id?: string | null
-          website?: string | null
+          website: string
         }
         Update: {
           active?: boolean
@@ -184,7 +184,7 @@ export interface Database {
           stripe_account_id?: string | null
           telegram_handle?: string | null
           twitter_id?: string | null
-          website?: string | null
+          website?: string
         }
       }
       PromotionalMaterial: {

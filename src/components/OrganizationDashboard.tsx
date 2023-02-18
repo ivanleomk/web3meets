@@ -1,9 +1,11 @@
+import { useUser } from "@supabase/auth-helpers-react";
 import React, { useState } from "react";
-import { UserPartnerOwnershipWithPartner } from "../types/database";
+import { toast } from "react-toastify";
+import { type UserPartnerOwnershipWithPartner } from "../types/database";
+import { type CreateOrganizationInput } from "../types/partner";
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import CreateOrganizationForm from "./CreateOrganizationForm";
-import InfoComponent from "./InfoComponent";
 import OrganizationTable from "./OrganizationTable";
 
 const OrganizationDashboard = () => {
@@ -13,6 +15,55 @@ const OrganizationDashboard = () => {
     refetchInterval: 30000,
     refetchOnWindowFocus: false,
   });
+
+  const utils = api.useContext();
+  const user = useUser();
+
+  const newPartnerMutation = api.partner.createPartner.useMutation({
+    onError: (err) => {
+      console.log(err);
+      toast.warning("Unable to add new organization. Please try again later");
+    },
+    onSuccess: () => {
+      toast.success(
+        "New organization succesfully created. Please wait for confirmation from our team for changes to reflect."
+      );
+    },
+  });
+
+  const onSubmit = async (data: CreateOrganizationInput) => {
+    const { name, website, twitter_id, telegram_handle } = data;
+    const newMut = newPartnerMutation.mutateAsync({
+      partner_name: name,
+      website,
+      twitter_id,
+      telegram_handle,
+    });
+    utils.partner.getAllPartners.setData(undefined, (old) => {
+      const newObj = {
+        approved: false,
+        partner_name: name,
+        user_id: user?.id as string,
+        Partner: {
+          partner_name: name,
+          website,
+          twitter_id: twitter_id ? twitter_id : "",
+          telegram_handle: telegram_handle ? telegram_handle : "",
+          open_to_sponsor: false,
+          active: false,
+          approved: false,
+          stripe_account_id: "",
+        },
+      };
+
+      if (!old) {
+        return [newObj];
+      }
+      return [...old, newObj];
+    });
+    setMode("View");
+    await newMut;
+  };
 
   return (
     <>
@@ -47,7 +98,10 @@ const OrganizationDashboard = () => {
         </div>
         <div className="">
           {mode === "Create" ? (
-            <CreateOrganizationForm postFormHook={() => setMode("View")} />
+            <CreateOrganizationForm
+              onSubmit={onSubmit}
+              buttonText="Create New Organisation"
+            />
           ) : (
             <OrganizationTable
               data={data ? (data as UserPartnerOwnershipWithPartner[]) : []}
