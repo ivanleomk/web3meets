@@ -3,7 +3,6 @@ import { ClipLoader } from "react-spinners";
 import { ORGANIZATION_FIELDS } from "../config/organization";
 import { type UserPartnerOwnershipWithPartner } from "../types/database";
 import { joinClassNames } from "../utils/string";
-import EmptyOrganizationState from "./EmptyOrganizationState";
 import OrganizationTableRow from "./OrganizationTableRow";
 
 type Props = {

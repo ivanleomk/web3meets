@@ -1,12 +1,8 @@
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import {
+import type {
   GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse,
-  NextPageContext,
-  PreviewData,
-} from "next";
-import { ParsedUrlQuery } from "querystring";
+  PreviewData} from "next";
+import type { ParsedUrlQuery } from "querystring";
 import React from "react";
 import UserDashboard from "../components/UserDashboardContainer";
 

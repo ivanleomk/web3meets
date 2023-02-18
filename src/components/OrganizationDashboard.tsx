@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { UserPartnerOwnershipWithPartner } from "../types/database";
+import type { UserPartnerOwnershipWithPartner } from "../types/database";
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import CreateOrganizationForm from "./CreateOrganizationForm";
-import InfoComponent from "./InfoComponent";
 import OrganizationTable from "./OrganizationTable";
 
 const OrganizationDashboard = () => {

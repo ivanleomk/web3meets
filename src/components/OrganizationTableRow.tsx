@@ -1,6 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { UserPartnerOwnershipWithPartner } from "../types/database";
+import type { UserPartnerOwnershipWithPartner } from "../types/database";
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import OrganizationStatus from "./OrganizationStatus";

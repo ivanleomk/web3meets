@@ -6,7 +6,7 @@ export const LINKS: LinkMetadata[] = [
     label: "About Us",
   },
   {
-    href: "/",
+    href: "/events",
     label: "Events",
   },
   {
