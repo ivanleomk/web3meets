@@ -1,93 +1,92 @@
-table User {
-  // Derived from Supabase
-  user_id uuid  [pk]
-  email text
-  admin boolean
-}
+CREATE TABLE "User" (
+  "user_id" uuid PRIMARY KEY NOT NULL,
+  "email" text NOT NULL,
+  "admin" boolean NOT NULL DEFAULT false
+);
 
-table UserPartnerOwnership {
-  user_id uuid
-  partner_name text 
-  approved boolean
-  
-  Indexes {
-    (user_id, partner_id) [unique]
-  }
-}
+CREATE TABLE "UserPartnerOwnership" (
+  "user_id" uuid NOT NULL,
+  "partner_id" uuid NOT NULL,
+  "approved" boolean NOT NULL DEFAULT false
+);
 
+CREATE TABLE "Partner" (
+  "partner_id" uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4,
+  "partner_name" text UNIQUE NOT NULL,
+  "website" text UNIQUE NOT NULL DEFAULT '',
+  "telegram_handle" text UNIQUE,
+  "twitter_id" text UNIQUE,
+  "stripe_account_id" text UNIQUE DEFAULT null,
+  "active" bool NOT NULL DEFAULT false,
+  "open_to_sponsor" boolean NOT NULL DEFAULT false,
+  "approved" bool NOT NULL DEFAULT false,
+  "bio" text NOT NULL DEFAULT ''
+);
 
-Ref:  UserPartnerOwnership.user_id > User.user_id [delete:cascade]
-Ref:  UserPartnerOwnership.partner_name > Partner.partner_name [delete:cascade]
+CREATE TABLE "Event" (
+  "event_id" serial PRIMARY KEY,
+  "user_id" uuid NOT NULL,
+  "starts_at" timestamptz NOT NULL,
+  "ends_at" timestamptz NOT NULL,
+  "title" text NOT NULL,
+  "featured" bool NOT NULL DEFAULT false,
+  "our_pick" bool NOT NULL DEFAULT false,
+  "location_id" serial,
+  "paid" bool NOT NULL DEFAULT false,
+  "stripe_event_id" text,
+  "remarks" text NOT NULL DEFAULT '',
+  "partnered" bool NOT NULL DEFAULT false,
+  "event_series_id" serial NOT NULL,
+  "partner_id" uuid,
+  "scheduled_post" timestamptz
+);
 
+CREATE TABLE "PromotionalMaterial" (
+  "event_id" serial NOT NULL,
+  "material_id" serial PRIMARY KEY NOT NULL,
+  "image_url" text NOT NULL
+);
 
-table Partner {
-  parter_name text [not null, unique]
-  website text [null, unique]
-  telegram_handle text [null, unique]
-  twitter_id text [null,unique]
-  // Internal Flag here
-  stripe_account_id text [null,unique]
-  // When a Partner wants to delete their acc - we indicate that it is inactive instead
-  active bool [not null,default:false]
-  open_to_sponsor boolean [not null,default:false]
-  approved bool [not null,default:false]
-}
+CREATE TABLE "EventSeries" (
+  "event_series_id" serial PRIMARY KEY,
+  "recurring" text,
+  "start_date" timestamptz,
+  "end_date" timestamptz
+);
 
-table Event {
-  event_id serial [pk]
-  user_id uuid [not null]
-  starts_at timestamptz [not null]
-  ends_at timestamptz [not null]
-  title text [not null]
-  featured bool [not null,default:false]
-  our_pick bool [not null,default:false]
-  location_id serial [null]
-  paid bool [not null,default:false]
-  // In case we ever want to accept event $$
-  stripe_event_id text [null]
-  remarks text [not null, default:""]
-  partnered bool  [not null,default:false]
-  event_series_id serial  [not null]
-  partner_id serial [ref: > Partner.partner_id]
-  scheduled_post timestamptz [null]
-}
+CREATE TABLE "Location" (
+  "location_id" serial PRIMARY KEY,
+  "address" text,
+  "google_maps_link" text,
+  "city_id" serial
+);
 
+CREATE TABLE "City" (
+  "city_id" serial PRIMARY KEY,
+  "country_id" serial
+);
 
-Ref: Event.location_id > Location.location_id
-Ref: Event.event_series_id > EventSeries.event_series_id [delete:cascade]
-Ref: Event.user_id > User.user_id
+CREATE TABLE "Country" (
+  "country_id" serial PRIMARY KEY,
+  "country_name" text
+);
 
+CREATE UNIQUE INDEX ON "UserPartnerOwnership" ("user_id", "partner_id");
 
-table PromotionalMaterial {
-  event_id serial 
-  image_url text
-}
+ALTER TABLE "UserPartnerOwnership" ADD FOREIGN KEY ("user_id") REFERENCES "User" ("user_id") ON DELETE CASCADE;
 
-Ref: PromotionalMaterial.event_id > Event.event_id
+ALTER TABLE "UserPartnerOwnership" ADD FOREIGN KEY ("partner_id") REFERENCES "Partner" ("partner_id") ON DELETE CASCADE;
 
-// Useful to help track recurring events - we specify end and start date
-table EventSeries {
-  event_series_id serial [pk] 
-  recurring text // Support basic stuff like weekly, monthly,bi monthly
-  //Thse can be null if recurring is set to null
-  start_date timestamptz [null]
-  end_date timestamptz  [null]
-}
+ALTER TABLE "Event" ADD FOREIGN KEY ("location_id") REFERENCES "Location" ("location_id");
 
-table Location {
-  location_id serial [pk]
-  address text 
-  google_maps_link text
-  city_id serial [ref: > City.city_id]
-}
+ALTER TABLE "Event" ADD FOREIGN KEY ("event_series_id") REFERENCES "EventSeries" ("event_series_id") ON DELETE CASCADE;
 
-table City {
-  city_id serial [pk]
-  country_id serial [ref: > Country.country_id]
-}
+ALTER TABLE "Event" ADD FOREIGN KEY ("user_id") REFERENCES "User" ("user_id");
 
-table Country {
-  country_id serial [pk]
-  country_name text 
-}
-   
+ALTER TABLE "Event" ADD FOREIGN KEY ("partner_id") REFERENCES "Partner" ("partner_id");
+
+ALTER TABLE "PromotionalMaterial" ADD FOREIGN KEY ("event_id") REFERENCES "Event" ("event_id");
+
+ALTER TABLE "Location" ADD FOREIGN KEY ("city_id") REFERENCES "City" ("city_id");
+
+ALTER TABLE "City" ADD FOREIGN KEY ("country_id") REFERENCES "Country" ("country_id");

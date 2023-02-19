@@ -71,7 +71,7 @@ export interface Database {
           location_id: number
           our_pick: boolean
           paid: boolean
-          partner_name: string | null
+          partner_id: string | null
           partnered: boolean
           remarks: string
           scheduled_post: string | null
@@ -88,7 +88,7 @@ export interface Database {
           location_id?: number
           our_pick?: boolean
           paid?: boolean
-          partner_name?: string | null
+          partner_id?: string | null
           partnered?: boolean
           remarks?: string
           scheduled_post?: string | null
@@ -105,7 +105,7 @@ export interface Database {
           location_id?: number
           our_pick?: boolean
           paid?: boolean
-          partner_name?: string | null
+          partner_id?: string | null
           partnered?: boolean
           remarks?: string
           scheduled_post?: string | null
@@ -159,7 +159,9 @@ export interface Database {
         Row: {
           active: boolean
           approved: boolean
+          bio: string
           open_to_sponsor: boolean
+          partner_id: string
           partner_name: string
           stripe_account_id: string | null
           telegram_handle: string | null
@@ -169,17 +171,21 @@ export interface Database {
         Insert: {
           active?: boolean
           approved?: boolean
+          bio?: string
           open_to_sponsor?: boolean
+          partner_id?: string
           partner_name: string
           stripe_account_id?: string | null
           telegram_handle?: string | null
           twitter_id?: string | null
-          website: string
+          website?: string
         }
         Update: {
           active?: boolean
           approved?: boolean
+          bio?: string
           open_to_sponsor?: boolean
+          partner_id?: string
           partner_name?: string
           stripe_account_id?: string | null
           telegram_handle?: string | null
@@ -224,17 +230,17 @@ export interface Database {
       UserPartnerOwnership: {
         Row: {
           approved: boolean
-          partner_name: string
+          partner_id: string
           user_id: string
         }
         Insert: {
           approved?: boolean
-          partner_name: string
+          partner_id: string
           user_id: string
         }
         Update: {
           approved?: boolean
-          partner_name?: string
+          partner_id?: string
           user_id?: string
         }
       }

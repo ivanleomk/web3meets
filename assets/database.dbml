@@ -7,30 +7,33 @@ table User {
 
 table UserPartnerOwnership {
   user_id uuid [not null]
-  partner_name text [not null]
+  partner_id uuid [not null]
   approved boolean [not null,default:false]
   
   Indexes {
-    (user_id, partner_name) [unique]
+    (user_id,partner_id) [unique]
   }
 }
 
 
 Ref:  UserPartnerOwnership.user_id > User.user_id [delete:cascade]
-Ref:  UserPartnerOwnership.partner_name > Partner.partner_name [delete:cascade]
+Ref:  UserPartnerOwnership.partner_id > Partner.partner_id [delete:cascade]
 
 
 table Partner {
+  // Need to manually set this value in the .sql file generated
+  partner_id uuid [pk,not null]
   partner_name text [pk,not null, unique]
-  website text [null, unique]
+  website text [not null, unique,default:""]
   telegram_handle text [null, unique]
   twitter_id text [null,unique]
   // Internal Flag here
-  stripe_account_id text [null,unique]
+  stripe_account_id text [null,unique,default:null]
   // When a Partner wants to delete their acc - we indicate that it is inactive instead
   active bool [not null,default:false]
   open_to_sponsor boolean [not null,default:false]
   approved bool [not null,default:false]
+  bio text [not null, default:""]
 }
 
 table Event {
@@ -48,7 +51,7 @@ table Event {
   remarks text [not null, default:""]
   partnered bool  [not null,default:false]
   event_series_id serial  [not null]
-  partner_name text 
+  partner_id uuid 
   scheduled_post timestamptz [null]
 }
 
@@ -56,7 +59,7 @@ table Event {
 Ref: Event.location_id > Location.location_id
 Ref: Event.event_series_id > EventSeries.event_series_id [delete:cascade]
 Ref: Event.user_id > User.user_id
-Ref: Event.partner_name > Partner.partner_name
+Ref: Event.partner_id > Partner.partner_id
 
 
 table PromotionalMaterial {

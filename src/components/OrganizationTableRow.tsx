@@ -13,7 +13,14 @@ type Props = {
 const OrganizationTableRow = ({ data }: Props) => {
   const {
     approved,
-    Partner: { partner_name, website, telegram_handle, twitter_id, active },
+    Partner: {
+      partner_id,
+      partner_name,
+      website,
+      telegram_handle,
+      twitter_id,
+      active,
+    },
   } = data;
 
   const { mutate: deletePartner } = api.partner.deletePartner.useMutation({

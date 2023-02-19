@@ -1,9 +1,5 @@
-import { useUser } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
-import { toast } from "react-toastify";
-import { z } from "zod";
-import { api } from "../utils/api";
 import Input from "./Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -30,8 +26,6 @@ const CreateOrganizationForm = ({
     resolver: zodResolver(createOrganizationSchema),
     defaultValues: initialValue ? initialValue : undefined,
   });
-  const utils = api.useContext();
-  const user = useUser();
 
   return (
     <>
@@ -41,11 +35,11 @@ const CreateOrganizationForm = ({
       >
         <Input
           label="Name"
-          errorMessage={errors?.name}
+          errorMessage={errors?.partner_name}
           htmlFor="Name"
           autocomplete=""
           type="text"
-          {...register("name")}
+          {...register("partner_name")}
         />
         <Input
           label="Website Address"
@@ -71,6 +65,19 @@ const CreateOrganizationForm = ({
           type="text"
           {...register("twitter_id")}
         />
+        <div>
+          <label
+            htmlFor="comment"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Bio
+          </label>
+          <textarea
+            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            {...register("bio")}
+          />
+        </div>
+
         <div className="col-span-2 flex items-center justify-center">
           <button
             disabled={isSubmitting}

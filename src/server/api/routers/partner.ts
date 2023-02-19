@@ -1,5 +1,7 @@
+import { UserPartnerOwnershipWithPartner } from "./../../../types/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createOrganizationSchema } from "../../../types/partner";
 import { adminServerSupabaseInstance } from "../../supabase/sharedInstance";
 
 import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
@@ -16,6 +18,7 @@ export const partnerRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       // TODO: Figure out a way to deal with naming updates --> We should use an internal id to track all of the various partners....
+
       const { partner_name, website, telegram_handle, twitter_id } = input;
       const { error } = await adminServerSupabaseInstance
         .from("Partner")
@@ -37,21 +40,20 @@ export const partnerRouter = createTRPCRouter({
     }),
   createPartner: supabaseProtectedProcedure
     .input(
-      z.object({
-        partner_name: z.string(),
-        website: z.string(),
-        telegram_handle: z.string().nullish(),
-        twitter_id: z.string().nullish(),
+      createOrganizationSchema.extend({
+        partner_id: z.string().uuid(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { partner_name, website, telegram_handle, twitter_id } = input;
+      const { partner_id, partner_name, website, telegram_handle, twitter_id } =
+        input;
       const { userId: user_id } = ctx;
 
       // First We try to create the partner org. if it already exists, then we throw an error. We use the name of the organisation as a unique key ( So people cannot create two partner orgs with the same name)
       const { data, error } = await adminServerSupabaseInstance
         .from("Partner")
         .insert({
+          partner_id,
           partner_name,
           website,
           telegram_handle,
@@ -63,11 +65,20 @@ export const partnerRouter = createTRPCRouter({
         .select("*")
         .maybeSingle();
 
-      if (error || !data) {
+      if (
+        error?.message ===
+        'duplicate key value violates unique constraint "Partner_partner_name_key"'
+      ) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
-            "Unable to create new organization - please try again and contact support if this problem persists",
+            "Organization name has already been taken on our platform. Please try another name.",
+        });
+      }
+      if (error || !data) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error?.message,
         });
       }
 
@@ -77,7 +88,7 @@ export const partnerRouter = createTRPCRouter({
           .from("UserPartnerOwnership")
           .insert({
             user_id,
-            partner_name,
+            partner_id,
             approved: false,
           })
           .select("*")
@@ -86,8 +97,7 @@ export const partnerRouter = createTRPCRouter({
       if (newPartnerOwnershipError || !newPartnerOwnership) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message:
-            "Unable to create new organization - please try again and contact support if this problem persists",
+          message: newPartnerOwnershipError?.message,
         });
       }
 
