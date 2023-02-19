@@ -10,7 +10,6 @@ export default function FilterLayout() {
   return (
     <div className="bg-white">
       <div>
-        {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
           <Dialog
             as="div"

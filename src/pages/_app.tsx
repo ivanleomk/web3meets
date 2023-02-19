@@ -15,6 +15,7 @@ import { type Database } from "../types/database-raw";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserWrapper } from "../context/UserContext";
+import "react-datepicker/dist/react-datepicker.css";
 
 function MyApp({
   Component,
