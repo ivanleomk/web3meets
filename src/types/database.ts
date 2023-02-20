@@ -21,3 +21,8 @@ export type UserPartnerOwnershipWithPartner = UserPartnerOwnership & {
 export type UserPartnerOwnershipWithUser = UserPartnerOwnership & {
   User: User;
 };
+
+export type UserPartnerOwnershipWithUserAndPartner = UserPartnerOwnership & {
+  User: User;
+  Partner: Partner;
+};

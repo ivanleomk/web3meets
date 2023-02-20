@@ -78,7 +78,7 @@ const CreateOrganizationForm = ({
           />
         </div>
 
-        <div className="col-span-2 flex items-center justify-center">
+        <div className="col-span-2 flex justify-end">
           <button
             disabled={isSubmitting}
             type="submit"

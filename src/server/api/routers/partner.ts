@@ -1,4 +1,3 @@
-import { UserPartnerOwnershipWithPartner } from "./../../../types/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createOrganizationSchema } from "../../../types/partner";
@@ -7,53 +6,139 @@ import { adminServerSupabaseInstance } from "../../supabase/sharedInstance";
 import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
 
 export const partnerRouter = createTRPCRouter({
-  updatePartnerDetails: supabaseProtectedProcedure
+  verifyValidOrganization: supabaseProtectedProcedure
     .input(
       z.object({
-        partner_name: z.string(),
-        website: z.string().url(),
-        telegram_handle: z.string().nullish(),
-        twitter_id: z.string().nullish(),
+        partner_id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { partner_id } = input;
+      // Validate that organization has at least one administrator
+      const { error, count } = await adminServerSupabaseInstance
+        .from("UserPartnerOwnership")
+        .select("*", { count: "exact" })
+        .eq("partner_id", partner_id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            "Unable to update Organization on backend. Please verify that data is correct",
+        });
+      }
+
+      if (count == 0) {
+        const { error: deleteOrganizationError } =
+          await adminServerSupabaseInstance
+            .from("Partner")
+            .delete()
+            .eq("partner_id", partner_id);
+
+        if (deleteOrganizationError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Unable to update Organization on backend. Please verify that data is correct",
+          });
+        }
+        return true;
+      }
+
+      return false;
+    }),
+  deletePartnerAdministrator: supabaseProtectedProcedure
+    .input(
+      z.object({
+        user_id_deleting: z.string(),
+        partner_id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId: user_id } = ctx;
+      const { user_id_deleting, partner_id } = input;
+
+      // Verify that user has admin rights
+      const { data, error } = await adminServerSupabaseInstance
+        .from("UserPartnerOwnership")
+        .select("*")
+        .eq("partner_id", user_id)
+        .eq("user_id", user_id)
+        .eq("approved", true);
+
+      if (!data || error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unable to verify that user has admin rights",
+        });
+      }
+
+      // Delete the existing user
+      const { data: deletedUser, error: deletedUserError } =
+        await adminServerSupabaseInstance
+          .from("UserPartnerOwnership")
+          .delete()
+          .eq("user_id", user_id_deleting)
+          .eq("partner_id", partner_id)
+          .select("*");
+
+      if (!deletedUser || deletedUserError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to delete user. Please try again",
+        });
+      }
+      return;
+    }),
+  updatePartnerDetails: supabaseProtectedProcedure
+    .input(
+      createOrganizationSchema.extend({
+        partner_id: z.string().uuid(),
       })
     )
     .mutation(async ({ input }) => {
       // TODO: Figure out a way to deal with naming updates --> We should use an internal id to track all of the various partners....
 
-      const { partner_name, website, telegram_handle, twitter_id } = input;
-      const { error } = await adminServerSupabaseInstance
+      const {
+        partner_id,
+        partner_name,
+        website,
+        telegram_handle,
+        twitter_id,
+        bio,
+      } = input;
+      const { data, error } = await adminServerSupabaseInstance
         .from("Partner")
         .update({
           partner_name,
           website,
           telegram_handle,
           twitter_id,
+          bio,
         })
-        .eq("partner_name", partner_name);
+        .eq("partner_id", partner_id)
+        .select("*");
 
-      if (error) {
+      if (error || !data) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
             "Unable to create new organization - please try again and contact support if this problem persists",
         });
       }
+
+      return data;
     }),
   createPartner: supabaseProtectedProcedure
-    .input(
-      createOrganizationSchema.extend({
-        partner_id: z.string().uuid(),
-      })
-    )
+    .input(createOrganizationSchema)
     .mutation(async ({ input, ctx }) => {
-      const { partner_id, partner_name, website, telegram_handle, twitter_id } =
-        input;
+      const { partner_name, website, telegram_handle, twitter_id } = input;
       const { userId: user_id } = ctx;
 
       // First We try to create the partner org. if it already exists, then we throw an error. We use the name of the organisation as a unique key ( So people cannot create two partner orgs with the same name)
       const { data, error } = await adminServerSupabaseInstance
         .from("Partner")
         .insert({
-          partner_id,
           partner_name,
           website,
           telegram_handle,
@@ -88,7 +173,7 @@ export const partnerRouter = createTRPCRouter({
           .from("UserPartnerOwnership")
           .insert({
             user_id,
-            partner_id,
+            partner_id: data.partner_id,
             approved: false,
           })
           .select("*")
@@ -106,19 +191,16 @@ export const partnerRouter = createTRPCRouter({
   getPartnerInformation: supabaseProtectedProcedure
     .input(
       z.object({
-        partner_name: z.string(),
+        partner_id: z.string().uuid(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { userId: user_id } = ctx;
-      const { partner_name } = input;
+      const { partner_id } = input;
 
       const { data, error } = await adminServerSupabaseInstance
         .from("UserPartnerOwnership")
-        .select("*,Partner(*)")
-        .eq("partner_name", partner_name)
-        .eq("user_id", user_id)
-        .maybeSingle();
+        .select("*, Partner(*),User(*)")
+        .eq("partner_id", partner_id);
 
       if (!data || error) {
         throw new TRPCError({
@@ -150,18 +232,18 @@ export const partnerRouter = createTRPCRouter({
   deletePartner: supabaseProtectedProcedure
     .input(
       z.object({
-        partner_name: z.string(),
+        partner_id: z.string().uuid(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { userId } = ctx;
-      const { partner_name } = input;
+      const { partner_id } = input;
 
       const { data, error } = await adminServerSupabaseInstance
         .from("UserPartnerOwnership")
         .delete()
         .eq("user_id", userId)
-        .eq("partner_name", partner_name)
+        .eq("partner_id", partner_id)
         .select("*");
 
       if (error || data?.length == 0) {
@@ -169,6 +251,31 @@ export const partnerRouter = createTRPCRouter({
           code: "BAD_REQUEST",
           message: "Unable to delete item",
         });
+      }
+
+      // We also verify that if this user is the only one left in the organization, we will just delete the organization
+      const { error: UserPartnershipCountError, count } =
+        await adminServerSupabaseInstance
+          .from("UserPartnerOwnership")
+          .select("*", { count: "exact" })
+          .eq("partner_id", partner_id);
+
+      if (UserPartnershipCountError) {
+        // We've already deleted the org, throw no errors
+        return data;
+      }
+
+      if ((count as number) > 0) {
+        return data;
+      }
+      // We delete organization either way
+      const { error: PartnerDeletionError } = await adminServerSupabaseInstance
+        .from("Partner")
+        .delete()
+        .eq("partner_id", partner_id);
+
+      if (PartnerDeletionError) {
+        return data;
       }
 
       return data;

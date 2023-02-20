@@ -29,6 +29,7 @@ type ButtonProps = {
   onClickHandler?: () => void;
   postClickHook?: () => void;
   text: string;
+  disabled?: boolean;
 };
 
 export const Button = ({
@@ -39,6 +40,7 @@ export const Button = ({
   onClickHandler,
   text,
   postClickHook,
+  disabled = false,
 }: ButtonProps) => {
   if (variant !== "solid" && variant !== "outline") {
     throw new Error("Invalid Variant Prop");
@@ -58,9 +60,9 @@ export const Button = ({
     variantStyle = variantStyleList[color];
   }
 
-  const styling = `${variantStyle} ${baseStyle} ${additionalStyling}`;
+  const styling = `${variantStyle} ${baseStyle} ${additionalStyling} disabled:cursor-not-allowed`;
 
-  if (href) {
+  if (href && !disabled) {
     if (!postClickHook) {
       return (
         <Link href={href} className={styling} passHref>
@@ -70,6 +72,7 @@ export const Button = ({
     }
     return (
       <button
+        disabled={disabled}
         className={styling}
         onClick={() => {
           void router.push(href);
@@ -87,6 +90,7 @@ export const Button = ({
 
   return (
     <button
+      disabled={disabled}
       onClick={() => {
         onClickHandler();
         if (postClickHook) {

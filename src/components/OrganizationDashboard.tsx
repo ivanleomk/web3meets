@@ -1,13 +1,13 @@
-import { useUser } from "@supabase/auth-helpers-react";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
+import { ORGANIZATION_FIELDS } from "../config/organization";
 import { type UserPartnerOwnershipWithPartner } from "../types/database";
 import { type CreateOrganizationInput } from "../types/partner";
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import CreateOrganizationForm from "./CreateOrganizationForm";
 import OrganizationTable from "./OrganizationTable";
+import OrganizationTableRow from "./OrganizationTableRow";
 
 const OrganizationDashboard = () => {
   const [mode, setMode] = useState<"Create" | "View">("View");
@@ -31,11 +31,10 @@ const OrganizationDashboard = () => {
     },
   });
 
-  const onSubmit = async (data: CreateOrganizationInput) => {
+  const onSubmit = (data: CreateOrganizationInput) => {
     const { partner_name, website, twitter_id, telegram_handle } = data;
-    const partner_id = uuidv4();
+
     newPartnerMutation.mutate({
-      partner_id,
       partner_name,
       website,
       twitter_id,
@@ -86,6 +85,11 @@ const OrganizationDashboard = () => {
             <OrganizationTable
               data={data ? (data as UserPartnerOwnershipWithPartner[]) : []}
               isLoading={isLoading}
+              errorMessage="No User Organizations found"
+              headerFields={ORGANIZATION_FIELDS}
+              renderComponent={(data: UserPartnerOwnershipWithPartner) => {
+                return <OrganizationTableRow data={data} />;
+              }}
             />
           )}
         </div>
