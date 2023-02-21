@@ -21,14 +21,16 @@ const OrganizationMemberTableRow = ({
   const { approved, partner_id } = data;
   const { email, user_id } = data.User;
   const router = useRouter();
-
+  const utils = api.useContext();
   const { mutate: updateOrganization } =
     api.partner.verifyValidOrganization.useMutation({
       onSuccess: (res) => {
         if (res) {
           void router.push("/dashboard");
         }
+
         toast.success("Succesfully deleted administrator from organization");
+        void utils.partner.getPartnerInformation.invalidate();
       },
       onError: (err) => {
         toast.warning(err.message);

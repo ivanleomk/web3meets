@@ -1,27 +1,26 @@
-import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useUser } from "@supabase/auth-helpers-react";
 
-import { TRPCError } from "@trpc/server";
 import { type GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { toast } from "react-toastify";
+import ActionModal from "../../../components/ActionModal";
+import AddNewAdministrator from "../../../components/AddNewAdministrator";
+
 import { Button } from "../../../components/Button";
 import CreateOrganizationForm from "../../../components/CreateOrganizationForm";
 import OrganizationMemberTableRow from "../../../components/OrganizationMemberTableRow";
 import OrganizationStatus from "../../../components/OrganizationStatus";
 import OrganizationTable from "../../../components/OrganizationTable";
 import SectionHeader from "../../../components/SectionHeader";
-import { useUserContext } from "../../../context/UserContext";
+
 import { adminServerSupabaseInstance } from "../../../server/supabase/sharedInstance";
 import {
   type UserPartnerOwnershipWithUser,
-  type UserPartnerOwnershipWithPartner,
-  Partner,
-  UserPartnerOwnership,
-  Event,
-  UserPartnerOwnershipWithUserAndPartner,
+  type Partner,
+  type Event,
+  type UserPartnerOwnershipWithUserAndPartner,
 } from "../../../types/database";
 import { api } from "../../../utils/api";
 
@@ -60,7 +59,6 @@ const PartnerPage = ({
       );
     },
   });
-  const utils = api.useContext();
 
   const PartnerMetadata =
     UserPartnershipOwnershipAndMembersData.length >= 1
@@ -84,10 +82,9 @@ const PartnerPage = ({
       return item.user_id == user?.id;
     });
 
-  const hasOrganizationAdminRights =
-    userAdminRightsForOrganization?.approved as boolean;
-
-  console.log(MemberMetadata);
+  const organizationIsApproved = PartnerMetadata?.approved as boolean;
+  const userIsApproved = userAdminRightsForOrganization?.approved as boolean;
+  const hasOrganizationAdminRights = organizationIsApproved && userIsApproved;
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -163,13 +160,20 @@ const PartnerPage = ({
           }}
         />
         <div className="mt-16 flex w-full justify-end">
-          <Button
-            text="Add New User"
+          <ActionModal
+            buttonText="Add New User"
             variant="solid"
-            color="gray"
-            href="/add-user"
-            additionalStyling=""
-          />
+            modalTitle="Add New User"
+            modalSubtitle={
+              "Simply fill in the user's email address and we'll send over an invite to him to join your organisation if the email exists in our database"
+            }
+            metadata={{
+              partner_id: PartnerMetadata?.partner_id as string,
+            }}
+            disabled={!hasOrganizationAdminRights}
+          >
+            <AddNewAdministrator />
+          </ActionModal>
         </div>
       </SectionHeader>
 

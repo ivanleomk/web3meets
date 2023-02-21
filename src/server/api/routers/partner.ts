@@ -1,3 +1,4 @@
+import { createNewAdministratorSchema } from "./../../../types/partner";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createOrganizationSchema } from "../../../types/partner";
@@ -6,6 +7,57 @@ import { adminServerSupabaseInstance } from "../../supabase/sharedInstance";
 import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
 
 export const partnerRouter = createTRPCRouter({
+  addNewAdministrator: supabaseProtectedProcedure
+    .input(
+      createNewAdministratorSchema.extend({
+        partner_id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { user_email, partner_id } = input;
+
+      const { userId: user_id } = ctx;
+
+      // Validate that user is an administrator
+      const { data: userAdmin, error: userAdminValidationError } =
+        await adminServerSupabaseInstance
+          .from("UserPartnerOwnership")
+          .select("*")
+          .eq("partner_id", partner_id)
+          .eq("user_id", user_id)
+          .eq("approved", true)
+          .maybeSingle();
+
+      if (!userAdmin || userAdminValidationError) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "User must be an administrator in order to modify the organization",
+        });
+      }
+
+      // We get the user's ID
+      const { data: newAdminData, error: newAdminDataError } =
+        await adminServerSupabaseInstance
+          .from("User")
+          .select("user_id")
+          .eq("email", user_email)
+          .maybeSingle();
+
+      // This can happen if we cannot find the user or user does not exist - do not return an error either way.
+      if (!newAdminData || newAdminDataError || !newAdminData.user_id) {
+        return true;
+      }
+
+      // We now add the user
+      await adminServerSupabaseInstance.from("UserPartnerOwnership").insert({
+        approved: true,
+        partner_id,
+        user_id: newAdminData.user_id,
+      });
+
+      return true;
+    }),
   verifyValidOrganization: supabaseProtectedProcedure
     .input(
       z.object({
@@ -145,7 +197,8 @@ export const partnerRouter = createTRPCRouter({
           twitter_id,
           open_to_sponsor: false,
           stripe_account_id: null,
-          active: false,
+          active: true,
+          approved: false,
         })
         .select("*")
         .maybeSingle();

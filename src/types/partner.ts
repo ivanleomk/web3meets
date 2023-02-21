@@ -13,4 +13,13 @@ export const createOrganizationSchema = z.object({
     .transform((e) => (e === "" ? undefined : e)),
 });
 
+export const createNewAdministratorSchema = z.object({
+  user_email: z
+    .string()
+    .email({ message: "Please enter a valid email address" }),
+});
+
 export type CreateOrganizationInput = z.infer<typeof createOrganizationSchema>;
+export type CreateAdministratorInput = z.infer<
+  typeof createNewAdministratorSchema
+>;
