@@ -1,9 +1,5 @@
-import { useUser } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
-import { toast } from "react-toastify";
-import { z } from "zod";
-import { api } from "../utils/api";
 import Input from "./Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -12,64 +8,24 @@ import {
 } from "../types/partner";
 
 type Props = {
-  postFormHook: () => void;
+  initialValue?: CreateOrganizationInput | undefined;
+  onSubmit: (data: CreateOrganizationInput) => void;
+  buttonText: string;
 };
 
-const CreateOrganizationForm = ({ postFormHook }: Props) => {
-  const newPartnerMutation = api.partner.createPartner.useMutation({
-    onError: (err) => {
-      console.log(err);
-      toast.warning("Unable to add new organization. Please try again later");
-    },
-    onSuccess: () => {
-      toast.success(
-        "New organization succesfully created. Please wait for confirmation from our team for changes to reflect."
-      );
-    },
-  });
+const CreateOrganizationForm = ({
+  onSubmit,
+  initialValue,
+  buttonText,
+}: Props) => {
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = useForm<CreateOrganizationInput>({
     resolver: zodResolver(createOrganizationSchema),
+    defaultValues: initialValue ? initialValue : undefined,
   });
-  const utils = api.useContext();
-  const user = useUser();
-
-  const onSubmit = async (data: CreateOrganizationInput) => {
-    const { name, website, twitter_id, telegram_handle } = data;
-    const newMut = newPartnerMutation.mutateAsync({
-      partner_name: name,
-      website,
-      twitter_id,
-      telegram_handle,
-    });
-    utils.partner.getAllPartners.setData(undefined, (old) => {
-      const newObj = {
-        approved: false,
-        partner_name: name,
-        user_id: user?.id as string,
-        Partner: {
-          partner_name: name,
-          website,
-          twitter_id: twitter_id ? twitter_id : "",
-          telegram_handle: telegram_handle ? telegram_handle : "",
-          open_to_sponsor: false,
-          active: false,
-          approved: false,
-          stripe_account_id: "",
-        },
-      };
-
-      if (!old) {
-        return [newObj];
-      }
-      return [...old, newObj];
-    });
-    postFormHook();
-    await newMut;
-  };
 
   return (
     <>
@@ -79,11 +35,11 @@ const CreateOrganizationForm = ({ postFormHook }: Props) => {
       >
         <Input
           label="Name"
-          errorMessage={errors?.name}
+          errorMessage={errors?.partner_name}
           htmlFor="Name"
           autocomplete=""
           type="text"
-          {...register("name")}
+          {...register("partner_name")}
         />
         <Input
           label="Website Address"
@@ -109,7 +65,20 @@ const CreateOrganizationForm = ({ postFormHook }: Props) => {
           type="text"
           {...register("twitter_id")}
         />
-        <div className="col-span-2 flex items-center justify-center">
+        <div>
+          <label
+            htmlFor="comment"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Bio
+          </label>
+          <textarea
+            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            {...register("bio")}
+          />
+        </div>
+
+        <div className="col-span-2 flex justify-end">
           <button
             disabled={isSubmitting}
             type="submit"
@@ -120,7 +89,7 @@ const CreateOrganizationForm = ({ postFormHook }: Props) => {
                 <ClipLoader color="white" size={20} />
               </>
             ) : (
-              <>Create New Organization</>
+              <>{buttonText}</>
             )}
           </button>
         </div>

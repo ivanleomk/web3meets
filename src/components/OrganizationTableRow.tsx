@@ -1,6 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { UserPartnerOwnershipWithPartner } from "../types/database";
+import { type UserPartnerOwnershipWithPartner } from "../types/database";
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import OrganizationStatus from "./OrganizationStatus";
@@ -13,7 +13,14 @@ type Props = {
 const OrganizationTableRow = ({ data }: Props) => {
   const {
     approved,
-    Partner: { partner_name, website, telegram_handle, twitter_id, active },
+    Partner: {
+      partner_id,
+      partner_name,
+      website,
+      telegram_handle,
+      twitter_id,
+      active,
+    },
   } = data;
 
   const { mutate: deletePartner } = api.partner.deletePartner.useMutation({
@@ -41,10 +48,10 @@ const OrganizationTableRow = ({ data }: Props) => {
         {twitter_id}
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        <OrganizationStatus active={active ? active : false} />
+        <OrganizationStatus active={approved ? approved : false} />
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        <OrganizationStatus active={approved ? approved : false} />
+        <OrganizationStatus active={active ? active : false} />
       </td>
 
       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
@@ -53,13 +60,13 @@ const OrganizationTableRow = ({ data }: Props) => {
             variant="outline"
             color="gray"
             onClickHandler={() => {
-              deletePartner({ partner_name });
+              deletePartner({ partner_id });
               // Optimistic Updates set here
-              utils.partner.getAllPartners.setData(undefined, (old) =>
-                old?.filter((item) => {
-                  item.partner_name !== partner_name;
-                })
-              );
+              utils.partner.getAllPartners.setData(undefined, (old) => {
+                return old?.filter((item) => {
+                  item.partner_id !== partner_id;
+                });
+              });
             }}
             userActionText="Confirm"
             buttonText="Delete Membership"
@@ -69,7 +76,7 @@ const OrganizationTableRow = ({ data }: Props) => {
           <Button
             variant="solid"
             color="gray"
-            href={`/partners/${partner_name}`}
+            href={`/dashboard/partner?partner_id=${partner_id}`}
             text="Update Org"
           />
         </div>

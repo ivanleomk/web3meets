@@ -1,17 +1,27 @@
-import React from "react";
+import React, { type ReactNode } from "react";
 import { ClipLoader } from "react-spinners";
-import { ORGANIZATION_FIELDS } from "../config/organization";
-import { type UserPartnerOwnershipWithPartner } from "../types/database";
 import { joinClassNames } from "../utils/string";
-import EmptyOrganizationState from "./EmptyOrganizationState";
-import OrganizationTableRow from "./OrganizationTableRow";
 
-type Props = {
-  data: UserPartnerOwnershipWithPartner[];
+type Props<T> = {
+  data: T[];
   isLoading: boolean;
+  errorMessage: string;
+  headerFields: {
+    label: string;
+    sr_value: string;
+  }[];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  renderComponent: (data: T) => ReactNode;
 };
 
-const OrganizationTable = ({ isLoading, data }: Props) => {
+const OrganizationTable = <T,>({
+  isLoading,
+  data,
+  errorMessage,
+  headerFields,
+  renderComponent,
+}: Props<T>) => {
   if (isLoading) {
     return (
       <div className="mt-20 flex items-center justify-center">
@@ -24,7 +34,7 @@ const OrganizationTable = ({ isLoading, data }: Props) => {
     return (
       <div className="my-20 text-center">
         <div className="center inline-block min-w-full py-2 align-middle text-sm sm:px-6 lg:px-8">
-          No organization memberships found
+          {errorMessage}
         </div>
       </div>
     );
@@ -37,10 +47,10 @@ const OrganizationTable = ({ isLoading, data }: Props) => {
           <table className="min-w-full divide-y divide-gray-300">
             <thead>
               <tr>
-                {ORGANIZATION_FIELDS.map((fieldName, idx) => {
+                {headerFields.map((field, idx) => {
                   return (
                     <th
-                      key={fieldName}
+                      key={field.sr_value}
                       scope="col"
                       className={joinClassNames(
                         idx === 0
@@ -48,24 +58,15 @@ const OrganizationTable = ({ isLoading, data }: Props) => {
                           : "px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500"
                       )}
                     >
-                      {fieldName}
+                      {field.label}
                     </th>
                   );
                 })}
-
-                <th scope="col" className="relative py-3 pl-3 pr-6 sm:pr-0">
-                  <span className="sr-only">Edit</span>
-                </th>
-                <th scope="col" className="relative py-3 pl-3 pr-6 sm:pr-0">
-                  <span className="sr-only">Delete</span>
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {data?.map((item) => {
-                return (
-                  <OrganizationTableRow key={item.partner_name} data={item} />
-                );
+                return renderComponent(item);
               })}
             </tbody>
           </table>

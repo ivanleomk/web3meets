@@ -14,7 +14,7 @@ const MobileDropdownMenu = () => {
   const supabaseClient = useSupabaseClient();
   return (
     <Popover className="md:hidden">
-      {({ open }) => (
+      {({ open, close }) => (
         <>
           <Popover.Button
             className="relative z-10 -m-2 inline-flex items-center rounded-lg stroke-gray-900 p-2 hover:bg-gray-200/50 hover:stroke-gray-600 active:stroke-gray-900 [&:not(:focus-visible)]:focus:outline-none"
@@ -53,13 +53,25 @@ const MobileDropdownMenu = () => {
                 >
                   <div className="space-y-4">
                     {LINKS.map((item, idx) => {
-                      return <MobileNavLink key={idx} {...item} />;
+                      return (
+                        <MobileNavLink
+                          postClickHook={close}
+                          key={idx}
+                          {...item}
+                        />
+                      );
                     })}
                     <div className="border-b-2"></div>
                     {isAuthenticated ? (
                       <>
                         {PROFILE_LINKS.map((item, idx) => {
-                          return <MobileNavLink key={idx} {...item} />;
+                          return (
+                            <MobileNavLink
+                              postClickHook={close}
+                              key={idx}
+                              {...item}
+                            />
+                          );
                         })}
 
                         <Button
@@ -68,6 +80,7 @@ const MobileDropdownMenu = () => {
                           color="gray"
                           additionalStyling="w-full"
                           onClickHandler={() => {
+                            close();
                             supabaseClient.auth
                               .signOut()
                               .then(() => {
@@ -82,15 +95,21 @@ const MobileDropdownMenu = () => {
                         />
                       </>
                     ) : (
-                      <>
-                        <Button text="Log In" variant="outline" href="/login" />
+                      <div className="flex flex-col space-y-4">
                         <Button
+                          postClickHook={() => close()}
+                          text="Log In"
+                          variant="outline"
+                          href="/login"
+                        />
+                        <Button
+                          postClickHook={() => close()}
                           text="Sign Up"
                           variant="solid"
                           color="gray"
                           href="/signup"
                         />
-                      </>
+                      </div>
                     )}
                   </div>
                 </Popover.Panel>
