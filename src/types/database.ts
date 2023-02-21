@@ -17,3 +17,12 @@ export type Location = DatabaseTables["Location"]["Row"];
 export type UserPartnerOwnershipWithPartner = UserPartnerOwnership & {
   Partner: Partner;
 };
+
+export type UserPartnerOwnershipWithUser = UserPartnerOwnership & {
+  User: User;
+};
+
+export type UserPartnerOwnershipWithUserAndPartner = UserPartnerOwnership & {
+  User: User;
+  Partner: Partner;
+};

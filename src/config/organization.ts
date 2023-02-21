@@ -5,4 +5,7 @@ export const ORGANIZATION_FIELDS = [
   "Twitter ID",
   "Membership",
   "Organization",
-];
+  "Edit/Delete",
+].map((item) => {
+  return { label: item, sr_value: item };
+});

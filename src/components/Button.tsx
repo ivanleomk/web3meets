@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const baseStyles = {
   solid:
@@ -26,7 +27,9 @@ type ButtonProps = {
   color?: string;
   additionalStyling?: string;
   onClickHandler?: () => void;
+  postClickHook?: () => void;
   text: string;
+  disabled?: boolean;
 };
 
 export const Button = ({
@@ -36,6 +39,8 @@ export const Button = ({
   additionalStyling = "",
   onClickHandler,
   text,
+  postClickHook,
+  disabled = false,
 }: ButtonProps) => {
   if (variant !== "solid" && variant !== "outline") {
     throw new Error("Invalid Variant Prop");
@@ -47,6 +52,7 @@ export const Button = ({
   const baseStyle = baseStyles[variant];
   const variantStyleList = variantStyles[variant];
   let variantStyle = "";
+  const router = useRouter();
 
   if (Object.keys(variantStyleList).includes(color)) {
     variantStyle = variantStyleList[color];
@@ -54,13 +60,27 @@ export const Button = ({
     variantStyle = variantStyleList[color];
   }
 
-  const styling = `${variantStyle} ${baseStyle} ${additionalStyling}`;
+  const styling = `${variantStyle} ${baseStyle} ${additionalStyling} disabled:cursor-not-allowed`;
 
-  if (href) {
+  if (href && !disabled) {
+    if (!postClickHook) {
+      return (
+        <Link href={href} className={styling} passHref>
+          {text}
+        </Link>
+      );
+    }
     return (
-      <Link href={href} className={styling}>
+      <button
+        disabled={disabled}
+        className={styling}
+        onClick={() => {
+          void router.push(href);
+          postClickHook();
+        }}
+      >
         {text}
-      </Link>
+      </button>
     );
   }
 
@@ -69,7 +89,16 @@ export const Button = ({
   }
 
   return (
-    <button onClick={() => onClickHandler()} className={styling}>
+    <button
+      disabled={disabled}
+      onClick={() => {
+        onClickHandler();
+        if (postClickHook) {
+          postClickHook();
+        }
+      }}
+      className={styling}
+    >
       {text}
     </button>
   );

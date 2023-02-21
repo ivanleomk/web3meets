@@ -26,7 +26,7 @@ ivanleo@Ivans-MacBook-Pro web3meets % make update-types
 supabase gen types typescript --linked > src/types/database-raw.ts
 ```
 
-4. Run app
+1. Run app
 
 ```bash
 yarn run dev

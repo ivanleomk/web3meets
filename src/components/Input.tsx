@@ -1,5 +1,5 @@
 import { type ForwardedRef, forwardRef } from "react";
-import type { FieldError } from "react-hook-form";
+import { type FieldError } from "react-hook-form";
 
 type Props = {
   label?: string;

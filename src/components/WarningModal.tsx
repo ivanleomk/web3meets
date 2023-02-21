@@ -12,6 +12,7 @@ type Props = {
   variant: "solid" | "outline";
   color: string;
   userActionText: string;
+  disabled?: boolean;
 };
 
 const WarningModal = ({
@@ -22,6 +23,7 @@ const WarningModal = ({
   variant,
   color,
   userActionText,
+  disabled = false,
 }: Props) => {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
@@ -34,6 +36,7 @@ const WarningModal = ({
         onClickHandler={() => {
           setOpen(true);
         }}
+        disabled={disabled}
         text={buttonText}
       />
       <Transition.Root show={open} as={Fragment}>
