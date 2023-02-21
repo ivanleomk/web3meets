@@ -19,7 +19,7 @@ const OrganizationTableRow = ({ data }: Props) => {
       website,
       telegram_handle,
       twitter_id,
-      active,
+      approved: organizationApproved,
     },
   } = data;
 
@@ -51,7 +51,9 @@ const OrganizationTableRow = ({ data }: Props) => {
         <OrganizationStatus active={approved ? approved : false} />
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        <OrganizationStatus active={active ? active : false} />
+        <OrganizationStatus
+          active={organizationApproved ? organizationApproved : false}
+        />
       </td>
 
       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">

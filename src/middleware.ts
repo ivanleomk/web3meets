@@ -18,12 +18,11 @@ export async function middleware(req: NextRequest) {
   }
   // Auth condition not met, redirect to home page.
   const redirectUrl = req.nextUrl.clone();
-  redirectUrl.pathname =
-    req.nextUrl.pathname === "/invitation" ? "/signup" : "/login";
+  redirectUrl.pathname = "/login";
   redirectUrl.searchParams.set(`redirectedFrom`, req.url);
   return NextResponse.redirect(redirectUrl);
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/invitation"],
+  matcher: ["/dashboard/:path*", "/settings"],
 };
