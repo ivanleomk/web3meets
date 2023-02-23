@@ -20,13 +20,11 @@ const SignUp = () => {
     router: NextRouter,
     redirectTo: undefined | string
   ) => {
-    console.log(credentials);
     await isExistingUser
       .mutateAsync({
         userEmail: credentials.email,
       })
       .then((res) => {
-        console.log(res);
         if (res) {
           toast.warning(
             "Sign up failed. Please try signing in instead if you have an account."
