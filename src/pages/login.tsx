@@ -31,6 +31,9 @@ const LoginPage = () => {
         redirectTo="/"
         onSubmitHandler={signInUserWithPassword}
       />
+      <Link href="/reset-password">
+        <p className="mt-4 text-sm text-indigo-600">Forgot Your Password?</p>
+      </Link>
     </div>
   );
 };
