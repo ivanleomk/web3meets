@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
-import { ClipLoader } from "react-spinners";
+
 import Input from "./Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   type CreateOrganizationInput,
   createOrganizationSchema,
 } from "../types/partner";
+import SubmitButton from "./SubmitButton";
 
 type Props = {
   initialValue?: CreateOrganizationInput | undefined;
@@ -78,21 +79,7 @@ const CreateOrganizationForm = ({
           />
         </div>
 
-        <div className="col-span-2 flex justify-end">
-          <button
-            disabled={isSubmitting}
-            type="submit"
-            className="flex max-w-md justify-center rounded-md border border-transparent bg-gray-800  py-3 px-4 text-sm font-medium text-white hover:bg-gray-900 active:bg-gray-800 active:text-white/80"
-          >
-            {isSubmitting ? (
-              <>
-                <ClipLoader color="white" size={20} />
-              </>
-            ) : (
-              <>{buttonText}</>
-            )}
-          </button>
-        </div>
+        <SubmitButton isSubmitting={isSubmitting} buttonText={buttonText} />
       </form>
     </>
   );

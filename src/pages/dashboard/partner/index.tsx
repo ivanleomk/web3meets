@@ -182,6 +182,12 @@ const PartnerPage = ({
         subtitle="Here are all the events that you've organised under this organisation"
       >
         <p>Events go here</p>
+        <div className="mt-16 flex w-full justify-end">
+          <Button
+            text="Create New Event"
+            href={`/dashboard/partner/create-event?partner_id=${partner_id}`}
+          />
+        </div>
       </SectionHeader>
     </div>
   );
