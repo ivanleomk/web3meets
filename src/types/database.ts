@@ -3,7 +3,6 @@ import { type Database } from "./database-raw";
 type DatabaseTables = Database["public"]["Tables"];
 
 // Generic Tables
-export type EventSeries = DatabaseTables["EventSeries"]["Row"];
 export type Event = DatabaseTables["Event"]["Row"];
 export type User = DatabaseTables["User"]["Row"];
 export type UserPartnerOwnership =

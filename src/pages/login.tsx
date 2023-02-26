@@ -2,11 +2,15 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import LoginPassword from "../components/LoginPassword";
 import useAuthCheck from "../hooks/use-auth-check";
+import { api } from "../utils/api";
 import { signInUserWithPassword } from "../utils/auth";
 
 const LoginPage = () => {
   const router = useRouter();
   const { redirectedFrom } = router.query;
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const getUserQuery = api.useContext().user.user.prefetch;
 
   useAuthCheck(redirectedFrom as string);
 
@@ -28,8 +32,8 @@ const LoginPage = () => {
       </div>
       <LoginPassword
         buttonText="Sign in"
-        redirectTo="/"
-        onSubmitHandler={signInUserWithPassword}
+        redirectTo="/dashboard"
+        onSubmitHandler={signInUserWithPassword(getUserQuery)}
       />
       <Link href="/reset-password">
         <p className="mt-4 text-sm text-indigo-600">Forgot Your Password?</p>

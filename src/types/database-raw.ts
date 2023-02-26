@@ -65,74 +65,54 @@ export interface Database {
       Event: {
         Row: {
           ends_at: string
+          event_description: string
           event_id: number
-          event_series_id: number
+          event_title: string
+          event_type: string
           featured: boolean
           location_id: number
+          online: boolean
           our_pick: boolean
-          paid: boolean
           partner_id: string | null
           partnered: boolean
-          remarks: string
+          rsvp_link: string | null
           scheduled_post: string | null
           starts_at: string
           stripe_event_id: string | null
-          title: string
-          user_id: string
         }
         Insert: {
           ends_at: string
+          event_description?: string
           event_id?: number
-          event_series_id?: number
+          event_title: string
+          event_type: string
           featured?: boolean
           location_id?: number
+          online: boolean
           our_pick?: boolean
-          paid?: boolean
           partner_id?: string | null
           partnered?: boolean
-          remarks?: string
+          rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at: string
           stripe_event_id?: string | null
-          title: string
-          user_id: string
         }
         Update: {
           ends_at?: string
+          event_description?: string
           event_id?: number
-          event_series_id?: number
+          event_title?: string
+          event_type?: string
           featured?: boolean
           location_id?: number
+          online?: boolean
           our_pick?: boolean
-          paid?: boolean
           partner_id?: string | null
           partnered?: boolean
-          remarks?: string
+          rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at?: string
           stripe_event_id?: string | null
-          title?: string
-          user_id?: string
-        }
-      }
-      EventSeries: {
-        Row: {
-          end_date: string | null
-          event_series_id: number
-          recurring: string | null
-          start_date: string | null
-        }
-        Insert: {
-          end_date?: string | null
-          event_series_id?: number
-          recurring?: string | null
-          start_date?: string | null
-        }
-        Update: {
-          end_date?: string | null
-          event_series_id?: number
-          recurring?: string | null
-          start_date?: string | null
         }
       }
       Location: {
@@ -200,7 +180,7 @@ export interface Database {
           material_id: number
         }
         Insert: {
-          event_id?: number
+          event_id: number
           image_url: string
           material_id?: number
         }

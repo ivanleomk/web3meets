@@ -7,6 +7,11 @@ import SectionHeader from "../../../../components/SectionHeader";
 const CreateEventPage = () => {
   const router = useRouter();
   const { partner_id } = router.query;
+
+  if (!partner_id) {
+    return null;
+  }
+
   return (
     <>
       <div className="-mb-14">

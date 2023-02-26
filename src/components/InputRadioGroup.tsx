@@ -1,4 +1,4 @@
-import type { Control, FieldValues, Path } from "react-hook-form";
+import type { Control, FieldError, FieldValues, Path } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
 type Props<T extends FieldValues> = {
@@ -11,6 +11,7 @@ type Props<T extends FieldValues> = {
     id: string;
     title: string;
   }[];
+  errorMessage: FieldError | undefined;
 };
 
 const InputRadioGroup = <T extends FieldValues>({
@@ -19,6 +20,7 @@ const InputRadioGroup = <T extends FieldValues>({
   label,
   subtitle,
   options,
+  errorMessage,
 }: Props<T>) => {
   return (
     <div>
@@ -55,6 +57,11 @@ const InputRadioGroup = <T extends FieldValues>({
             )}
           />
         </div>
+        {errorMessage ? (
+          <p className="mt-2 text-sm text-red-600" id="email-error">
+            {errorMessage.message}
+          </p>
+        ) : null}
       </fieldset>
     </div>
   );

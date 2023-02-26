@@ -1,12 +1,20 @@
+import { UserPartnerOwnership, Partner } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { UserPartnerOwnershipWithPartner } from "../types/database";
+import { api } from "../utils/api";
+import EventDashboard from "./EventDashboard";
 
 import OrganizationDashboard from "./OrganizationDashboard";
 
-const tabs = ["Organizations", "Events"];
+type Props = {
+  initialTab: string;
+  tabs: string[];
+};
 
-export default function UserDashboard() {
-  const [currentTab, setCurrentTab] = useState(tabs[0]);
+export default function UserDashboard({ initialTab, tabs }: Props) {
+  const [currentTab, setCurrentTab] = useState(initialTab);
 
   return (
     <div>
@@ -66,7 +74,7 @@ export default function UserDashboard() {
         {currentTab === "Organizations" ? (
           <OrganizationDashboard />
         ) : (
-          <p>Events</p>
+          <EventDashboard />
         )}
       </div>
     </div>
