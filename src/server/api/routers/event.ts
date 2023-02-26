@@ -66,7 +66,9 @@ export const eventRouter = createTRPCRouter({
             rsvp_link: rsvp_link,
             partner_id,
             online,
-            event_description,
+            event_description: event_description
+              ? event_description
+              : undefined,
           })
           .select("*")
           .maybeSingle();

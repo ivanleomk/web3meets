@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import UserDashboard from "../../components/UserDashboardContainer";
-import { Modes, Tabs } from "../../types/dashboard";
+import type { Modes, Tabs } from "../../types/dashboard";
 
-const tabs = ["Organizations", "Events"];
+const tabs: Tabs[] = ["Organizations", "Events"];
 
 const Dashboard = () => {
   const router = useRouter();
