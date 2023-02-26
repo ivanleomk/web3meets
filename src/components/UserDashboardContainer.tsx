@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Modes, Tabs } from "../types/dashboard";
 import { UserPartnerOwnershipWithPartner } from "../types/database";
 import { api } from "../utils/api";
 import EventDashboard from "./EventDashboard";
@@ -8,13 +9,21 @@ import EventDashboard from "./EventDashboard";
 import OrganizationDashboard from "./OrganizationDashboard";
 
 type Props = {
-  initialTab: string;
-  tabs: string[];
+  initialTab: Tabs;
+  setInitialTab: (s: Tabs) => void;
+  initialMode: Modes;
+  setInitialMode: (s: Modes) => void;
+  tabs: Tabs[];
 };
 
-export default function UserDashboard({ initialTab, tabs }: Props) {
-  const [currentTab, setCurrentTab] = useState(initialTab);
-
+export default function UserDashboard({
+  initialTab,
+  initialMode,
+  setInitialMode,
+  setInitialTab,
+  tabs,
+}: Props) {
+  console.log(initialMode);
   return (
     <div>
       <div className="sm:hidden">
@@ -42,7 +51,7 @@ export default function UserDashboard({ initialTab, tabs }: Props) {
               className="relative -my-2 -mx-3 rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors delay-150 hover:text-gray-900 hover:delay-[0ms]"
             >
               <AnimatePresence>
-                {currentTab == tab && (
+                {initialTab == tab && (
                   <motion.span
                     className="absolute inset-0 rounded-lg bg-gray-200"
                     layoutId="hoverTabs"
@@ -57,11 +66,11 @@ export default function UserDashboard({ initialTab, tabs }: Props) {
               </AnimatePresence>
               <span
                 key={tab}
-                onClick={() => setCurrentTab(tab)}
+                onClick={() => setInitialTab(tab)}
                 className={
                   "relative z-10 cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
                 }
-                aria-current={tab === currentTab ? "page" : undefined}
+                aria-current={tab === initialTab ? "page" : undefined}
               >
                 {tab}
               </span>
@@ -70,10 +79,16 @@ export default function UserDashboard({ initialTab, tabs }: Props) {
         </nav>
       </div>
       <div className="mt-10 px-1 md:px-4">
-        {currentTab === "Organizations" ? (
-          <OrganizationDashboard />
+        {initialTab === "Organizations" ? (
+          <OrganizationDashboard
+            initialMode={initialMode}
+            setInitialMode={setInitialMode}
+          />
         ) : (
-          <EventDashboard />
+          <EventDashboard
+            initialMode={initialMode}
+            setInitialMode={setInitialMode}
+          />
         )}
       </div>
     </div>

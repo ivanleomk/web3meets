@@ -1,4 +1,4 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import React, { useState } from "react";
 import { type eventCreationInputType } from "../types/event";
 import CreateEventForm from "./CreateEventForm";
@@ -6,14 +6,28 @@ import SectionHeader from "./SectionHeader";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
+import { type Modes } from "../types/dashboard";
+import OrganizationTable from "./OrganizationTable";
+import { EVENT_FIELDS } from "../config/organization";
+import EventRow from "./EventRow";
 
-type Mode = "View" | "Create";
+type Props = {
+  initialMode: Modes;
+  setInitialMode: (m: Modes) => void;
+};
 
-const EventDashboard = () => {
-  const [currentMode, setCurrentMode] = useState<Mode>("View");
-
+const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
   const supabaseClient = useSupabaseClient();
+  const user = useUser();
   const { mutateAsync } = api.event.createNewEvent.useMutation();
+  const {
+    data: allEvents,
+    error: allEventsError,
+    isLoading,
+  } = api.event.getUserEvents.useQuery(undefined, {
+    refetchInterval: 120000,
+    enabled: user !== null,
+  });
 
   const onSubmit = async (data: eventCreationInputType) => {
     const submitData = { ...data };
@@ -44,26 +58,34 @@ const EventDashboard = () => {
     }
 
     toast.success("Succesfully saved event in database.");
-    setCurrentMode("View");
+    setInitialMode("View");
   };
 
   return (
     <SectionHeader
-      title={currentMode === "Create" ? "Create a new event" : "All Events"}
+      title={initialMode === "Create" ? "Create a new event" : "All Events"}
       subtitle={
-        currentMode === "Create"
+        initialMode === "Create"
           ? "We just need a few more details before we can create your new event"
           : "Here are a list of events which you can edit, delete for the organizations which you manage"
       }
       onClickHandler={() => {
-        setCurrentMode(currentMode === "Create" ? "View" : "Create");
+        setInitialMode(initialMode === "Create" ? "View" : "Create");
       }}
       buttonText={
-        currentMode === "Create" ? "View all events" : "Create new event"
+        initialMode === "Create" ? "View all events" : "Create new event"
       }
     >
-      {currentMode === "View" ? (
-        <>Viewing All Events</>
+      {initialMode === "View" ? (
+        <OrganizationTable
+          data={allEvents ? allEvents : []}
+          isLoading={isLoading}
+          errorMessage="No Events found"
+          headerFields={EVENT_FIELDS}
+          renderComponent={(data) => {
+            return <EventRow data={data} />;
+          }}
+        />
       ) : (
         <CreateEventForm
           initialValue={undefined}

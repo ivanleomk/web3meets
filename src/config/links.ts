@@ -25,7 +25,7 @@ export const AUTHENTICATED_LINKS: LinkMetadata[] = [
     label: "Events",
   },
   {
-    href: "/dashboard?mode=Events",
+    href: "/dashboard?mode=Events&view=create",
     label: "Submit an Event",
   },
 ];

@@ -7,10 +7,41 @@ import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
 import { convertDateToTimestamptz } from "../../../utils/date";
 
 export const eventRouter = createTRPCRouter({
+  getUserEvents: supabaseProtectedProcedure.query(async ({ ctx }) => {
+    const { userId: user_id } = ctx;
+
+    const { data, error } = await adminServerSupabaseInstance
+      .from("UserPartnerOwnership")
+      .select("*,Partner(*)")
+      .eq("user_id", user_id);
+
+    if (error) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Unable to get list of events",
+      });
+    }
+
+    const partnerIds = data.map((item) => item.partner_id);
+
+    const { data: events, error: eventsError } =
+      await adminServerSupabaseInstance
+        .from("Event")
+        .select()
+        .in("partner_id", partnerIds);
+
+    if (eventsError) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Unable to get list of events",
+      });
+    }
+
+    return events;
+  }),
   createNewEvent: supabaseProtectedProcedure
     .input(eventCreationSchema)
     .mutation(async ({ input }) => {
-      console.log(input);
       const {
         event_title,
         event_type,

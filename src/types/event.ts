@@ -27,9 +27,7 @@ export const eventCreationSchema = z
       message: "Event name must be at least 5 characters long",
     }),
     event_type: z.nativeEnum(eventType),
-    event_description: z.string().min(5, {
-      message: "Event description must be at least 10 characters long",
-    }),
+    event_description: z.string().nullish(),
     partner_id: z.preprocess(
       (e) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -59,20 +57,17 @@ export const eventCreationSchema = z
           (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
           "Only .jpg, .jpeg, .png and .webp formats are supported."
         ),
-      // Allows for anullvalue
+      // Allows for a null value
       z.any().nullable(),
     ]),
 
-    rsvp_link: z
-      .union([
-        z.string().url({
-          message:
-            "Please input a valid url for users to RSVP at which begins with https",
-        }),
-        z.string().length(0),
-      ])
-      .optional()
-      .transform((e) => (e === "" ? undefined : e)),
+    rsvp_link: z.union([
+      z.string().url({
+        message:
+          "Please input a valid url for users to RSVP at which begins with https",
+      }),
+      z.string().nullish(),
+    ]),
   })
   .refine((schema) => schema.starts_at < schema.ends_at, {
     message: "Event start time must be before event end time",

@@ -75,12 +75,16 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
           label="Organizing Partner"
           subtitle="Which organization is organizing this event?"
           errorMessage={errors?.partner_id}
-          options={partners.map((item) => {
-            return {
-              label: item.Partner.partner_name,
-              value: item.partner_id,
-            };
-          })}
+          options={
+            !partners
+              ? []
+              : partners?.map((item) => {
+                  return {
+                    label: item.Partner.partner_name,
+                    value: item.partner_id,
+                  };
+                })
+          }
         />
         <InputDatePicker
           label="Event Start Time"

@@ -27,6 +27,7 @@ const OrganizationContext = createContext<OrganizationContextType>(
 export function OrganizationWrapper({ children }: OrganizationContextProps) {
   const user = useUser();
   const { data, isLoading } = api.partner.getAllPartners.useQuery(undefined, {
+    // Refetch every 2 mins
     refetchInterval: 120000,
     refetchOnWindowFocus: false,
     enabled: user !== null,
