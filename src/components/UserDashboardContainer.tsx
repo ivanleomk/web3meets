@@ -1,4 +1,3 @@
-import { UserPartnerOwnership, Partner } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
