@@ -1,14 +1,14 @@
 import React from "react";
-import { useDropzone } from "react-dropzone";
-import {
+import type {
   FieldValues,
   Control,
   Path,
   FieldError,
-  useForm,
   UseFormSetValue,
 } from "react-hook-form";
+
 import { Controller } from "react-hook-form";
+import { toast } from "react-toastify";
 import { Button } from "./Button";
 import FileDropzone from "./FileDropzone";
 
@@ -40,7 +40,7 @@ const InputFileUpload = <T extends FieldValues>({
         control={control}
         name={name}
         render={({ field: { onChange, onBlur, name, ref, value } }) => {
-          if (value) {
+          if (value && Array.isArray(value) && value.length > 0) {
             const file = value[0] as File;
             return (
               <div className="mt-4 flex items-center justify-between">
@@ -59,6 +59,16 @@ const InputFileUpload = <T extends FieldValues>({
               </div>
             );
           }
+
+          if (value && Array.isArray(value)) {
+            toast.warning(
+              "We only support a single banner image per event. Please do not upload multiple images"
+            );
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            setValue(name, null);
+          }
+
           return (
             <FileDropzone
               onChange={onChange}

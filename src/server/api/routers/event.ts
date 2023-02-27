@@ -1,3 +1,4 @@
+import { city } from "./../../../types/event";
 import { TRPCError } from "@trpc/server";
 import { adminServerSupabaseInstance } from "./../../supabase/sharedInstance";
 import { z } from "zod";
@@ -51,7 +52,8 @@ export const eventRouter = createTRPCRouter({
         rsvp_link,
         partner_id,
         online,
-        location,
+        city,
+        country,
         event_description,
       } = input;
 
@@ -69,6 +71,8 @@ export const eventRouter = createTRPCRouter({
             event_description: event_description
               ? event_description
               : undefined,
+            city,
+            country,
           })
           .select("*")
           .maybeSingle();

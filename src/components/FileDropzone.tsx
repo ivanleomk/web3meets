@@ -1,6 +1,6 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import { Noop, RefCallBack } from "react-hook-form";
+import type { Noop, RefCallBack } from "react-hook-form";
 
 type Props = {
   ref: RefCallBack;
@@ -13,6 +13,12 @@ type Props = {
 const FileDropzone = ({ onChange, ref, name, onBlur }: Props) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: onChange,
+    accept: {
+      "image/png": [".png"],
+      "image/jpeg": [".jpeg"],
+      "image/jpg": [".jpg"],
+    },
+    maxFiles: 1,
   });
   return (
     <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">

@@ -11,13 +11,18 @@ export enum eventLocation {
   offline = "Offline",
 }
 
+export enum City {
+  Singapore = "Singapore",
+  NA = "Not Applicable",
+}
+
+export enum Country {
+  Singapore = "Singapore",
+  NA = "Not Applicable",
+}
+
 const MAX_FILE_SIZE = 500000;
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
 export const eventCreationSchema = z
   .object({
@@ -46,7 +51,8 @@ export const eventCreationSchema = z
       })
     ),
     online: z.preprocess((val) => val === "Yes", z.boolean()),
-    location: z.string(),
+    city: z.nativeEnum(City),
+    country: z.nativeEnum(Country),
     banner_image: z.union([
       z
         .any()

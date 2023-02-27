@@ -7,6 +7,8 @@ import {
   eventCreationSchema,
   eventType,
   eventLocation,
+  City,
+  Country,
 } from "../types/event";
 import Input from "./Input";
 import InputDatePicker from "./InputDatePicker";
@@ -60,15 +62,34 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
           type="text"
           {...register("rsvp_link")}
         />
-        <Input
-          subtitle="Where is this event held?"
-          label="Event Location"
-          errorMessage={errors?.location}
-          htmlFor="Event Location"
-          autocomplete=""
-          type="text"
-          {...register("location")}
+        <InputSelect
+          control={control}
+          name="city"
+          label="City"
+          subtitle="Which city is this event being held in?"
+          errorMessage={errors?.city}
+          options={[City.Singapore, City.NA].map((item) => {
+            return {
+              label: item,
+              value: item,
+            };
+          })}
         />
+
+        <InputSelect
+          control={control}
+          name="country"
+          label="Country"
+          subtitle="Which country is this event being held in?"
+          errorMessage={errors?.country}
+          options={[Country.Singapore, Country.NA].map((item) => {
+            return {
+              label: item,
+              value: item,
+            };
+          })}
+        />
+
         <InputSelect
           control={control}
           name="partner_id"
@@ -86,6 +107,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
                 })
           }
         />
+        <div />
         <InputDatePicker
           label="Event Start Time"
           control={control}

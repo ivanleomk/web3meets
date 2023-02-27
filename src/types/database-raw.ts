@@ -34,36 +34,10 @@ export interface Database {
   }
   public: {
     Tables: {
-      City: {
-        Row: {
-          city_id: number
-          country_id: number
-        }
-        Insert: {
-          city_id?: number
-          country_id?: number
-        }
-        Update: {
-          city_id?: number
-          country_id?: number
-        }
-      }
-      Country: {
-        Row: {
-          country_id: number
-          country_name: string | null
-        }
-        Insert: {
-          country_id?: number
-          country_name?: string | null
-        }
-        Update: {
-          country_id?: number
-          country_name?: string | null
-        }
-      }
       Event: {
         Row: {
+          City: string
+          country: string
           ends_at: string
           event_description: string
           event_id: number
@@ -81,6 +55,8 @@ export interface Database {
           stripe_event_id: string | null
         }
         Insert: {
+          City?: string
+          country?: string
           ends_at: string
           event_description?: string
           event_id?: number
@@ -98,6 +74,8 @@ export interface Database {
           stripe_event_id?: string | null
         }
         Update: {
+          City?: string
+          country?: string
           ends_at?: string
           event_description?: string
           event_id?: number
@@ -113,26 +91,6 @@ export interface Database {
           scheduled_post?: string | null
           starts_at?: string
           stripe_event_id?: string | null
-        }
-      }
-      Location: {
-        Row: {
-          address: string | null
-          city_id: number
-          google_maps_link: string | null
-          location_id: number
-        }
-        Insert: {
-          address?: string | null
-          city_id?: number
-          google_maps_link?: string | null
-          location_id?: number
-        }
-        Update: {
-          address?: string | null
-          city_id?: number
-          google_maps_link?: string | null
-          location_id?: number
         }
       }
       Partner: {
