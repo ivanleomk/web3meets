@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { FieldError, useForm } from "react-hook-form";
 import { useOrganizationContext } from "../context/OrganizationContext";
+import { Event } from "../types/database";
 import {
   type eventCreationInputType,
   eventCreationSchema,
@@ -62,6 +63,17 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
           type="text"
           {...register("rsvp_link")}
         />
+        <Input
+          subtitle="Where is the event being held?"
+          label="Location"
+          errorMessage={errors?.location}
+          htmlFor="Location"
+          autocomplete=""
+          type="text"
+          {...register("location")}
+        />
+        <div />
+
         <InputSelect
           control={control}
           name="city"
@@ -143,13 +155,13 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
           name="online"
           label="Online Event"
           subtitle="Is this an online event"
-          options={["Yes", "No"].map((item) => {
+          options={[eventLocation.online, eventLocation.offline].map((item) => {
             return {
               id: item,
               title: item,
             };
           })}
-          errorMessage={errors?.event_type}
+          errorMessage={errors?.online}
         />
 
         <InputTextarea
@@ -161,8 +173,8 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
         <InputFileUpload
           setValue={setValue}
           control={control}
-          name="banner_image"
-          errorMessage={errors?.banner_image as FieldError}
+          name="images"
+          errorMessage={errors?.images as FieldError}
           label="Banner Image"
           subtitle="We only accept .png, .jpg and .jpeg files less than 5 mb."
         />

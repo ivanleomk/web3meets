@@ -27,16 +27,18 @@ const InputDatePicker = <T extends FieldValues>({
       <Controller
         control={control}
         name={name}
-        render={({ field: { onChange, value } }) => (
-          <DatePicker
-            selected={value}
-            onChange={onChange}
-            className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-            showTimeSelect
-            timeIntervals={15}
-            dateFormat="MMMM d, yyyy h:mm aa"
-          />
-        )}
+        render={({ field: { onChange, value } }) => {
+          return (
+            <DatePicker
+              selected={value}
+              onChange={onChange}
+              className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              showTimeSelect
+              timeIntervals={15}
+              dateFormat="MMMM d, yyyy hh:mm aa"
+            />
+          );
+        }}
       />
       {errorMessage ? (
         <p className="mt-2 text-sm text-red-600" id="email-error">

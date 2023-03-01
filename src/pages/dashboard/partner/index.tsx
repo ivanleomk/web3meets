@@ -10,10 +10,12 @@ import AddNewAdministrator from "../../../components/AddNewAdministrator";
 
 import { Button } from "../../../components/Button";
 import CreateOrganizationForm from "../../../components/CreateOrganizationForm";
+import EventRow from "../../../components/EventRow";
 import OrganizationMemberTableRow from "../../../components/OrganizationMemberTableRow";
 import OrganizationStatus from "../../../components/OrganizationStatus";
 import OrganizationTable from "../../../components/OrganizationTable";
 import SectionHeader from "../../../components/SectionHeader";
+import { EVENT_FIELDS } from "../../../config/organization";
 
 import { adminServerSupabaseInstance } from "../../../server/supabase/sharedInstance";
 import {
@@ -35,8 +37,6 @@ const PartnerPage = ({
 }: Props) => {
   const router = useRouter();
   const { partner_id } = router.query;
-  console.log(currentEvents);
-  console.log(partnerInformationAndMembers);
 
   const { data: UserPartnershipOwnershipAndMembersData } =
     api.partner.getPartnerInformation.useQuery(
@@ -49,6 +49,18 @@ const PartnerPage = ({
         initialData: partnerInformationAndMembers,
       }
     );
+
+  const { data: OrganizationEventList } = api.event.getPartnerEvents.useQuery(
+    {
+      partner_id: partner_id as string,
+    },
+    {
+      // Every 30s
+      refetchInterval: 30000,
+      initialData: currentEvents,
+    }
+  );
+
   const { mutate } = api.partner.updatePartnerDetails.useMutation({
     onSuccess: () => {
       toast.success("Succesfully updated information on Organization");
@@ -181,11 +193,19 @@ const PartnerPage = ({
         title="Events Organised"
         subtitle="Here are all the events that you've organised under this organisation"
       >
-        <p>Events go here</p>
+        <OrganizationTable
+          data={OrganizationEventList ? OrganizationEventList : []}
+          isLoading={false}
+          errorMessage="No Events found"
+          headerFields={EVENT_FIELDS}
+          renderComponent={(data) => {
+            return <EventRow data={data} />;
+          }}
+        />
         <div className="mt-16 flex w-full justify-end">
           <Button
             text="Create New Event"
-            href={`/dashboard/partner/create-event?partner_id=${partner_id}`}
+            href={`/dashboard?mode=Events&view=create`}
           />
         </div>
       </SectionHeader>

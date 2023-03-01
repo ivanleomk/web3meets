@@ -10,7 +10,7 @@ type Props = {
   onBlur: Noop;
 };
 
-const FileDropzone = ({ onChange, ref, name, onBlur }: Props) => {
+const FileDropzone = ({ onChange, name, onBlur }: Props) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: onChange,
     accept: {
@@ -18,7 +18,6 @@ const FileDropzone = ({ onChange, ref, name, onBlur }: Props) => {
       "image/jpeg": [".jpeg"],
       "image/jpg": [".jpg"],
     },
-    maxFiles: 1,
   });
   return (
     <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
@@ -38,7 +37,6 @@ const FileDropzone = ({ onChange, ref, name, onBlur }: Props) => {
           />
         </svg>
         <input
-          ref={ref}
           {...getInputProps()}
           id="file-upload"
           name={name}

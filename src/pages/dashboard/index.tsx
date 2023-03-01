@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import UserDashboard from "../../components/UserDashboardContainer";
+import useAuthCheck from "../../hooks/use-auth-check";
 import type { Modes, Tabs } from "../../types/dashboard";
 
 const tabs: Tabs[] = ["Organizations", "Events"];
@@ -19,6 +20,10 @@ const Dashboard = () => {
       setInitialMode(query.view ? "Create" : "View");
     }
   }, [query]);
+
+  const { redirectedFrom } = router.query;
+
+  useAuthCheck(redirectedFrom as string);
 
   return (
     <div>

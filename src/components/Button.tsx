@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ClipLoader } from "react-spinners";
 
 const baseStyles = {
   solid:
@@ -13,11 +14,13 @@ const variantStyles = {
     white:
       "bg-white light:text-cyan-900 hover:bg-white/90 active:bg-white/90 active:text-cyan-900/70",
     gray: "bg-gray-800 text-white hover:bg-gray-900 active:bg-gray-800 active:text-white/80",
+    red: "bg-red-600 py-2 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2",
   },
   outline: {
     gray: "border-gray-300 light:text-gray-700 hover:border-gray-400 active:bg-gray-100 active:text-gray-700/80",
     white: "",
     cyan: "",
+    red: "",
   },
 };
 
@@ -30,6 +33,7 @@ type ButtonProps = {
   postClickHook?: () => void;
   text: string;
   disabled?: boolean;
+  isSubmitting?: boolean;
 };
 
 export const Button = ({
@@ -41,11 +45,17 @@ export const Button = ({
   text,
   postClickHook,
   disabled = false,
+  isSubmitting,
 }: ButtonProps) => {
   if (variant !== "solid" && variant !== "outline") {
     throw new Error("Invalid Variant Prop");
   }
-  if (color !== "cyan" && color !== "white" && color !== "gray") {
+  if (
+    color !== "cyan" &&
+    color !== "white" &&
+    color !== "gray" &&
+    color !== "red"
+  ) {
     throw new Error("Invalid Color Prop");
   }
 
@@ -99,7 +109,16 @@ export const Button = ({
       }}
       className={styling}
     >
-      {text}
+      {isSubmitting ? (
+        <>
+          <ClipLoader
+            color={color == "white" || color == "gray" ? "black" : "white"}
+            size={20}
+          />
+        </>
+      ) : (
+        <>{text}</>
+      )}
     </button>
   );
 };

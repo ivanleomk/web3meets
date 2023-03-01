@@ -35,35 +35,57 @@ const InputFileUpload = <T extends FieldValues>({
       <label className="text-base font-semibold leading-6 text-gray-900">
         {label}
       </label>
-      <p className="mb-1 text-sm leading-5 text-gray-500">{subtitle}</p>
+      <p className="mb-1 mt-1 text-sm leading-5 text-gray-500">{subtitle}</p>
       <Controller
         control={control}
         name={name}
         render={({ field: { onChange, onBlur, name, ref, value } }) => {
           if (value && Array.isArray(value) && value.length > 0) {
-            const file = value[0] as File;
             return (
-              <div className="mt-4 flex items-center justify-between">
-                <p className="mt-2 max-w-xs text-sm  text-gray-500">
-                  Uploaded File : {file.name}
-                </p>
-                <Button
-                  text="Delete File"
-                  onClickHandler={() => {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    //@ts-ignore
-                    setValue(name, null);
+              <>
+                {value.map((file: File) => {
+                  return (
+                    <>
+                      <div
+                        key={file.name}
+                        className="my-4 grid grid-cols-3 items-start gap-x-10"
+                      >
+                        <div className="col-span-2">
+                          <p className="max-w-xs text-sm  text-gray-500">
+                            {file.name}{" "}
+                          </p>
+                          <span className="text-sm text-gray-300">
+                            ({(file.size / (1024 * 1024)).toFixed(2)} mb)
+                          </span>
+                        </div>
+
+                        <Button
+                          text="Delete File"
+                          onClickHandler={() => {
+                            const newValue = value.filter(
+                              (item: File) => item.name !== file.name
+                            );
+                            setValue(name, newValue);
+                          }}
+                          variant="outline"
+                        />
+                      </div>
+                    </>
+                  );
+                })}
+                <FileDropzone
+                  onChange={(e) => {
+                    onChange([...value, ...e]);
                   }}
-                  variant="outline"
+                  onBlur={onBlur}
+                  name={name}
+                  ref={ref}
                 />
-              </div>
+              </>
             );
           }
 
           if (value && Array.isArray(value)) {
-            toast.warning(
-              "We only support a single banner image per event. Please do not upload multiple images"
-            );
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             setValue(name, null);

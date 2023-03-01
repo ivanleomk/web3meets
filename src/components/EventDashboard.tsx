@@ -10,6 +10,7 @@ import { type Modes } from "../types/dashboard";
 import OrganizationTable from "./OrganizationTable";
 import { EVENT_FIELDS } from "../config/organization";
 import EventRow from "./EventRow";
+import { EVENT_IMAGE_BUCKET } from "../types/storage";
 
 type Props = {
   initialMode: Modes;
@@ -19,6 +20,9 @@ type Props = {
 const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
   const supabaseClient = useSupabaseClient();
   const user = useUser();
+  const { mutateAsync: uploadImages } = api.event.uploadImages.useMutation();
+  const utils = api.useContext();
+
   const { mutateAsync } = api.event.createNewEvent.useMutation();
   const {
     data: allEvents,
@@ -31,35 +35,79 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
 
   const onSubmit = async (data: eventCreationInputType) => {
     const submitData = { ...data };
-    if (data.banner_image) {
-      const fileData = data.banner_image[0] as File;
-      const fileExtension = fileData.name.split(".").pop();
 
-      // We have a valid file here - File name is generated base don title-promo-image-1
-      const fileName = `${uuidv4()}-promo-image-1.${fileExtension}`;
-      const res = await supabaseClient.storage
-        .from("event-images")
-        .upload(fileName, fileData, { upsert: true });
-
-      if (res.error) {
-        toast.warning("Unable to create new event. Please try again.");
-      }
-
-      const publicUrl = `https://zdhtczfwadgksdmbuggu.supabase.co/storage/v1/object/public/event-images/${fileName}`;
-      submitData["banner_image"] = publicUrl;
-    }
-    console.log(submitData);
-
+    let res;
     try {
-      await mutateAsync(submitData);
+      res = await mutateAsync(submitData);
     } catch (err) {
       toast.warning("Unable to save event data. Please try again.");
       return;
     }
 
+    const event_id = res.event_id;
+    const files = submitData.images as File[];
+    // First we create the new folder
+    if (files) {
+      const fileUploads = files?.map((file) => {
+        const fileExtension = file.name.split(".").pop();
+        const filePath = `${event_id}/${uuidv4()}.${fileExtension}`;
+        return supabaseClient.storage
+          .from(EVENT_IMAGE_BUCKET)
+          .upload(filePath, file);
+      });
+      const fileUploadResult = await Promise.all(fileUploads);
+
+      const fileNames = fileUploadResult?.map((file, id) => {
+        if (file.error) {
+          toast.warning(
+            "Unable to upload event promotional images. Please try uploading them again."
+          );
+        }
+        const filePath = file.data?.path;
+        return {
+          image_url: `${process.env.NEXT_PUBLIC_IMAGE_BUCKET}/${filePath}`,
+          file_name: files[id]?.name as string,
+        };
+      });
+
+      try {
+        await uploadImages({
+          event_id,
+          images: fileNames,
+        });
+      } catch (err) {
+        toast.warning("Unable to save event data. Please try again.");
+        return;
+      }
+    }
+    void utils.event.getUserEvents.invalidate();
     toast.success("Succesfully saved event in database.");
     setInitialMode("View");
   };
+
+  if (allEventsError) {
+    return (
+      <SectionHeader
+        title={initialMode === "Create" ? "Create a new event" : "All Events"}
+        subtitle={
+          initialMode === "Create"
+            ? "We just need a few more details before we can create your new event"
+            : "Here are a list of events which you can edit, delete for the organizations which you manage"
+        }
+        onClickHandler={() => {
+          setInitialMode(initialMode === "Create" ? "View" : "Create");
+        }}
+        buttonText={
+          initialMode === "Create" ? "View all events" : "Create new event"
+        }
+      >
+        <p className="mt-20 text-center text-sm leading-5">
+          Unexpected error encountered - please try refreshing the page or
+          contact support if this issue persists
+        </p>
+      </SectionHeader>
+    );
+  }
 
   return (
     <SectionHeader

@@ -33,28 +33,31 @@ const InputRadioGroup = <T extends FieldValues>({
           <Controller
             control={control}
             name={name}
-            render={({ field: { onChange, onBlur, name, ref } }) => (
-              <>
-                {options.map((item) => {
-                  return (
-                    <div className="flex items-center" key={item.id}>
-                      <input
-                        name={name}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        ref={ref}
-                        type="radio"
-                        value={item.id}
-                        className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      <label className="ml-3 block text-sm font-medium text-gray-700">
-                        {item.title}
-                      </label>
-                    </div>
-                  );
-                })}
-              </>
-            )}
+            render={({ field: { onChange, onBlur, name, ref, value } }) => {
+              return (
+                <>
+                  {options.map((item) => {
+                    return (
+                      <div className="flex items-center" key={item.id}>
+                        <input
+                          name={name}
+                          checked={value === item.id}
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          ref={ref}
+                          type="radio"
+                          value={item.id}
+                          className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <label className="ml-3 block text-sm font-medium text-gray-700">
+                          {item.title}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            }}
           />
         </div>
         {errorMessage ? (
