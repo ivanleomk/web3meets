@@ -167,6 +167,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       .eq("event_id", event_id)
       .maybeSingle();
 
+  console.log(EventInformation, EventInformationError);
+
   if (!EventInformation || EventInformationError) {
     return {
       redirect: {
