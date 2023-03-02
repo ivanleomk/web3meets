@@ -8,6 +8,7 @@ type Props = {
   htmlFor: string;
   type: string;
   autocomplete: string;
+  subtitle?: string;
 };
 const Input = forwardRef(
   (
@@ -17,6 +18,7 @@ const Input = forwardRef(
       errorMessage,
       htmlFor,
       type,
+      subtitle,
       autocomplete,
       ...props
     }: Props,
@@ -30,6 +32,9 @@ const Input = forwardRef(
         >
           {label}
         </label>
+        {subtitle ? (
+          <p className="my-2 text-sm leading-5 text-gray-500">{subtitle}</p>
+        ) : null}
         <div className="mt-1">
           <input
             id={htmlFor}

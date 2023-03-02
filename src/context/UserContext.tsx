@@ -2,12 +2,8 @@
 
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
-import {
-  createContext,
-  type ReactNode,
-  useContext,
-  useState,
-} from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
+import { toast } from "react-toastify";
 import { api } from "../utils/api";
 
 type UserContextMetadata = {

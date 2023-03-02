@@ -34,125 +34,66 @@ export interface Database {
   }
   public: {
     Tables: {
-      City: {
-        Row: {
-          city_id: number
-          country_id: number
-        }
-        Insert: {
-          city_id?: number
-          country_id?: number
-        }
-        Update: {
-          city_id?: number
-          country_id?: number
-        }
-      }
-      Country: {
-        Row: {
-          country_id: number
-          country_name: string | null
-        }
-        Insert: {
-          country_id?: number
-          country_name?: string | null
-        }
-        Update: {
-          country_id?: number
-          country_name?: string | null
-        }
-      }
       Event: {
         Row: {
+          city: string
+          country: string
           ends_at: string
-          event_id: number
-          event_series_id: number
+          event_description: string
+          event_id: string
+          event_title: string
+          event_type: string
           featured: boolean
+          location: string | null
           location_id: number
+          online: boolean
           our_pick: boolean
-          paid: boolean
           partner_id: string | null
           partnered: boolean
-          remarks: string
+          rsvp_link: string | null
           scheduled_post: string | null
           starts_at: string
           stripe_event_id: string | null
-          title: string
-          user_id: string
         }
         Insert: {
+          city?: string
+          country?: string
           ends_at: string
-          event_id?: number
-          event_series_id?: number
+          event_description?: string
+          event_id?: string
+          event_title: string
+          event_type: string
           featured?: boolean
+          location?: string | null
           location_id?: number
+          online: boolean
           our_pick?: boolean
-          paid?: boolean
           partner_id?: string | null
           partnered?: boolean
-          remarks?: string
+          rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at: string
           stripe_event_id?: string | null
-          title: string
-          user_id: string
         }
         Update: {
+          city?: string
+          country?: string
           ends_at?: string
-          event_id?: number
-          event_series_id?: number
+          event_description?: string
+          event_id?: string
+          event_title?: string
+          event_type?: string
           featured?: boolean
+          location?: string | null
           location_id?: number
+          online?: boolean
           our_pick?: boolean
-          paid?: boolean
           partner_id?: string | null
           partnered?: boolean
-          remarks?: string
+          rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at?: string
           stripe_event_id?: string | null
-          title?: string
-          user_id?: string
-        }
-      }
-      EventSeries: {
-        Row: {
-          end_date: string | null
-          event_series_id: number
-          recurring: string | null
-          start_date: string | null
-        }
-        Insert: {
-          end_date?: string | null
-          event_series_id?: number
-          recurring?: string | null
-          start_date?: string | null
-        }
-        Update: {
-          end_date?: string | null
-          event_series_id?: number
-          recurring?: string | null
-          start_date?: string | null
-        }
-      }
-      Location: {
-        Row: {
-          address: string | null
-          city_id: number
-          google_maps_link: string | null
-          location_id: number
-        }
-        Insert: {
-          address?: string | null
-          city_id?: number
-          google_maps_link?: string | null
-          location_id?: number
-        }
-        Update: {
-          address?: string | null
-          city_id?: number
-          google_maps_link?: string | null
-          location_id?: number
         }
       }
       Partner: {
@@ -166,7 +107,7 @@ export interface Database {
           stripe_account_id: string | null
           telegram_handle: string | null
           twitter_id: string | null
-          website: string
+          website: string | null
         }
         Insert: {
           active?: boolean
@@ -178,7 +119,7 @@ export interface Database {
           stripe_account_id?: string | null
           telegram_handle?: string | null
           twitter_id?: string | null
-          website?: string
+          website?: string | null
         }
         Update: {
           active?: boolean
@@ -190,24 +131,27 @@ export interface Database {
           stripe_account_id?: string | null
           telegram_handle?: string | null
           twitter_id?: string | null
-          website?: string
+          website?: string | null
         }
       }
       PromotionalMaterial: {
         Row: {
-          event_id: number
+          event_id: string | null
           image_url: string
           material_id: number
+          original_name: string | null
         }
         Insert: {
-          event_id?: number
+          event_id?: string | null
           image_url: string
           material_id?: number
+          original_name?: string | null
         }
         Update: {
-          event_id?: number
+          event_id?: string | null
           image_url?: string
           material_id?: number
+          original_name?: string | null
         }
       }
       User: {
@@ -262,7 +206,10 @@ export interface Database {
     Tables: {
       buckets: {
         Row: {
+          allowed_mime_types: string[] | null
+          avif_autodetection: boolean | null
           created_at: string | null
+          file_size_limit: number | null
           id: string
           name: string
           owner: string | null
@@ -270,7 +217,10 @@ export interface Database {
           updated_at: string | null
         }
         Insert: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
           created_at?: string | null
+          file_size_limit?: number | null
           id: string
           name: string
           owner?: string | null
@@ -278,7 +228,10 @@ export interface Database {
           updated_at?: string | null
         }
         Update: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
           created_at?: string | null
+          file_size_limit?: number | null
           id?: string
           name?: string
           owner?: string | null

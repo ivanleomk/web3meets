@@ -1,4 +1,4 @@
-import type { AppProps} from "next/app";
+import type { AppProps } from "next/app";
 
 import { api } from "../utils/api";
 
@@ -16,6 +16,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserWrapper } from "../context/UserContext";
 import "react-datepicker/dist/react-datepicker.css";
+import { OrganizationWrapper } from "../context/OrganizationContext";
 
 function MyApp({
   Component,
@@ -37,12 +38,14 @@ function MyApp({
       initialSession={pageProps.initialSession}
     >
       <UserWrapper>
-        <Header />
-        <div className="mx-auto mb-20 max-w-7xl px-10">
-          <Component {...pageProps} />
-          <ToastContainer />
-        </div>
-        <Footer />
+        <OrganizationWrapper>
+          <Header />
+          <div className="mx-auto mb-20 max-w-7xl px-10">
+            <Component {...pageProps} />
+            <ToastContainer />
+          </div>
+          <Footer />
+        </OrganizationWrapper>
       </UserWrapper>
     </SessionContextProvider>
   );

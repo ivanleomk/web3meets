@@ -9,3 +9,17 @@ export const ORGANIZATION_FIELDS = [
 ].map((item) => {
   return { label: item, sr_value: item };
 });
+
+export const EVENT_FIELDS = [
+  "Name",
+  "Start Time",
+  "End Time",
+  "Online",
+  "RSVP Link",
+  "Edit/Delete",
+].map((item) => {
+  return {
+    label: item,
+    sr_value: item,
+  };
+});
