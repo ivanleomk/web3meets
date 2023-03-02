@@ -1,6 +1,8 @@
 import { format } from "date-fns";
 import React from "react";
 import { EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
+import EventCardDateTime from "./EventCardDateTime";
+import EventCardLocation from "./EventCardLocation";
 
 type Props = {
   event: EventAndPartnerInfoAndPromotionalMaterial;
@@ -31,34 +33,18 @@ const EventCard = ({ event }: Props) => {
                   : event.fallback_name}
               </p>
             </div>
-            {event.promoted ? (
-              <div className="absolute right-4 top-4 block w-fit rounded-md bg-gradient-to-r from-amber-800 via-fuchsia-800 to-violet-800 p-1 px-2 text-[12px] text-gray-700 sm:hidden">
+            {true ? (
+              <div className=" bg-red-00 right-4 top-4 block w-fit rounded-md border-2 p-1 px-2 text-[12px] text-gray-700 sm:hidden">
                 Promoted
               </div>
             ) : null}
           </div>
           <div className="mt-2 flex flex-shrink-0 items-center text-left text-gray-700">
-            <div>
-              <div className="mt-1 text-xs text-gray-700 xl:mt-[-1px] xl:text-sm">
-                {format(new Date(event.starts_at), "E, dd MMM")}
-              </div>
-              <div className="mt-0 text-[11px] text-gray-500 xl:mt-0 xl:text-[12px]">
-                {format(new Date(event.starts_at), "hh:mm aa")}
-              </div>
-            </div>
+            <EventCardDateTime eventTime={event.starts_at} />
             <div className="mx-4 text-xs font-semibold text-gray-500">–</div>
-            <div>
-              <div className="mt-1 text-xs text-gray-700 xl:mt-[-1px] xl:text-sm">
-                {format(new Date(event.ends_at), "E, dd MMM")}
-              </div>
-              <div className="mt-0 text-[11px] text-gray-500 xl:mt-0 xl:text-[12px]">
-                {format(new Date(event.ends_at), "hh:mm aa")}
-              </div>
-            </div>
+            <EventCardDateTime eventTime={event.ends_at} />
           </div>
-          <div className="mt-2 text-xs text-gray-700 xl:text-sm">
-            {event.city} - {event.country}
-          </div>
+          <EventCardLocation city={event.city} country={event.country} />
           <div className="mt-4 flex justify-between">
             <div className="flex items-center">
               <div className="w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">

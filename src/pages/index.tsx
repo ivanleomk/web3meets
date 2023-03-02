@@ -32,8 +32,6 @@ export async function getStaticProps() {
     .select("*,Partner(*),PromotionalMaterial(*)")
     .gt("starts_at", convertDateToTimestamptz(new Date()));
 
-  console.log(data, error);
-
   return {
     props: {
       events: data,

@@ -1,6 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import {
+  Control,
+  FieldErrors,
+  useForm,
+  UseFormHandleSubmit,
+  UseFormWatch,
+} from "react-hook-form";
 import {
   eventLocationFilter,
   eventTypeFilter,
@@ -12,28 +18,23 @@ import InputDatePicker from "./InputDatePicker";
 import InputRadioGroup from "./InputRadioGroup";
 import InputRangeSlider from "./InputRangeSlider";
 
-const initialState = {
-  event_type: eventTypeFilter.any,
-  event_location: eventLocationFilter.any,
-  start_to_end: [0, 24],
-};
-
 type Props = {
   onSubmit: (data: refinedEventFilterType) => void;
+  handleSubmit: UseFormHandleSubmit<refinedEventFilterType>;
+  watch: UseFormWatch<refinedEventFilterType>;
+  control: Control<refinedEventFilterType>;
+  errors: FieldErrors<refinedEventFilterType>;
+  resetHandler: () => void;
 };
 
-const EventFilters = ({ onSubmit }: Props) => {
-  const {
-    handleSubmit,
-    reset,
-    formState: { errors },
-    control,
-    watch,
-  } = useForm<refinedEventFilterType>({
-    resolver: zodResolver(refinedEventFilterSchema),
-    defaultValues: initialState,
-  });
-
+const EventFilters = ({
+  onSubmit,
+  handleSubmit,
+  watch,
+  control,
+  errors,
+  resetHandler,
+}: Props) => {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
@@ -124,7 +125,7 @@ const EventFilters = ({ onSubmit }: Props) => {
           variant="outline"
           text="Reset Filters"
           onClickHandler={() => {
-            reset(initialState);
+            resetHandler();
           }}
           additionalStyling="w-full mt-4"
         />

@@ -1,7 +1,14 @@
 import { FunnelIcon } from "@heroicons/react/20/solid";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { type EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
-import { refinedEventFilterType } from "../types/event-filter";
+import {
+  eventLocationFilter,
+  eventTypeFilter,
+  refinedEventFilterSchema,
+  refinedEventFilterType,
+} from "../types/event-filter";
 import {
   filterEventByEventLocation,
   filterEventByStartAndEndDate,
@@ -12,6 +19,12 @@ import EventCard from "./EventCard";
 import EventFilters from "./EventFilters";
 import MobileDialogPanel from "./MobileDialogPanel";
 
+const initialState = {
+  event_type: eventTypeFilter.any,
+  event_location: eventLocationFilter.any,
+  start_to_end: [0, 24],
+};
+
 type Props = {
   events: EventAndPartnerInfoAndPromotionalMaterial[];
 };
@@ -20,7 +33,7 @@ export default function EventPage({ events }: Props) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [existingEvents, setExistingEvents] = useState(events);
 
-  const handleSubmit = (data: refinedEventFilterType) => {
+  const submitHandler = (data: refinedEventFilterType) => {
     const eventsWithValidStartDate = filterEventByStartAndEndDate(events, data);
     const eventsWithValidLocation = filterEventByEventLocation(
       eventsWithValidStartDate,
@@ -38,6 +51,17 @@ export default function EventPage({ events }: Props) {
     setExistingEvents(eventsWithValidStartTime);
   };
 
+  const {
+    handleSubmit,
+    reset,
+    formState: { errors },
+    control,
+    watch,
+  } = useForm<refinedEventFilterType>({
+    resolver: zodResolver(refinedEventFilterSchema),
+    defaultValues: initialState,
+  });
+
   return (
     <div className="bg-white">
       <div>
@@ -48,7 +72,14 @@ export default function EventPage({ events }: Props) {
         >
           <div className="px-6">
             <h3 className="sr-only">Categories</h3>
-            <EventFilters onSubmit={handleSubmit} />
+            <EventFilters
+              errors={errors}
+              control={control}
+              resetHandler={() => reset(initialState)}
+              handleSubmit={handleSubmit}
+              onSubmit={submitHandler}
+              watch={watch}
+            />
           </div>
         </MobileDialogPanel>
 
@@ -79,7 +110,14 @@ export default function EventPage({ events }: Props) {
               {/* Filters */}
               <div className="col-span-1 hidden lg:block">
                 <h3 className="sr-only">Event Filters</h3>
-                <EventFilters onSubmit={handleSubmit} />
+                <EventFilters
+                  errors={errors}
+                  control={control}
+                  resetHandler={() => reset(initialState)}
+                  handleSubmit={handleSubmit}
+                  onSubmit={submitHandler}
+                  watch={watch}
+                />
               </div>
 
               <div className="lg:col-span-3">
