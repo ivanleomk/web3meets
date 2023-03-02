@@ -23,3 +23,8 @@ export type UserPartnerOwnershipWithUserAndPartner = UserPartnerOwnership & {
   User: User;
   Partner: Partner;
 };
+
+export type EventAndPartnerInfoAndPromotionalMaterial = Event & {
+  Partner: Partner;
+  PromotionalMaterial: PromotionalMaterial[];
+};

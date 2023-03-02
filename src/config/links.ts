@@ -6,7 +6,7 @@ export const LINKS: LinkMetadata[] = [
     label: "About Us",
   },
   {
-    href: "/events",
+    href: "/",
     label: "Events",
   },
   {
@@ -21,7 +21,7 @@ export const AUTHENTICATED_LINKS: LinkMetadata[] = [
     label: "About Us",
   },
   {
-    href: "/events",
+    href: "/",
     label: "Events",
   },
   {

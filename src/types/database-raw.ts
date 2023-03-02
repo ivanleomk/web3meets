@@ -43,6 +43,7 @@ export interface Database {
           event_id: string
           event_title: string
           event_type: string
+          fallback_name: string | null
           featured: boolean
           location: string | null
           location_id: number
@@ -50,6 +51,7 @@ export interface Database {
           our_pick: boolean
           partner_id: string | null
           partnered: boolean
+          promoted: boolean
           rsvp_link: string | null
           scheduled_post: string | null
           starts_at: string
@@ -63,6 +65,7 @@ export interface Database {
           event_id?: string
           event_title: string
           event_type: string
+          fallback_name?: string | null
           featured?: boolean
           location?: string | null
           location_id?: number
@@ -70,6 +73,7 @@ export interface Database {
           our_pick?: boolean
           partner_id?: string | null
           partnered?: boolean
+          promoted?: boolean
           rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at: string
@@ -83,6 +87,7 @@ export interface Database {
           event_id?: string
           event_title?: string
           event_type?: string
+          fallback_name?: string | null
           featured?: boolean
           location?: string | null
           location_id?: number
@@ -90,6 +95,7 @@ export interface Database {
           our_pick?: boolean
           partner_id?: string | null
           partnered?: boolean
+          promoted?: boolean
           rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at?: string

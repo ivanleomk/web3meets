@@ -34,6 +34,7 @@ type ButtonProps = {
   text: string;
   disabled?: boolean;
   isSubmitting?: boolean;
+  submitType?: boolean;
 };
 
 export const Button = ({
@@ -46,6 +47,7 @@ export const Button = ({
   postClickHook,
   disabled = false,
   isSubmitting,
+  submitType,
 }: ButtonProps) => {
   if (variant !== "solid" && variant !== "outline") {
     throw new Error("Invalid Variant Prop");
@@ -91,6 +93,22 @@ export const Button = ({
       >
         {text}
       </button>
+    );
+  }
+
+  if (submitType) {
+    return (
+      <div className="col-span-2 flex justify-end">
+        <button disabled={isSubmitting} type="submit" className={styling}>
+          {isSubmitting ? (
+            <>
+              <ClipLoader color="white" size={20} />
+            </>
+          ) : (
+            <>{text}</>
+          )}
+        </button>
+      </div>
     );
   }
 

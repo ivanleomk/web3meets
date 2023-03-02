@@ -16,8 +16,8 @@ export function Header() {
   return (
     <header>
       <nav className="mx-auto max-w-7xl">
-        <div className="relative z-50 flex justify-between py-8 px-10">
-          <div className="relative z-10 flex items-center gap-16">
+        <div className="relative flex justify-between py-8 px-10">
+          <div className="relative z-30 flex items-center gap-16">
             <Logo />
             <div className="hidden md:flex md:gap-10">
               <Navlinks

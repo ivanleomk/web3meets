@@ -12,7 +12,7 @@ const SubmitButton = ({ isSubmitting, buttonText }: Props) => {
       <button
         disabled={isSubmitting}
         type="submit"
-        className="flex max-w-md justify-center rounded-md border border-transparent bg-gray-800  py-3 px-4 text-sm font-medium text-white hover:bg-gray-900 active:bg-gray-800 active:text-white/80"
+        className="flex max-w-md justify-center rounded-md border border-transparent bg-gray-800  py-2 px-2 text-sm font-medium text-white hover:bg-gray-900 active:bg-gray-800 active:text-white/80"
       >
         {isSubmitting ? (
           <>

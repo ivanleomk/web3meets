@@ -8,6 +8,7 @@ import { Button } from "./Button";
 import { useUserContext } from "../context/UserContext";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
+import Logo from "./Logo";
 
 const MobileDropdownMenu = () => {
   const { isAuthenticated } = useUserContext();
@@ -17,7 +18,7 @@ const MobileDropdownMenu = () => {
       {({ open, close }) => (
         <>
           <Popover.Button
-            className="relative z-10 -m-2 inline-flex items-center rounded-lg stroke-gray-900 p-2 hover:bg-gray-200/50 hover:stroke-gray-600 active:stroke-gray-900 [&:not(:focus-visible)]:focus:outline-none"
+            className="relative z-20 -m-2 inline-flex items-center rounded-lg stroke-gray-900 p-2 hover:bg-gray-200/50 hover:stroke-gray-600 active:stroke-gray-900 [&:not(:focus-visible)]:focus:outline-none"
             aria-label="Toggle site navigation"
           >
             {({ open }) =>
@@ -37,7 +38,7 @@ const MobileDropdownMenu = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-0 bg-gray-300/60 backdrop-blur"
+                  className="fixed inset-0  bg-gray-300/60 backdrop-blur"
                 />
                 <Popover.Panel
                   static
