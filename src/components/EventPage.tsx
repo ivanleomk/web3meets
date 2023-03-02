@@ -1,20 +1,16 @@
-import { Fragment, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { FunnelIcon } from "@heroicons/react/20/solid";
-import FilterOptions from "./FilterOptions";
-import MobileDialogPanel from "./MobileDialogPanel";
-import EventFilters from "./EventFilters";
-import { Event, Partner } from "../types/database";
+import { useState } from "react";
 import { type EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
+import { refinedEventFilterType } from "../types/event-filter";
 import {
   filterEventByEventLocation,
   filterEventByStartAndEndDate,
   filterEventsByEventPrice,
   filterEventsByStartTime,
 } from "../utils/event-filter";
-import { refinedEventFilterType } from "../types/event-filter";
 import EventCard from "./EventCard";
+import EventFilters from "./EventFilters";
+import MobileDialogPanel from "./MobileDialogPanel";
 
 type Props = {
   events: EventAndPartnerInfoAndPromotionalMaterial[];

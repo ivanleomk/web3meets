@@ -1,7 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import React, { Fragment, ReactNode } from "react";
-import FilterOptions from "./FilterOptions";
 
 type Props = {
   mobileFiltersOpen: boolean;

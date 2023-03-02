@@ -1,8 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Event, Partner } from "../types/database";
-import { eventType } from "../types/event";
 import {
   eventLocationFilter,
   eventTypeFilter,
@@ -10,12 +8,9 @@ import {
   refinedEventFilterType,
 } from "../types/event-filter";
 import { Button } from "./Button";
-import FilterOptions from "./FilterOptions";
 import InputDatePicker from "./InputDatePicker";
 import InputRadioGroup from "./InputRadioGroup";
 import InputRangeSlider from "./InputRangeSlider";
-import SectionHeader from "./SectionHeader";
-import SubmitButton from "./SubmitButton";
 
 const initialState = {
   event_type: eventTypeFilter.any,
@@ -31,7 +26,7 @@ const EventFilters = ({ onSubmit }: Props) => {
   const {
     handleSubmit,
     reset,
-    formState: { isSubmitting, errors },
+    formState: { errors },
     control,
     watch,
   } = useForm<refinedEventFilterType>({
