@@ -28,7 +28,7 @@ type Props = {
 const PartnerPage = ({ users, events, partner }: Props) => {
   return (
     <div className="mx-auto max-w-6xl text-left">
-      <Button href="/" text="Back to Event Dashboard" variant="outline" />
+      <Button href="/" text="See other events" variant="outline" />
 
       <div className="mx-auto my-10 grid max-w-7xl gap-y-6  gap-x-8 px-6 lg:gap-y-20 lg:px-8 xl:grid-cols-3">
         <div className="max-w-2xl">

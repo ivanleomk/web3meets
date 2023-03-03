@@ -17,6 +17,11 @@ const PartnerContactDetails = ({ partner }: Props) => {
   return (
     <div>
       <p className="my-4 font-semibold text-gray-800">Contact Us</p>
+      {!telegram_handle && !website && !twitter_id ? (
+        <p className="ml-5">
+          {partner.partner_name} has not provided any contact details
+        </p>
+      ) : null}
       <div className="mb-16 ml-5 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 sm:grid-cols-2 lg:max-w-none lg:grid-cols-4 lg:gap-y-16">
         {[
           {

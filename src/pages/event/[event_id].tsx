@@ -22,6 +22,7 @@ type Props = {
 };
 
 const Event = ({ event }: Props) => {
+  console.log(event);
   return (
     <>
       <Button
@@ -35,7 +36,10 @@ const Event = ({ event }: Props) => {
           <img
             src={event.PromotionalMaterial.at(0)?.image_url}
             alt={`Event Banner Image for ${event.event_title}`}
-            className="h-full w-full object-cover object-center"
+            className="h-full w-full object-contain object-center"
+            style={{
+              maxHeight: "620px",
+            }}
           />
         </div>
         <div className="mt-4">
