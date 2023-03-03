@@ -165,16 +165,19 @@ export interface Database {
           admin: boolean
           email: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           admin?: boolean
           email: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           admin?: boolean
           email?: string
           user_id?: string
+          user_name?: string | null
         }
       }
       UserPartnerOwnership: {

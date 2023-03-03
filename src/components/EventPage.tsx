@@ -121,7 +121,7 @@ export default function EventPage({ events }: Props) {
               </div>
 
               <div className="lg:col-span-3">
-                {false ? (
+                {existingEvents?.length >= 1 ? (
                   existingEvents.map((event) => {
                     return <EventCard key={event.event_id} event={event} />;
                   })

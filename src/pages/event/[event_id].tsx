@@ -30,75 +30,71 @@ const Event = ({ event }: Props) => {
         variant="outline"
         href="/"
       />
-      <div className="mt-10 grid grid-cols-6">
-        <div className="aspect-w-1 aspect-h-1 col-span-3 overflow-hidden rounded-lg ">
+      <div className="mx-auto mt-10 max-w-4xl">
+        <div className="aspect-w-1 aspect-h-1 max-h- col-span-3 overflow-hidden rounded-lg ">
           <img
             src={event.PromotionalMaterial.at(0)?.image_url}
             alt={`Event Banner Image for ${event.event_title}`}
             className="h-full w-full object-cover object-center"
           />
         </div>
-        <div className="col-span-2 mx-10">
-          <div className="mt-4">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              {event.event_title}
-            </h1>
-            {event.Partner ? (
-              <Link href={`/partner/${event.Partner.partner_id}`}>
-                <p className="text-md sm:text-md mt-2 text-gray-900">
-                  by{" "}
-                  {event?.Partner?.partner_name
-                    ? event?.Partner?.partner_name
-                    : event.fallback_name}
-                </p>
-              </Link>
-            ) : (
+        <div className="mt-4">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            {event.event_title}
+          </h1>
+          {event.Partner ? (
+            <Link href={`/partner/${event.Partner.partner_id}`}>
               <p className="text-md sm:text-md mt-2 text-gray-900">
-                by {event.fallback_name}
+                by{" "}
+                {event?.Partner?.partner_name
+                  ? event?.Partner?.partner_name
+                  : event.fallback_name}
               </p>
-            )}
-            <div className="mt-3 flex items-center ">
-              <ClockIcon
-                className="h-5 w-5 flex-shrink-0 text-green-500"
-                aria-hidden="true"
-              />
-              <div className="ml-4 flex space-x-3">
-                <EventCardDateTime eventTime={event.starts_at} />
-                <div>-</div>
-                <EventCardDateTime eventTime={event.ends_at} />
-              </div>
+            </Link>
+          ) : (
+            <p className="text-md sm:text-md mt-2 text-gray-900">
+              by {event.fallback_name}
+            </p>
+          )}
+          <div className="mt-3 flex items-center ">
+            <ClockIcon
+              className="h-5 w-5 flex-shrink-0 text-green-500"
+              aria-hidden="true"
+            />
+            <div className="ml-4 flex space-x-3">
+              <EventCardDateTime eventTime={event.starts_at} />
+              <div>-</div>
+              <EventCardDateTime eventTime={event.ends_at} />
             </div>
-            <div className="mt-4 flex items-center">
-              <MapIcon
-                className="mr-4 h-5 w-5 flex-shrink-0 text-green-500"
-                aria-hidden="true"
-              />
+          </div>
+          <div className="mt-4 flex items-center">
+            <MapIcon
+              className="mr-4 h-5 w-5 flex-shrink-0 text-green-500"
+              aria-hidden="true"
+            />
 
-              <EventCardLocation city={event.city} country={event.country} />
+            <EventCardLocation city={event.city} country={event.country} />
+          </div>
+
+          <div className="mt-4 flex items-center space-x-4">
+            <div className="w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
+              {event.event_type}
             </div>
-
-            <div className="mt-4 flex items-center space-x-4">
-              <div className="w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
-                {event.event_type}
-              </div>
-              <div className="ml-1 w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
-                {event.online ? "Online" : "Offline"}
-              </div>
+            <div className="ml-1 w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
+              {event.online ? "Online" : "Offline"}
             </div>
+          </div>
 
-            <div className="mt-4 space-y-6">
-              <p className="text-base text-gray-500">
-                {event.event_description}
-              </p>
-            </div>
-
-            {event.rsvp_link ? (
-              <Button
-                additionalStyling="my-6"
-                href={event.rsvp_link}
-                text="Register Here"
-              />
-            ) : null}
+          {event.rsvp_link ? (
+            <Button
+              additionalStyling="my-6"
+              href={event.rsvp_link}
+              text="Register Here"
+            />
+          ) : null}
+          <div className="mt-4 space-y-6">
+            <p className="text-bold text-lg">Details</p>
+            <p className="text-base text-gray-500">{event.event_description}</p>
           </div>
         </div>
       </div>

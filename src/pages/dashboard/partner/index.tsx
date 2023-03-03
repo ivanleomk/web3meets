@@ -235,13 +235,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { data, error } = await adminServerSupabaseInstance
     .from("UserPartnerOwnership")
     .select("*,User(*),Partner(*)")
-    .eq("partner_id", partner_id);
+    .eq("partner_id", partner_id)
+    .eq("user_id", user_id);
 
-  const userRights = data?.filter((item) => {
-    return item.user_id === user_id;
-  });
+  console.log(data, error);
 
-  if (error || userRights?.length == 0 || !userRights) {
+  if (error || !data) {
     return {
       redirect: {
         destination:

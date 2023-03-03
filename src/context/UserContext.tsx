@@ -10,6 +10,7 @@ type UserContextMetadata = {
   email: string;
   isAdmin: boolean;
   profile_image: string | null;
+  user_name: string | null;
 };
 
 type UserContextType = {
@@ -47,12 +48,13 @@ export function UserWrapper({ children }: UserContextProps) {
 
   api.user.user.useQuery(undefined, {
     onSuccess: (data) => {
-      const { admin, email } = data;
+      const { admin, email, user_name } = data;
       setIsAuthenticated(true);
       setUserMetadata({
         email: email,
         isAdmin: admin,
         profile_image: null,
+        user_name,
       });
     },
     enabled: user !== null,

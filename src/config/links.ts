@@ -28,6 +28,10 @@ export const AUTHENTICATED_LINKS: LinkMetadata[] = [
     href: "/dashboard?mode=Events&view=create",
     label: "Submit an Event",
   },
+  {
+    href: "/settings",
+    label: "Settings",
+  },
 ];
 
 export const PROFILE_LINKS: LinkMetadata[] = [

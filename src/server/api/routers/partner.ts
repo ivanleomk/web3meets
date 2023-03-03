@@ -328,6 +328,7 @@ export const partnerRouter = createTRPCRouter({
         .eq("partner_id", partner_id);
 
       if (PartnerDeletionError) {
+        console.log(error);
         return data;
       }
 

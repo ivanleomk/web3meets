@@ -13,7 +13,7 @@ type Props = {
 
 const EventCard = ({ event }: Props) => {
   return (
-    <Link href={`event/${event.event_id}`}>
+    <Link href={`/event/${event.event_id}`}>
       <div className="grid cursor-pointer grid-cols-12">
         <div className="col-span-12 sm:col-span-5">
           <EventCardBannerImage

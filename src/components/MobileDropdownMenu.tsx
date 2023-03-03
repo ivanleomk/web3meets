@@ -14,7 +14,7 @@ const MobileDropdownMenu = () => {
   const { isAuthenticated } = useUserContext();
   const supabaseClient = useSupabaseClient();
   return (
-    <Popover className="md:hidden">
+    <Popover className="lg:hidden">
       {({ open, close }) => (
         <>
           <Popover.Button

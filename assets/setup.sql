@@ -1,17 +1,13 @@
 CREATE TABLE "User" (
   "user_id" uuid PRIMARY KEY NOT NULL,
-  "email" text NOT NULL,
-  "admin" boolean NOT NULL DEFAULT false
-);
-
-CREATE TABLE "UserPartnerOwnership" (
-  "user_id" uuid NOT NULL,
-  "partner_id" uuid NOT NULL,
-  "approved" boolean NOT NULL DEFAULT false
+  "email" text UNIQUE NOT NULL,
+  "admin" boolean NOT NULL DEFAULT false,
+  "user_name" text,
+  "avatar_url" text
 );
 
 CREATE TABLE "Partner" (
-  "partner_id" uuid PRIMARY KEY NOT NULL,
+  "partner_id" uuid PRIMARY KEY NOT NULL DEFAULT UUID_generate_v4(),
   "partner_name" text NOT NULL,
   "website" text,
   "telegram_handle" text,
@@ -23,8 +19,16 @@ CREATE TABLE "Partner" (
   "bio" text DEFAULT null
 );
 
+CREATE TABLE "UserPartnerOwnership" (
+  "user_id" uuid NOT NULL REFERENCES "User" ("user_id") ON DELETE CASCADE,
+  "partner_id" uuid NOT NULL REFERENCES "Partner" ("partner_id") ON DELETE CASCADE,
+  "approved" boolean NOT NULL DEFAULT false,
+  
+  PRIMARY KEY ("user_id","partner_id")
+);
+
 CREATE TABLE "Event" (
-  "event_id" uuid PRIMARY KEY,
+  "event_id" uuid PRIMARY KEY NOT NULL DEFAULT UUID_generate_v4(),
   "fallback_name" text,
   "starts_at" timestamptz NOT NULL,
   "ends_at" timestamptz NOT NULL,
@@ -36,7 +40,7 @@ CREATE TABLE "Event" (
   "remarks" text NOT NULL DEFAULT '',
   "partnered" bool NOT NULL DEFAULT false,
   "event_description" text,
-  "partner_id" uuid DEFAULT null,
+  "partner_id" uuid DEFAULT null REFERENCES "Partner" ("partner_id") ON DELETE CASCADE,
   "scheduled_post" timestamptz,
   "online" boolean,
   "rsvp_link" text DEFAULT null,
@@ -45,17 +49,16 @@ CREATE TABLE "Event" (
   "location" text DEFAULT null
 );
 
+CREATE TABLE "Registration"(
+  "registration_id" serial NOT NULL PRIMARY KEY,
+  "user_email" text NOT NULL,
+  "event_id" uuid NOT NULL REFERENCES "Event" ("event_id") ON DELETE CASCADE,
+  "user_id" uuid   REFERENCES "User" ("user_id") ON DELETE CASCADE
+);
+
 CREATE TABLE "PromotionalMaterial" (
-  "event_id" uuid NOT NULL,
+  "event_id" uuid NOT NULL REFERENCES "Event" ("event_id") ON DELETE CASCADE,
   "material_id" serial PRIMARY KEY NOT NULL,
   "image_url" text NOT NULL,
   "original_name" text NOT NULL
 );
-
-ALTER TABLE "UserPartnerOwnership" ADD FOREIGN KEY ("user_id") REFERENCES "User" ("user_id") ON DELETE CASCADE;
-
-ALTER TABLE "UserPartnerOwnership" ADD FOREIGN KEY ("partner_id") REFERENCES "Partner" ("partner_id") ON DELETE CASCADE;
-
-ALTER TABLE "Event" ADD FOREIGN KEY ("partner_id") REFERENCES "Partner" ("partner_id");
-
-ALTER TABLE "PromotionalMaterial" ADD FOREIGN KEY ("event_id") REFERENCES "Event" ("event_id") ON DELETE CASCADE;

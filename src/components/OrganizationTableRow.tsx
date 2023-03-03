@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { toast } from "react-toastify";
 import { type UserPartnerOwnershipWithPartner } from "../types/database";
@@ -36,8 +37,9 @@ const OrganizationTableRow = ({ data }: Props) => {
   return (
     <tr key={partner_name}>
       <td className="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-        {partner_name}
+        <Link href={`/partner/${partner_id}`}>{partner_name}</Link>
       </td>
+
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         {website}
       </td>

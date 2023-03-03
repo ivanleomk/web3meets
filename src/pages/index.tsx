@@ -1,15 +1,8 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { type NextPage } from "next";
-import { Header } from "../components/Header";
-import SectionHeader from "../components/SectionHeader";
 import EventPage from "../components/EventPage";
-import { Database } from "../types/database-raw";
 
-import { api } from "../utils/api";
-import { getServerSideProps } from "./dashboard/partner";
 import { adminServerSupabaseInstance } from "../server/supabase/sharedInstance";
 import { convertDateToTimestamptz } from "../utils/date";
-import { type sEventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
+import { type EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
 
 type Props = {
   events: EventAndPartnerInfoAndPromotionalMaterial[];
@@ -30,6 +23,9 @@ export async function getStaticProps() {
     .from("Event")
     .select("*,Partner(*),PromotionalMaterial(*)")
     .gt("starts_at", convertDateToTimestamptz(new Date()));
+
+  // console.log(data);
+  console.log(error);
 
   return {
     props: {

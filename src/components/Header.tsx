@@ -19,7 +19,7 @@ export function Header() {
         <div className="relative flex justify-between py-8 px-10">
           <div className="relative z-30 flex items-center gap-16">
             <Logo />
-            <div className="hidden md:flex md:gap-10">
+            <div className="hidden md:gap-10 lg:flex">
               <Navlinks
                 LinkItemMetadata={isAuthenticated ? AUTHENTICATED_LINKS : LINKS}
               />
@@ -34,7 +34,7 @@ export function Header() {
                   variant="solid"
                   color="gray"
                   href="/dashboard"
-                  additionalStyling="hidden md:block"
+                  additionalStyling="hidden lg:block"
                 />
                 <Button
                   variant="outline"
@@ -51,7 +51,7 @@ export function Header() {
                       });
                   }}
                   text="Sign Out"
-                  additionalStyling="hidden md:block"
+                  additionalStyling="hidden lg:block"
                 />
               </>
             ) : (
@@ -60,14 +60,14 @@ export function Header() {
                   text="Log In"
                   variant="outline"
                   href="/login"
-                  additionalStyling="hidden md:block"
+                  additionalStyling="hidden lg:block"
                 />
                 <Button
                   text="Sign Up"
                   variant="solid"
                   color="gray"
                   href="/signup"
-                  additionalStyling="hidden md:block"
+                  additionalStyling="hidden lg:block"
                 />
               </>
             )}

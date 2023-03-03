@@ -1,8 +1,16 @@
-import { UserCircleIcon } from "@heroicons/react/24/outline";
+import {
+  BuildingOffice2Icon,
+  EnvelopeIcon,
+  PhoneIcon,
+  UserCircleIcon,
+} from "@heroicons/react/24/outline";
 import { type GetServerSideProps } from "next";
 import React from "react";
 import { Button } from "../../components/Button";
 import EventCard from "../../components/EventCard";
+import PartnerContactDetails from "../../components/PartnerContactDetails";
+import PartnerOrganizationMembers from "../../components/PartnerOrganizationMembers";
+import PartnerPageEvents from "../../components/PartnerPageEvents";
 import SectionHeader from "../../components/SectionHeader";
 import { adminServerSupabaseInstance } from "../../server/supabase/sharedInstance";
 import {
@@ -21,60 +29,22 @@ const PartnerPage = ({ users, events, partner }: Props) => {
   return (
     <div className="mx-auto max-w-6xl text-left">
       <Button href="/" text="Back to Event Dashboard" variant="outline" />
-      {/* <div className="">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          {partner.partner_name}
-        </h2>
-        <p className="mt-4 text-gray-500">{partner.bio}</p>
-      </div> */}
-      <div className="bg-white pb-24 pt-14">
-        <div className="mx-auto grid max-w-7xl gap-y-20 gap-x-8 px-6 lg:px-8 xl:grid-cols-3">
-          <div className="max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Bio
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Learn more about {partner.partner_name}
-            </p>
-          </div>
 
-          <ul
-            role="list"
-            className="grid gap-x-8 gap-y-12 sm:grid-cols-2 sm:gap-y-16 xl:col-span-2"
-          >
-            {users.map((person) => (
-              <li key={person.User.user_id}>
-                <div className="flex items-center gap-x-6">
-                  <div>
-                    <h3 className="text-base font-semibold leading-7 tracking-tight text-gray-900">
-                      {person.User.email}
-                    </h3>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="mx-auto grid max-w-7xl gap-y-20 gap-x-8 px-6 lg:px-8 xl:grid-cols-3">
+      <div className="mx-auto my-10 grid max-w-7xl gap-y-6  gap-x-8 px-6 lg:gap-y-20 lg:px-8 xl:grid-cols-3">
         <div className="max-w-2xl">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Our Events
+            Bio
           </h2>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            See our upcoming events
+            Learn more about {partner.partner_name}
           </p>
         </div>
         <div className="sm:grid-cols-2 sm:gap-y-16 xl:col-span-2">
-          {events.map((event) => (
-            <EventCard key={event.event_id} event={event} />
-          ))}
+          <PartnerOrganizationMembers users={users} />
+          <PartnerContactDetails partner={partner} />
         </div>
       </div>
-
-      {/* <p>{JSON.stringify(partner)}</p>
-      <p>{JSON.stringify(events)}</p> */}
+      <PartnerPageEvents events={events} />
     </div>
   );
 };
