@@ -1,3 +1,4 @@
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ClipLoader } from "react-spinners";
@@ -35,6 +36,7 @@ type ButtonProps = {
   disabled?: boolean;
   isSubmitting?: boolean;
   submitType?: boolean;
+  showBackArrow?: boolean;
 };
 
 export const Button = ({
@@ -48,6 +50,7 @@ export const Button = ({
   disabled = false,
   isSubmitting,
   submitType,
+  showBackArrow = false,
 }: ButtonProps) => {
   if (variant !== "solid" && variant !== "outline") {
     throw new Error("Invalid Variant Prop");
@@ -76,9 +79,32 @@ export const Button = ({
 
   if (href && !disabled) {
     if (!postClickHook) {
+      const regEx = /^http/;
+
+      if (regEx.test(href)) {
+        return (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styling}
+          >
+            <div className="flex items-center">
+              {showBackArrow ? (
+                <ArrowLeftIcon className="mr-1 h-4 w-4" />
+              ) : null}{" "}
+              {text}
+            </div>
+          </a>
+        );
+      }
+
       return (
         <Link href={href} className={styling} passHref>
-          {text}
+          <div className="flex items-center">
+            {showBackArrow ? <ArrowLeftIcon className="mr-1 h-4 w-4" /> : null}{" "}
+            {text}
+          </div>
         </Link>
       );
     }

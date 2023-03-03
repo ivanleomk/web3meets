@@ -8,13 +8,11 @@ type Props = {
 
 const EventCardLocation = ({ city, country }: Props) => {
   if (city == City.NA || country == City.NA) {
-    return (
-      <div className="mt-2 text-xs text-gray-700 xl:text-sm">Online Event</div>
-    );
+    return <div className="text-xs text-gray-700 xl:text-sm">Online Event</div>;
   }
 
   return (
-    <div className="mt-2 text-xs text-gray-700 xl:text-sm">
+    <div className="text-xs text-gray-700 xl:text-sm">
       {city} - {country}
     </div>
   );
