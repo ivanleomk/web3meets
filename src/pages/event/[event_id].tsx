@@ -8,42 +8,20 @@ import {
   MapIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
-import { GetServerSideProps } from "next";
-import React, { useState } from "react";
+import { type GetServerSideProps } from "next";
+import Link from "next/link";
+import React from "react";
 import { Button } from "../../components/Button";
 import EventCardDateTime from "../../components/EventCardDateTime";
 import EventCardLocation from "../../components/EventCardLocation";
 import { adminServerSupabaseInstance } from "../../server/supabase/sharedInstance";
-import { EventAndPartnerInfoAndPromotionalMaterial } from "../../types/database";
-import { joinClassNames } from "../../utils/css";
+import { type EventAndPartnerInfoAndPromotionalMaterial } from "../../types/database";
 
 type Props = {
   event: EventAndPartnerInfoAndPromotionalMaterial;
 };
 
-const product = {
-  name: "Everyday Ruck Snack",
-  href: "#",
-  price: "$220",
-  description:
-    "Don't compromise on snack-carrying capacity with this lightweight and spacious bag. The drawstring top keeps all your favorite chips, crisps, fries, biscuits, crackers, and cookies secure.",
-  imageSrc:
-    "https://tailwindui.com/img/ecommerce-images/product-page-04-featured-product-shot.jpg",
-  imageAlt:
-    "Model wearing light green backpack with black canvas straps and front zipper pouch.",
-  breadcrumbs: [
-    { id: 1, name: "Travel", href: "#" },
-    { id: 2, name: "Bags", href: "#" },
-  ],
-  sizes: [
-    { name: "18L", description: "Perfect for a reasonable amount of snacks." },
-    { name: "20L", description: "Enough room for a serious amount of snacks." },
-  ],
-};
-const reviews = { average: 4, totalCount: 1624 };
-
 const Event = ({ event }: Props) => {
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   return (
     <>
       <Button
@@ -56,7 +34,7 @@ const Event = ({ event }: Props) => {
         <div className="aspect-w-1 aspect-h-1 col-span-3 overflow-hidden rounded-lg ">
           <img
             src={event.PromotionalMaterial.at(0)?.image_url}
-            // alt={product.imageAlt}
+            alt={`Event Banner Image for ${event.event_title}`}
             className="h-full w-full object-cover object-center"
           />
         </div>
@@ -65,12 +43,20 @@ const Event = ({ event }: Props) => {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               {event.event_title}
             </h1>
-            <p className="text-md sm:text-md mt-2 text-gray-900">
-              by{" "}
-              {event?.Partner?.partner_name
-                ? event?.Partner?.partner_name
-                : event.fallback_name}
-            </p>
+            {event.Partner ? (
+              <Link href={`/partner/${event.Partner.partner_id}`}>
+                <p className="text-md sm:text-md mt-2 text-gray-900">
+                  by{" "}
+                  {event?.Partner?.partner_name
+                    ? event?.Partner?.partner_name
+                    : event.fallback_name}
+                </p>
+              </Link>
+            ) : (
+              <p className="text-md sm:text-md mt-2 text-gray-900">
+                by {event.fallback_name}
+              </p>
+            )}
             <div className="mt-3 flex items-center ">
               <ClockIcon
                 className="h-5 w-5 flex-shrink-0 text-green-500"
