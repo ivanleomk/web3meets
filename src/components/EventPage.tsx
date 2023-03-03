@@ -121,9 +121,15 @@ export default function EventPage({ events }: Props) {
               </div>
 
               <div className="lg:col-span-3">
-                {existingEvents.map((event) => {
-                  return <EventCard key={event.event_id} event={event} />;
-                })}
+                {false ? (
+                  existingEvents.map((event) => {
+                    return <EventCard key={event.event_id} event={event} />;
+                  })
+                ) : (
+                  <div className="mt-10 flex items-center justify-center">
+                    <p>There are no listed events at the moment</p>
+                  </div>
+                )}
               </div>
             </div>
           </section>

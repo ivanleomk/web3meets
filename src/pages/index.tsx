@@ -9,14 +9,13 @@ import { api } from "../utils/api";
 import { getServerSideProps } from "./dashboard/partner";
 import { adminServerSupabaseInstance } from "../server/supabase/sharedInstance";
 import { convertDateToTimestamptz } from "../utils/date";
-import { EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
+import { type sEventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
 
 type Props = {
   events: EventAndPartnerInfoAndPromotionalMaterial[];
 };
 
 const Home = ({ events }: Props) => {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
   console.log(events);
 
   return (
