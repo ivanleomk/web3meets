@@ -238,8 +238,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     .eq("partner_id", partner_id)
     .eq("user_id", user_id);
 
-  console.log(data, error);
-
   if (error || !data) {
     return {
       redirect: {

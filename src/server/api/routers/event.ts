@@ -23,7 +23,7 @@ export const eventRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Validate that user is an admin
-      const { userId: user_id } = ctx;
+      const { userId: user_id, NextResponse } = ctx;
       const { event_id, ...eventInformation } = input;
       const partner_id = eventInformation.partner_id.value;
 
@@ -57,14 +57,16 @@ export const eventRouter = createTRPCRouter({
         .select("*")
         .maybeSingle();
 
-      console.log(data, error);
-
       if (error || !data) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unable to update event. Please try again later",
         });
       }
+
+      void NextResponse.revalidate(`/event/${event_id}`);
+      void NextResponse.revalidate(`/partner/${partner_id}`);
+      void NextResponse.revalidate(`/`);
 
       return data;
     }),
@@ -157,8 +159,9 @@ export const eventRouter = createTRPCRouter({
         event_id: z.string().uuid(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { event_id, images } = input;
+      const { NextResponse } = ctx;
       const insertionData = images.map((item) => {
         return {
           event_id,
@@ -180,6 +183,9 @@ export const eventRouter = createTRPCRouter({
         });
       }
 
+      void NextResponse.revalidate(`/event/${event_id}`);
+      void NextResponse.revalidate(`/`);
+
       return data;
     }),
   deleteEvent: supabaseProtectedProcedure
@@ -190,7 +196,7 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId: user_id } = ctx;
+      const { userId: user_id, NextResponse } = ctx;
       const { event_id, partner_id } = input;
 
       // First we validate that for this specific partner id, user has admin rights
@@ -212,6 +218,9 @@ export const eventRouter = createTRPCRouter({
             "Unable to delete event from database. Please try again later or contact support if this issue persists.",
         });
       }
+
+      void NextResponse.revalidate(`/partner/${partner_id}`);
+      void NextResponse.revalidate(`/`);
 
       return data;
     }),
@@ -249,7 +258,8 @@ export const eventRouter = createTRPCRouter({
   }),
   createNewEvent: supabaseProtectedProcedure
     .input(eventObjectSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      const { NextResponse } = ctx;
       const {
         event_title,
         event_type,
@@ -285,8 +295,6 @@ export const eventRouter = createTRPCRouter({
           .select("*")
           .maybeSingle();
 
-      console.log(insertEventOp, insertEventOpError);
-
       if (insertEventOpError || !insertEventOp) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -294,6 +302,10 @@ export const eventRouter = createTRPCRouter({
             "Unable to create new event. Please try again later or contact support if this error persists",
         });
       }
+
+      void NextResponse.revalidate(`/event/${insertEventOp.event_id}`);
+      void NextResponse.revalidate(`/partner/${partner_id}`);
+      void NextResponse.revalidate(`/`);
 
       return insertEventOp;
     }),

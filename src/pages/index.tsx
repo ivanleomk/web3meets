@@ -24,14 +24,11 @@ export async function getStaticProps() {
     .select("*,Partner(*),PromotionalMaterial(*)")
     .gt("starts_at", convertDateToTimestamptz(new Date()));
 
-  // console.log(data);
-  console.log(error);
-
   return {
     props: {
       events: data,
     },
-    revalidate: 120, // In seconds
+    revalidate: 600, // every 10 mins
   };
 }
 

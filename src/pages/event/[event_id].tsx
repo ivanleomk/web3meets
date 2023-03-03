@@ -126,7 +126,7 @@ export const getStaticProps: GetServerSideProps = async (ctx) => {
     props: {
       event: data,
     },
-    // Every 10 mins we refresh cache i guess TODO: Enable manual refresh of cache.
+    // Every 10 mins we refresh cache i guess TODO:
     revalidate: 600,
   };
 };

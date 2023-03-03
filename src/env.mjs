@@ -10,6 +10,7 @@ const server = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
   SUPABASE_SERVICE_ROLE: z.string(),
+  MY_SECRET_TOKEN: z.string(),
 });
 
 /**
@@ -35,6 +36,7 @@ const processEnv = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE,
   NEXT_PUBLIC_IMAGE_BUCKET: process.env.NEXT_PUBLIC_IMAGE_BUCKET,
+  MY_SECRET_TOKEN: process.env.MY_SECRET_TOKEN,
 };
 
 // Don't touch the part below
