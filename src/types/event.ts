@@ -62,7 +62,7 @@ export const eventObjectSchema = z.object({
     value: z.string().uuid(),
     label: z.string(),
   }),
-  fallback_name: z.union([z.string(), z.string().nullable()]),
+  fallback_name: z.union([z.string(), z.any().nullable()]),
   online: z.nativeEnum(eventLocation),
   city: z.object({
     label: z.nativeEnum(City),

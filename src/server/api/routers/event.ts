@@ -452,8 +452,7 @@ export const eventRouter = createTRPCRouter({
         void NextResponse.revalidate(`/event/${insertEventOp.event_id}`);
         void NextResponse.revalidate(`/partner/${partner_id}`);
         void NextResponse.revalidate(`/`);
-
-        return insertEventOp;
       }
+      return insertEventOp;
     }),
 });

@@ -254,9 +254,9 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
           {watch("partner_id")?.value ===
           process.env.NEXT_PUBLIC_NONE_PARTNER ? (
             <Input
-              subtitle="Which organisation is organising this event"
+              subtitle="Please provide a name for the organization that will be organising this event."
               label="Organisation name"
-              errorMessage={errors?.fallback_name}
+              errorMessage={undefined}
               htmlFor="fallback name"
               autocomplete=""
               type="text"

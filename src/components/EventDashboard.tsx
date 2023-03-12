@@ -45,9 +45,11 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
       toast.warning("Unable to save event data. Please try again.");
       return;
     }
-
+    console.log(res);
     if (!res) {
-      throw new Error("Unable to update event data. Please try again later");
+      toast.warning("Unable to update event data. Please try again later");
+
+      return;
     }
 
     const event_id = res.event_id;
