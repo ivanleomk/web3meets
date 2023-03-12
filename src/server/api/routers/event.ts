@@ -31,13 +31,12 @@ export const eventRouter = createTRPCRouter({
 
       const hasAdminRights = await hasAdminPrivileges(user_id);
       const hasEventAdminPermission = await isEventAdmin(user_id, event_id);
-      console.log(hasAdminRights, hasEventAdminPermission);
 
       // We determine if the user is registered as the event id registrar on the backend.
 
       if (!hasAdminRights && !hasEventAdminPermission) {
         // Non-Admin means we need to do more checksl
-        await isOrganizationAdmin(user_id, partner_id);
+        await isOrganizationAdmin(partner_id, user_id);
         await isOrganizationEvent(partner_id, event_id);
       }
 
@@ -124,7 +123,7 @@ export const eventRouter = createTRPCRouter({
 
       if (!hasAdminRights && !hasEventAdminPermission) {
         // Non-Admin means we need to do more checksl
-        await isOrganizationAdmin(user_id, partner_id);
+        await isOrganizationAdmin(partner_id, user_id);
         await isOrganizationEvent(partner_id, event_id);
       }
 
@@ -250,8 +249,16 @@ export const eventRouter = createTRPCRouter({
       const { userId: user_id, NextResponse } = ctx;
       const { event_id, partner_id } = input;
 
-      // First we validate that for this specific partner id, user has admin rights
-      await isOrganizationAdmin(partner_id, user_id);
+      const hasAdminRights = await hasAdminPrivileges(user_id);
+      const hasEventAdminPermission = await isEventAdmin(user_id, event_id);
+
+      // We determine if the user is registered as the event id registrar on the backend.
+
+      if (!hasAdminRights && !hasEventAdminPermission) {
+        // Non-Admin means we need to do more checksl
+        await isOrganizationAdmin(partner_id, user_id);
+        await isOrganizationEvent(partner_id, event_id);
+      }
 
       // Now we delete the event - associated images should be deleted accordingly.
       const { data, error } = await adminServerSupabaseInstance
@@ -323,7 +330,8 @@ export const eventRouter = createTRPCRouter({
       ? userUnapprovedEvents
       : [];
 
-    return userApprovedEvents.concat(userUnapprovedEventsCoerced);
+    const res = userApprovedEvents.concat(userUnapprovedEventsCoerced);
+    return res;
   }),
   unauthorizedCreateNewEvent: publicProcedure
     .input(eventObjectSchema)

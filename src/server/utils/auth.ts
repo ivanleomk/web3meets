@@ -11,7 +11,8 @@ export const hasAdminPrivileges = async (user_id: string) => {
   if (error || !data) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "User does not have valid permissions. Please try again later",
+      message:
+        "User does not have valid admin permissions. Please try again later",
     });
   }
   return data.admin;
@@ -43,19 +44,18 @@ export const isOrganizationAdmin = async (
   if (!partner_id) {
     return hasAdminPrivileges(user_id);
   }
-
   const { data: userPermission, error: userPermissionsError } =
     await adminServerSupabaseInstance
       .from("UserPartnerOwnership")
       .select("*")
-      .eq("partner_id", partner_id)
       .eq("user_id", user_id)
       .maybeSingle();
 
   if (!userPermission || userPermissionsError) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "User does not have valid permissions. Please try again later",
+      message:
+        "User does not have valid Organization permissions. Please try again later",
     });
   }
 };
@@ -75,7 +75,8 @@ export const isOrganizationEvent = async (
   if (!eventInformation || eventInformationError) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "User does not have valid permissions. Please try again later",
+      message:
+        "User does not have valid Event permissions. Please try again later",
     });
   }
 };

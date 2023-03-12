@@ -80,6 +80,10 @@ const EventRow = ({ data }: Props) => {
             variant="outline"
             color="gray"
             onClickHandler={() => {
+              console.log({
+                event_id: event_id,
+                partner_id: partner_id as string,
+              });
               deletePromotionalMaterial({
                 event_id: event_id,
                 partner_id: partner_id as string,
