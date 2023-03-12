@@ -7,8 +7,9 @@ import type {
   Merge,
   FieldErrorsImpl,
 } from "react-hook-form";
-import { Controller, type PathValue } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 
 type Props<T extends FieldValues> = {
   control: Control<T>;
@@ -24,6 +25,7 @@ type Props<T extends FieldValues> = {
     value: string;
     label: string;
   }[];
+  creatable?: boolean;
 };
 
 const InputSelect = <T extends FieldValues>({
@@ -33,6 +35,7 @@ const InputSelect = <T extends FieldValues>({
   subtitle,
   errorMessage,
   options,
+  creatable = false,
 }: Props<T>) => {
   return (
     <div>
@@ -44,6 +47,18 @@ const InputSelect = <T extends FieldValues>({
         control={control}
         name={name}
         render={({ field: { onChange, onBlur, value } }) => {
+          if (creatable) {
+            return (
+              <CreatableSelect
+                value={value}
+                onChange={(e) => onChange(e)}
+                onBlur={onBlur}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                options={options}
+              />
+            );
+          }
           return (
             <Select
               value={value}
@@ -58,7 +73,7 @@ const InputSelect = <T extends FieldValues>({
       />
       {errorMessage ? (
         <p className="mt-2 text-sm text-red-600">
-          {errorMessage.message?.toString as unknown as string}
+          {errorMessage.message as unknown as string}
         </p>
       ) : null}
     </div>

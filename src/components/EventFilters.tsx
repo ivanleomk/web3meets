@@ -45,7 +45,6 @@ const EventFilters = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="" />
       <InputDatePicker
         control={control}
         name="starts_at"
@@ -76,6 +75,7 @@ const EventFilters = ({
           eventTypeFilter.any,
           eventTypeFilter.free,
           eventTypeFilter.paid,
+          "Both",
         ].map((item) => {
           return {
             id: item,

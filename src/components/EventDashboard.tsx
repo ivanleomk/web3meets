@@ -46,6 +46,10 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
       return;
     }
 
+    if (!res) {
+      throw new Error("Unable to update event data. Please try again later");
+    }
+
     const event_id = res.event_id;
     const files = submitData.images as File[];
     // First we create the new folder
@@ -121,9 +125,6 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
         onClickHandler={() => {
           setInitialMode(initialMode === "Create" ? "View" : "Create");
         }}
-        // buttonText={
-        //   initialMode === "Create" ? "View all events" : "Create new event"
-        // }
       >
         {null}
       </SectionHeader>

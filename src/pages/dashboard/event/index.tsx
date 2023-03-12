@@ -22,7 +22,7 @@ import {
   Country,
   eventCreationInputType,
   eventLocation,
-  eventType,
+  eventPaymentType,
 } from "../../../types/event";
 import { EVENT_IMAGE_BUCKET } from "../../../types/storage";
 import { api } from "../../../utils/api";
@@ -63,7 +63,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        toast.warning(err);
       });
   }, [EventInformation.PromotionalMaterial]);
 
@@ -93,15 +93,22 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       value: EventInformation.country as Country,
       label: EventInformation.country as Country,
     },
-    event_type: EventInformation.event_type as eventType,
+    event_type: EventInformation.event_type as eventPaymentType,
     partner_id: {
       value: EventInformation.partner_id,
-      label: PartnerInformation.partner_name,
+      label:
+        EventInformation.partner_id === process.env.NEXT_PUBLIC_NONE_PARTNER
+          ? "Input My Own"
+          : PartnerInformation.partner_name,
     },
     online: EventInformation.online
       ? eventLocation.online
       : eventLocation.offline,
     images: files,
+    category: {
+      value: EventInformation.category,
+      label: EventInformation.category,
+    },
   };
 
   return (
@@ -130,7 +137,8 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
                 event_id as string
               );
             } catch (err) {
-              toast.warning("Unable to update events");
+              toast.warning("Unable to update event data");
+              return;
             }
             toast.success("Succesfully updated event details.");
           }}
@@ -167,8 +175,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       .eq("event_id", event_id)
       .maybeSingle();
 
-  console.log(EventInformation, EventInformationError);
-
   if (!EventInformation || EventInformationError) {
     return {
       redirect: {
@@ -184,7 +190,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     .from("User")
     .select("*")
     .eq("user_id", user_id)
-    .single();
+    .maybeSingle();
 
   if (error) {
     return {
@@ -196,7 +202,20 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  if (data?.admin) {
+  if (
+    EventInformation.partner_id === process.env.NEXT_PUBLIC_NONE_PARTNER &&
+    EventInformation.user_id != user_id
+  ) {
+    return {
+      redirect: {
+        destination:
+          "/dashboard?redirected_from=event_page&reason=invalid_credentials",
+        permanent: false,
+      },
+    };
+  }
+
+  if (data?.admin || EventInformation.user_id == user_id) {
     return {
       props: {
         EventInformation,

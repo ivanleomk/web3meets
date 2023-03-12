@@ -8,8 +8,6 @@ export const hasAdminPrivileges = async (user_id: string) => {
     .eq("user_id", user_id)
     .maybeSingle();
 
-  console.log(data, error);
-
   if (error || !data) {
     throw new TRPCError({
       code: "BAD_REQUEST",
@@ -17,6 +15,25 @@ export const hasAdminPrivileges = async (user_id: string) => {
     });
   }
   return data.admin;
+};
+
+export const isEventAdmin = async (user_id: string, event_id: string) => {
+  const { data: eventUserIdQuery, error: eventUserIdQueryError } =
+    await adminServerSupabaseInstance
+      .from("Event")
+      .select("*")
+      .eq("event_id", event_id)
+      .maybeSingle();
+
+  if (!eventUserIdQuery || eventUserIdQueryError) {
+    console.log(eventUserIdQuery, eventUserIdQueryError);
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Unable to update event",
+    });
+  }
+
+  return eventUserIdQuery.user_id == user_id;
 };
 
 export const isOrganizationAdmin = async (

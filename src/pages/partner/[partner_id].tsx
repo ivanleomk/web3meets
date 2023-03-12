@@ -25,6 +25,27 @@ type Props = {
   users: UserPartnerOwnershipWithUser[];
 };
 
+// Event Information
+// Event Title:
+// RSVP Link:
+// Organizing Partner:
+
+// Event Location
+// Venue Name: [Name of Venue]
+// Address: [Full Address of Venue]
+// City: [City Name]
+// Country: [Country Name]
+// Online/Offline: [Specify whether the event is online or offline or hybrid]
+
+// Event Date and Time
+// Event Start Time: [Date and Time of Event Start]
+// Event End Time: [Date and Time of Event End]
+
+// Event Details
+// Event Type: [Specify the type of event, e.g. conference, workshop, networking event, etc.]
+// Remarks: [Include any additional information about the event, such as a schedule or speaker lineup]
+// Image File: [Include an image file to promote the event, if available]
+
 const PartnerPage = ({ users, events, partner }: Props) => {
   return (
     <div className="mx-auto max-w-6xl text-left">
@@ -58,8 +79,6 @@ export const getStaticProps: GetServerSideProps = async (ctx) => {
     .from("Event")
     .select("*,Partner(*),PromotionalMaterial(*)")
     .eq("partner_id", partner_id);
-
-  console.log(data);
 
   const { data: partner_users, error: partner_users_error } =
     await adminServerSupabaseInstance

@@ -22,7 +22,6 @@ type Props = {
 };
 
 const Event = ({ event }: Props) => {
-  console.log(event);
   return (
     <>
       <Button
@@ -77,7 +76,10 @@ const Event = ({ event }: Props) => {
               aria-hidden="true"
             />
 
-            <EventCardLocation city={event.city} country={event.country} />
+            <EventCardLocation
+              city={event.city as string}
+              country={event.country as string}
+            />
           </div>
 
           <div className="mt-4 flex items-center space-x-4">

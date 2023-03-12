@@ -27,8 +27,6 @@ export const userRouter = createTRPCRouter({
         .select("*")
         .maybeSingle();
 
-      console.log(data, error);
-
       if (!data || error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

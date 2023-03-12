@@ -152,6 +152,7 @@ export const Button = ({
         }
       }}
       className={styling}
+      type="button"
     >
       {isSubmitting ? (
         <>

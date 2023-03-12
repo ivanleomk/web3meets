@@ -1,6 +1,6 @@
 import { add } from "date-fns";
 import { type EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
-import { eventType } from "../types/event";
+import { eventPaymentType } from "../types/event";
 import {
   eventLocationFilter,
   eventTypeFilter,
@@ -59,7 +59,7 @@ export const filterEventsByEventPrice = (
 
   return events.filter((item) => {
     const parsedEventType =
-      item.event_type == eventType.free
+      item.event_type == eventPaymentType.free
         ? eventTypeFilter.free
         : eventTypeFilter.paid;
     return parsedEventType == filterOption.event_type;
@@ -78,7 +78,6 @@ export const filterEventsByStartTime = (
 
   return events.filter((item) => {
     const itemStart = new Date(item.starts_at).getHours();
-    console.log("parsed it as ", itemStart);
     return start <= itemStart && itemStart <= end;
   });
 };

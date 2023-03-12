@@ -125,7 +125,7 @@ const PartnerPage = ({
                   // User must submit a valid url for changes to be commited so this will always be non-null
                   website: PartnerMetadata.website,
                   telegram_handle: PartnerMetadata.telegram_handle,
-                  bio: PartnerMetadata.bio,
+                  bio: PartnerMetadata.bio ?? undefined,
                 }
               : undefined
           }

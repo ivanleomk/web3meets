@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export enum eventType {
+export enum eventPaymentType {
   free = "Free",
   paid = "Paid",
   mix = "Free Tickets with Paid option",
@@ -9,6 +9,7 @@ export enum eventType {
 export enum eventLocation {
   online = "Online",
   offline = "Offline",
+  hybrid = "hybrid",
 }
 
 export enum City {
@@ -53,15 +54,15 @@ export const eventObjectSchema = z.object({
   event_title: z.string().min(5, {
     message: "Event name must be at least 5 characters long",
   }),
-  event_type: z.nativeEnum(eventType),
+  event_type: z.nativeEnum(eventPaymentType),
   event_description: z.string().nullish(),
 
-  // We can submit empty events here -> But only users with admin rights can do this. We verify this before submitting
-  partner_id: z.union([
-    z.string().uuid(),
-    // Allow it to be nullable
-    z.any().nullable(),
-  ]),
+  // We allow for invalid partners
+  partner_id: z.object({
+    value: z.string().uuid(),
+    label: z.string(),
+  }),
+  fallback_name: z.union([z.string(), z.string().nullable()]),
   online: z.nativeEnum(eventLocation),
   city: z.object({
     label: z.nativeEnum(City),
@@ -79,20 +80,67 @@ export const eventObjectSchema = z.object({
     z.string().nullish(),
   ]),
   location: z.string().nullish(),
+  category: z.object({
+    value: z.string(),
+    label: z.string(),
+  }),
 });
+
+export const eventCategories = [
+  "Hackathon",
+  "Meetup",
+  "Seminar",
+  "Exhibition",
+  "Conference",
+  "Workshop",
+  "Twitter Spaces",
+  "Networking",
+  "Panel",
+  "Demo Day",
+  "Party",
+  "Focus Group Discussion",
+  "Education Event",
+  "Social Event",
+];
 
 export const eventCreationSchemaMerge = eventObjectSchema.merge(
   eventMediaFilesSchema
 );
 
-export const eventCreationSchema = eventCreationSchemaMerge.refine(
-  (schema) => {
-    return schema.starts_at < schema.ends_at;
-  },
-  {
-    message: "Event start time must be before event end time",
-    path: ["starts_at"],
-  }
-);
+export const eventCreationSchema = eventCreationSchemaMerge
+  .refine(
+    (schema) => {
+      return schema.starts_at < schema.ends_at;
+    },
+    {
+      message: "Event start time must be before event end time",
+      path: ["starts_at"],
+    }
+  )
+  .refine(
+    (schema) => {
+      if (
+        (schema.city.value == City.NA && schema.country.value == Country.NA) ||
+        (schema.city.value == City.Singapore &&
+          schema.country.value == Country.Singapore)
+      ) {
+        return true;
+      }
+      return false;
+    },
+    {
+      message: "Invalid pairs for country and city",
+      path: ["city"],
+    }
+  )
+  .transform((schema) => {
+    return {
+      ...schema,
+      fallback_name:
+        schema.partner_id.value === process.env.NEXT_PUBLIC_NONE_PARTNER
+          ? schema.fallback_name
+          : null,
+    };
+  });
 
 export type eventCreationInputType = z.infer<typeof eventCreationSchema>;

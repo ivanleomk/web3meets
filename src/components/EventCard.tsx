@@ -14,7 +14,7 @@ type Props = {
 const EventCard = ({ event }: Props) => {
   return (
     <Link href={`/event/${event.event_id}`}>
-      <div className="grid cursor-pointer grid-cols-12">
+      <div className="my-4 grid cursor-pointer grid-cols-12">
         <div className="col-span-12 sm:col-span-5">
           <EventCardBannerImage
             eventName={event.event_title}
@@ -30,7 +30,8 @@ const EventCard = ({ event }: Props) => {
                 </div>
                 <p className="mt-0.5 text-xs text-gray-700">
                   by{" "}
-                  {event.Partner
+                  {event.Partner.partner_id !==
+                  process.env.NEXT_PUBLIC_NONE_PARTNER
                     ? event.Partner.partner_name
                     : event.fallback_name}
                 </p>
@@ -46,7 +47,10 @@ const EventCard = ({ event }: Props) => {
               <div className="mx-4 text-xs font-semibold text-gray-500">–</div>
               <EventCardDateTime eventTime={event.ends_at} />
             </div>
-            <EventCardLocation city={event.city} country={event.country} />
+            <EventCardLocation
+              city={event.city as string}
+              country={event.country as string}
+            />
             <div className="mt-4 flex justify-between">
               <div className="flex items-center">
                 <div className="w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">

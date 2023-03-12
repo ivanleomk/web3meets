@@ -9,8 +9,6 @@ type Props = {
 };
 
 const Home = ({ events }: Props) => {
-  console.log(events);
-
   return (
     <>
       <EventPage events={events} />
@@ -19,16 +17,17 @@ const Home = ({ events }: Props) => {
 };
 
 export async function getStaticProps() {
-  const { data, error } = await adminServerSupabaseInstance
+  const { data } = await adminServerSupabaseInstance
     .from("Event")
     .select("*,Partner(*),PromotionalMaterial(*)")
-    .gt("starts_at", convertDateToTimestamptz(new Date()));
+    .gt("starts_at", convertDateToTimestamptz(new Date()))
+    .eq("approved", true);
 
   return {
     props: {
       events: data,
     },
-    revalidate: 600, // every 10 mins
+    revalidate: process.env.NODE_ENV === "development" ? true : 600, // every 10 mins
   };
 }
 
