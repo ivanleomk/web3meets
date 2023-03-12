@@ -370,9 +370,11 @@ export const eventRouter = createTRPCRouter({
           .maybeSingle();
 
       if (insertEventOpError || !insertEventOp) {
+        console.log(insertEventOpError);
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
+            insertEventOpError?.message ??
             "Unable to create new event. Please try again later or contact support if this error persists",
         });
       }

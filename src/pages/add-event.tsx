@@ -24,36 +24,40 @@ const AddEvent = () => {
         initialValue={undefined}
         buttonText="Submit New Event"
         onSubmit={async (event) => {
-          const res = await createEvent(event);
-          const { event_id } = res;
+          try {
+            const res = await createEvent(event);
+            const { event_id } = res;
+            const fileUploads = event.images?.map((file: File, idx: number) => {
+              const fileExtension = file.name.split(".").pop();
+              const filePath = `${event_id}/${idx}.${fileExtension}`;
+              return supabaseClient.storage
+                .from(EVENT_IMAGE_BUCKET)
+                .upload(filePath, file);
+            });
+            const fileUploadResult = await Promise.all(fileUploads);
+            const fileNames = fileUploadResult?.map((file, id) => {
+              if (file.error) {
+                toast.warning(
+                  "Unable to upload event promotional images. Please try uploading them again."
+                );
+              }
+              const filePath = file.data?.path;
+              return {
+                image_url: `${process.env.NEXT_PUBLIC_IMAGE_BUCKET}/${filePath}`,
+                file_name: event.images[id]?.name as string,
+              };
+            });
 
-          const fileUploads = event.images?.map((file: File, idx: number) => {
-            const fileExtension = file.name.split(".").pop();
-            const filePath = `${event_id}/${idx}.${fileExtension}`;
-            return supabaseClient.storage
-              .from(EVENT_IMAGE_BUCKET)
-              .upload(filePath, file);
-          });
-          const fileUploadResult = await Promise.all(fileUploads);
-          const fileNames = fileUploadResult?.map((file, id) => {
-            if (file.error) {
-              toast.warning(
-                "Unable to upload event promotional images. Please try uploading them again."
-              );
-            }
-            const filePath = file.data?.path;
-            return {
-              image_url: `${process.env.NEXT_PUBLIC_IMAGE_BUCKET}/${filePath}`,
-              file_name: event.images[id]?.name as string,
-            };
-          });
-
-          await uploadImages({
-            images: fileNames,
-            event_id,
-          });
-
-          toast.success("Succesfully created event.");
+            await uploadImages({
+              images: fileNames,
+              event_id,
+            });
+            toast.success("Succesfully created event.");
+          } catch {
+            toast.warning(
+              "Unable to create new event. Please try again later."
+            );
+          }
         }}
       />
     </SectionHeader>
