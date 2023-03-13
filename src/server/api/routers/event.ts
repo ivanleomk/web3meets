@@ -71,8 +71,8 @@ export const eventRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/event/${event_id}`);
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/event/${event_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
       void NextResponse.revalidate(`/`);
 
       return data;
@@ -233,7 +233,7 @@ export const eventRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/event/${event_id}`);
+      // void NextResponse.revalidate(`/event/${event_id}`);
       void NextResponse.revalidate(`/`);
 
       return data;
@@ -277,7 +277,7 @@ export const eventRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
       void NextResponse.revalidate(`/`);
 
       return data;
@@ -449,8 +449,8 @@ export const eventRouter = createTRPCRouter({
       }
 
       if (partner_id.value !== process.env.NEXT_PUBLIC_NONE_PARTNER) {
-        void NextResponse.revalidate(`/event/${insertEventOp.event_id}`);
-        void NextResponse.revalidate(`/partner/${partner_id}`);
+        // void NextResponse.revalidate(`/event/${insertEventOp.event_id}`);
+        // void NextResponse.revalidate(`/partner/${partner_id}`);
         void NextResponse.revalidate(`/`);
       }
       return insertEventOp;
