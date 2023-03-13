@@ -57,6 +57,7 @@ export default function EventPage({ events }: Props) {
     formState: { errors },
     control,
     watch,
+    getValues,
   } = useForm<refinedEventFilterType>({
     resolver: zodResolver(refinedEventFilterSchema),
     defaultValues: initialState,
@@ -79,6 +80,7 @@ export default function EventPage({ events }: Props) {
               handleSubmit={handleSubmit}
               onSubmit={submitHandler}
               watch={watch}
+              getValues={getValues}
             />
           </div>
         </MobileDialogPanel>
@@ -117,6 +119,7 @@ export default function EventPage({ events }: Props) {
                   handleSubmit={handleSubmit}
                   onSubmit={submitHandler}
                   watch={watch}
+                  getValues={getValues}
                 />
               </div>
 

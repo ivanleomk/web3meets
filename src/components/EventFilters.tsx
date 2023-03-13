@@ -1,9 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { add } from "date-fns";
 import React, { useEffect } from "react";
 import {
   Control,
   FieldErrors,
   useForm,
+  UseFormGetValues,
   UseFormHandleSubmit,
   UseFormWatch,
 } from "react-hook-form";
@@ -25,6 +27,7 @@ type Props = {
   control: Control<refinedEventFilterType>;
   errors: FieldErrors<refinedEventFilterType>;
   resetHandler: () => void;
+  getValues: UseFormGetValues<refinedEventFilterType>;
 };
 
 const EventFilters = ({
@@ -34,6 +37,7 @@ const EventFilters = ({
   control,
   errors,
   resetHandler,
+  getValues,
 }: Props) => {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -46,6 +50,7 @@ const EventFilters = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <InputDatePicker
+        minDate={new Date()}
         control={control}
         name="starts_at"
         label={"Start Date"}
@@ -58,6 +63,11 @@ const EventFilters = ({
       <InputDatePicker
         control={control}
         name="ends_at"
+        minDate={
+          getValues("starts_at")
+            ? add(getValues("starts_at") as Date, { days: 1 })
+            : null
+        }
         label={"End Date"}
         subtitle={""}
         errorMessage={errors?.ends_at}
@@ -74,6 +84,7 @@ const EventFilters = ({
           eventTypeFilter.any,
           eventTypeFilter.free,
           eventTypeFilter.paid,
+          eventTypeFilter.mix,
         ].map((item) => {
           return {
             id: item,

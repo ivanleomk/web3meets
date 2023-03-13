@@ -4,6 +4,7 @@ export enum eventTypeFilter {
   free = "Free",
   paid = "Paid",
   any = "Any",
+  mix = "Mix",
 }
 
 export enum eventLocationFilter {

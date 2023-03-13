@@ -182,11 +182,19 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
   const { partners } = useOrganizationContext();
 
   useEffect(() => {
-    setValue("partner_id", {
-      value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
-      label: "Input my own",
-    });
-  }, [setValue]);
+    if (isAuthenticated && partners.length > 0) {
+      const chosenPartner = partners.at(0);
+      setValue("partner_id", {
+        value: chosenPartner?.Partner.partner_name as string,
+        label: chosenPartner?.partner_id as string,
+      });
+    } else {
+      setValue("partner_id", {
+        value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
+        label: "Input my own",
+      });
+    }
+  }, [setValue, isAuthenticated, partners]);
 
   return (
     <>

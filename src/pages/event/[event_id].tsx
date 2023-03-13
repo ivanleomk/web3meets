@@ -138,6 +138,9 @@ export const getStaticProps: GetServerSideProps = async (ctx) => {
 };
 
 export async function getStaticPaths() {
+  return {
+    paths: [],
+  };
   if (process.env.NODE_ENV === "development") {
     return {
       paths: [],

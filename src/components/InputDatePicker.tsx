@@ -11,6 +11,7 @@ type Props<T extends FieldValues> = {
   errorMessage: FieldError | undefined;
   dateFormat?: string;
   showTimeSelect?: boolean;
+  minDate?: null | Date;
 };
 
 const InputDatePicker = <T extends FieldValues>({
@@ -21,6 +22,7 @@ const InputDatePicker = <T extends FieldValues>({
   errorMessage,
   showTimeSelect = true,
   dateFormat = "MMMM d, yyyy hh:mm aa",
+  minDate = null,
 }: Props<T>) => {
   return (
     <div>
@@ -34,6 +36,7 @@ const InputDatePicker = <T extends FieldValues>({
         render={({ field: { onChange, value } }) => {
           return (
             <DatePicker
+              minDate={minDate}
               selected={value}
               onChange={onChange}
               className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"

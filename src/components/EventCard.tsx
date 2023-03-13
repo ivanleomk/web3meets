@@ -13,7 +13,11 @@ type Props = {
 
 const EventCard = ({ event }: Props) => {
   return (
-    <Link href={`/event/${event.event_id}`}>
+    <a
+      href={event.rsvp_link as string}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
       <div className="my-4 grid cursor-pointer grid-cols-12">
         <div className="col-span-12 sm:col-span-5">
           <EventCardBannerImage
@@ -57,7 +61,7 @@ const EventCard = ({ event }: Props) => {
                   {event.event_type}
                 </div>
                 <div className="ml-1 w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
-                  {event.online ? "Online" : "Offline"}
+                  {event.online}
                 </div>
                 <div className="ml-1 w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
                   {event.category}
@@ -67,7 +71,7 @@ const EventCard = ({ event }: Props) => {
           </div>
         </div>
       </div>
-    </Link>
+    </a>
   );
 };
 

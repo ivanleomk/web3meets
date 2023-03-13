@@ -42,10 +42,7 @@ export const filterEventByEventLocation = (
   }
 
   return events.filter((item) => {
-    const parsedLocation = item.online
-      ? eventLocationFilter.online
-      : eventLocationFilter.offline;
-    return parsedLocation === filterOption.event_location;
+    return item.online === filterOption.event_location;
   });
 };
 
@@ -58,11 +55,11 @@ export const filterEventsByEventPrice = (
   }
 
   return events.filter((item) => {
-    const parsedEventType =
-      item.event_type == eventPaymentType.free
-        ? eventTypeFilter.free
-        : eventTypeFilter.paid;
-    return parsedEventType == filterOption.event_type;
+    if (filterOption.event_type === eventTypeFilter.mix) {
+      return item.event_type === eventPaymentType.mix;
+    }
+
+    return item.event_type == filterOption.event_type;
   });
 };
 
