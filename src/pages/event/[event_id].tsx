@@ -137,40 +137,41 @@ export const getStaticProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export async function getStaticPaths() {
+export function getStaticPaths() {
   return {
     paths: [],
+    fallback: false,
   };
-  if (process.env.NODE_ENV === "development") {
-    return {
-      paths: [],
-      fallback: "blocking",
-    };
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   return {
+  //     paths: [],
+  //     fallback: "blocking",
+  //   };
+  // }
 
-  const { data, error } = await adminServerSupabaseInstance
-    .from("Event")
-    .select("*")
-    .order("starts_at", {
-      ascending: false,
-    });
+  // const { data, error } = await adminServerSupabaseInstance
+  //   .from("Event")
+  //   .select("*")
+  //   .order("starts_at", {
+  //     ascending: false,
+  //   });
 
-  if (!data || error) {
-    throw new Error("Unable to generate paths");
-  }
+  // if (!data || error) {
+  //   throw new Error("Unable to generate paths");
+  // }
 
-  const paths = data.map((item) => {
-    return {
-      params: {
-        event_id: item.event_id,
-      },
-    };
-  });
+  // const paths = data.map((item) => {
+  //   return {
+  //     params: {
+  //       event_id: item.event_id,
+  //     },
+  //   };
+  // });
 
-  return {
-    paths,
-    fallback: "blocking",
-  };
+  // return {
+  //   paths,
+  //   fallback: "blocking",
+  // };
 }
 
 export default Event;
