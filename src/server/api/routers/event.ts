@@ -51,7 +51,7 @@ export const eventRouter = createTRPCRouter({
           event_description: eventInformation.event_description
             ? eventInformation.event_description
             : undefined,
-          online: eventInformation.online === eventLocation.online,
+          online: eventInformation.online,
           partner_id: eventInformation.partner_id.value,
         };
 
@@ -362,7 +362,7 @@ export const eventRouter = createTRPCRouter({
             ends_at: convertDateToTimestamptz(ends_at),
             rsvp_link: rsvp_link,
             partner_id: partner_id.value,
-            online: online === eventLocation.online,
+            online: online,
             event_description: event_description
               ? event_description
               : undefined,
@@ -419,7 +419,7 @@ export const eventRouter = createTRPCRouter({
             ends_at: convertDateToTimestamptz(ends_at),
             rsvp_link: rsvp_link,
             partner_id: partner_id.value,
-            online: online === eventLocation.online,
+            online: online,
             event_description: event_description
               ? event_description
               : undefined,

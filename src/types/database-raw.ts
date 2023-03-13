@@ -48,7 +48,7 @@ export interface Database {
           fallback_name: string | null
           featured: boolean
           location: string | null
-          online: boolean | null
+          online: string
           our_pick: boolean
           partner_id: string
           partnered: boolean
@@ -72,7 +72,7 @@ export interface Database {
           fallback_name?: string | null
           featured?: boolean
           location?: string | null
-          online?: boolean | null
+          online: string
           our_pick?: boolean
           partner_id: string
           partnered?: boolean
@@ -96,7 +96,7 @@ export interface Database {
           fallback_name?: string | null
           featured?: boolean
           location?: string | null
-          online?: boolean | null
+          online?: string
           our_pick?: boolean
           partner_id?: string
           partnered?: boolean

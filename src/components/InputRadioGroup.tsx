@@ -77,13 +77,13 @@ const InputRadioGroup = <T extends FieldValues>({
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between">
         <h2 className="text-sm font-medium text-gray-900">{label}</h2>
       </div>
       <Controller
         control={control}
         name={name}
-        render={({ field: { onChange, onBlur, name, ref, value } }) => {
+        render={({ field: { onChange, onBlur, name, value } }) => {
           return (
             <RadioGroup
               onChange={onChange}
@@ -92,7 +92,7 @@ const InputRadioGroup = <T extends FieldValues>({
               name={name}
               className="mt-2"
             >
-              <div className="grid grid-cols-3 gap-1 text-left ">
+              <div className="grid grid-cols-2 gap-1 text-left ">
                 {options &&
                   options.map((option) => {
                     return (

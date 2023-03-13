@@ -9,7 +9,7 @@ export enum eventPaymentType {
 export enum eventLocation {
   online = "Online",
   offline = "Offline",
-  hybrid = "hybrid",
+  hybrid = "Hybrid",
 }
 
 export enum City {

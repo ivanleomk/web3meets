@@ -69,13 +69,11 @@ const EventFilters = ({
         control={control}
         name="event_type"
         label="Event Type"
-        // subtitle="Do people need to pay for the event?"
         subtitle=""
         options={[
           eventTypeFilter.any,
           eventTypeFilter.free,
           eventTypeFilter.paid,
-          "Both",
         ].map((item) => {
           return {
             id: item,
@@ -95,6 +93,7 @@ const EventFilters = ({
           eventLocationFilter.any,
           eventLocationFilter.online,
           eventLocationFilter.offline,
+          eventLocationFilter.hybrid,
         ].map((item) => {
           return {
             id: item,
