@@ -99,7 +99,7 @@ const PartnerPage = ({
   const hasOrganizationAdminRights = organizationIsApproved && userIsApproved;
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto mb-10 max-w-7xl">
       <Button href="/dashboard" variant="outline" text="Return to Dashboard" />
 
       <h2 className="mt-10 mb-2 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">

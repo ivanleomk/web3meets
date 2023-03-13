@@ -29,7 +29,7 @@ const Settings = () => {
   });
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl">
       <SectionHeader
         title="Account Details"
         subtitle="Update your account details here"

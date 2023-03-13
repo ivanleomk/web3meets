@@ -26,7 +26,7 @@ const Dashboard = () => {
   useAuthCheck(redirectedFrom as string);
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl">
       <h2 className="my-10 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
         Dashboard
       </h2>

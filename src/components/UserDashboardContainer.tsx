@@ -73,7 +73,7 @@ export default function UserDashboard({
   }
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl">
       <div className="sm:hidden">
         <label htmlFor="tabs" className="sr-only">
           Select a tab

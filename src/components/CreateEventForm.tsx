@@ -197,7 +197,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
   }, [setValue, isAuthenticated, partners]);
 
   return (
-    <>
+    <div className="mx-auto max-w-7xl">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-20">
         <FormBox sectionHeader="Event Information">
           <Input
@@ -411,7 +411,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
 
         <SubmitButton isSubmitting={isSubmitting} buttonText={buttonText} />
       </form>
-    </>
+    </div>
   );
 };
 
