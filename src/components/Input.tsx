@@ -28,7 +28,7 @@ const Input = forwardRef(
       <div>
         <label
           htmlFor={htmlFor}
-          className="block text-sm font-medium text-gray-700"
+          className="text-base font-semibold leading-6 text-gray-900"
         >
           {label}
         </label>

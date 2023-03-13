@@ -52,12 +52,15 @@ const EventCard = ({ event }: Props) => {
               country={event.country as string}
             />
             <div className="mt-4 flex justify-between">
-              <div className="flex items-center">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-4">
                 <div className="w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
                   {event.event_type}
                 </div>
                 <div className="ml-1 w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
                   {event.online ? "Online" : "Offline"}
+                </div>
+                <div className="ml-1 w-fit rounded-md border  bg-gray-200 bg-opacity-50 p-1 px-2 text-[12px] text-gray-700">
+                  {event.category}
                 </div>
               </div>
             </div>

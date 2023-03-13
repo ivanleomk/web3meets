@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect } from "react";
 import { FieldError, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useOrganizationContext } from "../context/OrganizationContext";
+import { useUserContext } from "../context/UserContext";
 import { Event } from "../types/database";
 import {
   type eventCreationInputType,
@@ -44,6 +45,8 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
     resolver: zodResolver(eventCreationSchema),
     defaultValues: initialValue ? initialValue : undefined,
   });
+
+  const { isAuthenticated } = useUserContext();
 
   const { mutate, isLoading } = api.crawler.getEventDataFromUrl.useMutation({
     onSuccess: async (data) => {
@@ -178,31 +181,16 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
 
   const { partners } = useOrganizationContext();
 
+  useEffect(() => {
+    setValue("partner_id", {
+      value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
+      label: "Input my own",
+    });
+  }, [setValue]);
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-20">
-        <div className="flex w-full justify-end">
-          {watch("rsvp_link") ? (
-            <Button
-              variant="outline"
-              color="gray"
-              submitType={false}
-              text="Crawl Data from RSVP Link"
-              onClickHandler={() => {
-                const rsvp_link = getValues("rsvp_link");
-                if (!rsvp_link?.includes("eventbrite")) {
-                  toast.warning("Unable to crawl data from given url");
-                  return;
-                }
-                mutate({
-                  url: rsvp_link,
-                });
-              }}
-              isSubmitting={isLoading}
-              disabled={isLoading}
-            />
-          ) : null}
-        </div>
         <FormBox sectionHeader="Event Information">
           <Input
             subtitle="What is your event called?"
@@ -213,46 +201,72 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
             type="text"
             {...register("event_title")}
           />
-          <Input
-            subtitle="Where do people RSVP for this event?"
-            label="RSVP Link"
-            errorMessage={errors?.rsvp_link}
-            htmlFor="RSVP Link"
-            autocomplete=""
-            type="text"
-            {...register("rsvp_link")}
-          />
-          <InputSelect
-            control={control}
-            name="partner_id"
-            label="Organizing Partner"
-            subtitle="Which organization is organizing this event?"
-            errorMessage={errors?.partner_id}
-            options={
-              !partners
-                ? [
-                    {
-                      label: "Input my own",
-                      value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
-                    },
-                  ]
-                : [
-                    {
-                      label: "Input my own",
-                      value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
-                    },
-                  ].concat(
-                    partners?.map((item) => {
-                      return {
-                        label: item.Partner.partner_name,
-                        value: item.partner_id,
-                      };
-                    })
-                  )
-            }
-          />
+          <div>
+            <Input
+              subtitle="Where do people RSVP for this event?"
+              label="RSVP Link"
+              errorMessage={errors?.rsvp_link}
+              htmlFor="RSVP Link"
+              autocomplete=""
+              type="text"
+              {...register("rsvp_link")}
+            />
+            <div className="my-4 flex justify-end">
+              {watch("rsvp_link") ? (
+                <Button
+                  variant="outline"
+                  color="gray"
+                  submitType={false}
+                  text="Retrieve Data from RSVP Link"
+                  onClickHandler={() => {
+                    const rsvp_link = getValues("rsvp_link");
+                    if (!rsvp_link?.includes("eventbrite")) {
+                      toast.warning("Unable to retrieve data from given url");
+                      return;
+                    }
+                    mutate({
+                      url: rsvp_link,
+                    });
+                  }}
+                  isSubmitting={isLoading}
+                  disabled={isLoading}
+                />
+              ) : null}
+            </div>
+          </div>
+          {isAuthenticated ? (
+            <InputSelect
+              control={control}
+              name="partner_id"
+              label="Organizing Partner"
+              subtitle="Which organization is organizing this event?"
+              errorMessage={errors?.partner_id}
+              options={
+                !partners
+                  ? [
+                      {
+                        label: "Input my own",
+                        value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
+                      },
+                    ]
+                  : [
+                      {
+                        label: "Input my own",
+                        value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
+                      },
+                    ].concat(
+                      partners?.map((item) => {
+                        return {
+                          label: item.Partner.partner_name,
+                          value: item.partner_id,
+                        };
+                      })
+                    )
+              }
+            />
+          ) : null}
           {watch("partner_id")?.value ===
-          process.env.NEXT_PUBLIC_NONE_PARTNER ? (
+            process.env.NEXT_PUBLIC_NONE_PARTNER || !isAuthenticated ? (
             <Input
               subtitle="Please provide a name for the organization that will be organising this event."
               label="Organisation name"
@@ -308,14 +322,16 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
             name="online"
             label="Online Event"
             subtitle="Is this an online event"
-            options={[eventLocation.online, eventLocation.offline].map(
-              (item) => {
-                return {
-                  id: item,
-                  title: item,
-                };
-              }
-            )}
+            options={[
+              eventLocation.online,
+              eventLocation.offline,
+              eventLocation.hybrid,
+            ].map((item) => {
+              return {
+                id: item,
+                title: item,
+              };
+            })}
             errorMessage={errors?.online}
           />
         </FormBox>

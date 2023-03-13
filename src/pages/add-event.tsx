@@ -27,6 +27,12 @@ const AddEvent = () => {
           try {
             const res = await createEvent(event);
             const { event_id } = res;
+
+            if (!event.images) {
+              toast.success("Succesfully created event");
+              return;
+            }
+
             const fileUploads = event.images?.map((file: File, idx: number) => {
               const fileExtension = file.name.split(".").pop();
               const filePath = `${event_id}/${idx}.${fileExtension}`;
