@@ -123,7 +123,7 @@ export default function EventPage({ events }: Props) {
                 />
               </div>
 
-              <div className="lg:col-span-3">
+              <div className="sticky top-16 z-0 h-[calc(100vh-14rem)] overflow-y-scroll lg:col-span-3">
                 {existingEvents?.length >= 1 ? (
                   existingEvents
                     .sort((a, b) => {

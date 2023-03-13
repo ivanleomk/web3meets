@@ -50,7 +50,7 @@ const MobileDropdownMenu = () => {
                     y: -32,
                     transition: { duration: 0.2 },
                   }}
-                  className="absolute inset-x-0 top-0 z-0 origin-top rounded-b-2xl bg-gray-50 px-6 pb-6 pt-32 shadow-2xl shadow-gray-900/20"
+                  className="absolute inset-x-0 top-0 z-10 origin-top rounded-b-2xl bg-gray-50 px-6 pb-6 pt-32 shadow-2xl shadow-gray-900/20"
                 >
                   <div className="space-y-4">
                     {LINKS.map((item, idx) => {
