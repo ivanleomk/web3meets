@@ -40,7 +40,7 @@ function MyApp({
       <UserWrapper>
         <OrganizationWrapper>
           <Header />
-          <div className="mx-auto mb-20 max-w-7xl px-4 md:px-10">
+          <div className="px-4 md:px-10">
             <Component {...pageProps} />
             <ToastContainer />
           </div>

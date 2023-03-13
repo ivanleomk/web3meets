@@ -92,7 +92,7 @@ const InputRadioGroup = <T extends FieldValues>({
               name={name}
               className="mt-2"
             >
-              <div className="grid grid-cols-2 gap-1 text-left ">
+              <div className="grid grid-cols-2 gap-1 text-left xl:grid-cols-4 ">
                 {options &&
                   options.map((option) => {
                     return (
