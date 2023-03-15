@@ -17,11 +17,13 @@ const Home = ({ events }: Props) => {
 };
 
 export async function getStaticProps() {
-  const { data } = await adminServerSupabaseInstance
+  const { data, error } = await adminServerSupabaseInstance
     .from("Event")
     .select("*,Partner(*),PromotionalMaterial(*)")
     .gt("starts_at", convertDateToTimestamptz(new Date()))
     .eq("approved", true);
+
+  console.log(error);
 
   return {
     props: {

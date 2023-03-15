@@ -34,11 +34,15 @@ type Props = {
 };
 
 const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
+  console.log(EventInformation, PartnerInformation);
   const router = useRouter();
   const { event_id } = router.query;
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
-  let fallback_image = null;
+  const [initialFallbackImage, setInitialFallbackImage] = useState<
+    null | string
+  >(null);
+
   const supabaseClient = useSupabaseClient();
 
   const { mutateAsync: updateEvent } = api.event.updateEvent.useMutation();
@@ -56,7 +60,8 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
 
     if (non_hosted_images.length > 0) {
       // User has chosen to provide a banner image which is not hosted on our servers. Therefore we just set fallback_image to the value;
-      fallback_image = non_hosted_images.at(0)?.image_url;
+      setLoading(false);
+      setInitialFallbackImage(non_hosted_images.at(0)?.image_url ?? null);
       return;
     }
 
@@ -93,7 +98,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       </>
     );
   }
-
+  debugger;
   const processedEventInformation: eventCreationInputType & {
     event_id: string;
   } = {
@@ -124,7 +129,8 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       value: EventInformation.category,
       label: EventInformation.category,
     },
-    fallback_image,
+    fallback_image: initialFallbackImage,
+    fallback_name: EventInformation?.fallback_name,
   };
 
   return (
@@ -134,6 +140,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       <SectionHeader title={"Update Event Information"} subtitle={""}>
         <CreateEventForm
           initialValue={processedEventInformation}
+          initialUploadImage={initialFallbackImage === null}
           onSubmit={async (data) => {
             const responseObj = {
               event_id: event_id as string,
@@ -141,19 +148,27 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
             };
 
             try {
-              await updateEvent(responseObj);
+              // TODO: Optimization here maybe? But it's really just a single SQL query so not much is needed
               await deleteImages({
                 event_id: event_id as string,
                 partner_id: data.partner_id.value,
               });
-              await uploadFiles(
-                data.images,
-                supabaseClient,
-                uploadImages,
-                event_id as string
-              );
+              await updateEvent(responseObj);
+
+              // User has provided images
+              if (data.images) {
+                await uploadFiles(
+                  data.images,
+                  supabaseClient,
+                  uploadImages,
+                  event_id as string
+                );
+              }
             } catch (err) {
-              toast.warning("Unable to update event data");
+              console.log(err);
+              toast.warning(
+                "Unable to update event. Please try again later or contact support if this issue persists"
+              );
               return;
             }
             toast.success("Succesfully updated event details.");
@@ -240,6 +255,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   const partner_id = EventInformation.partner_id as string;
+
   // Step 2 : Get partner ownership data
   const { data: PartnerOwnershipData, error: PartnerOwnershipDataError } =
     await adminServerSupabaseInstance

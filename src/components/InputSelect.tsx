@@ -73,7 +73,6 @@ const InputSelect = <T extends FieldValues>({
                     return {
                       ...styles,
                       backgroundColor: "rgb(209 213 219)",
-                      marginTop: "28px",
                     };
                   }
                   return styles;

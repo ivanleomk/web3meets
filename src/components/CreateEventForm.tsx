@@ -30,9 +30,15 @@ type Props = {
   initialValue?: eventCreationInputType | undefined;
   onSubmit: (data: eventCreationInputType) => void;
   buttonText: string;
+  initialUploadImage?: boolean;
 };
 
-const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
+const CreateEventForm = ({
+  initialValue,
+  onSubmit,
+  buttonText,
+  initialUploadImage = true,
+}: Props) => {
   const {
     register,
     handleSubmit,
@@ -47,8 +53,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
   });
 
   const { isAuthenticated } = useUserContext();
-  const [uploadImage, setUploadImage] = useState(true);
-  console.log(errors);
+  const [uploadImage, setUploadImage] = useState(initialUploadImage);
 
   const { mutate, isLoading } = api.crawler.getEventDataFromUrl.useMutation({
     onSuccess: (data) => {
@@ -180,7 +185,11 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
   const { partners } = useOrganizationContext();
 
   useEffect(() => {
-    if (isAuthenticated && partners.length > 0) {
+    if (
+      isAuthenticated &&
+      partners.length > 0 &&
+      !initialValue?.fallback_name
+    ) {
       const chosenPartner = partners.at(0);
       setValue("partner_id", {
         label: chosenPartner?.Partner.partner_name as string,
@@ -192,7 +201,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
         label: "Input my own",
       });
     }
-  }, [setValue, isAuthenticated, partners]);
+  }, [setValue, isAuthenticated, partners, initialValue]);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -423,7 +432,14 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
               labelTitle="Upload File"
               labelText="Upload a custom banner image or provide a link to one"
               enabled={uploadImage}
-              setEnabled={setUploadImage}
+              setEnabled={(enabled: boolean) => {
+                setUploadImage(enabled);
+                if (enabled) {
+                  setValue("fallback_image", null);
+                } else {
+                  setValue("images", null);
+                }
+              }}
             />
           </div>
         </FormBox>

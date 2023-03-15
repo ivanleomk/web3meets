@@ -25,7 +25,7 @@ export const eventRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Validate that user is an admin
       const { userId: user_id, NextResponse } = ctx;
-      const { event_id, ...eventInformation } = input;
+      const { event_id, fallback_image, ...eventInformation } = input;
       const partner_id = eventInformation.partner_id.value;
 
       const hasAdminRights = await hasAdminPrivileges(user_id);
@@ -67,6 +67,26 @@ export const eventRouter = createTRPCRouter({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unable to update event. Please try again later",
         });
+      }
+
+      if (fallback_image) {
+        const { error } = await adminServerSupabaseInstance
+          .from("PromotionalMaterial")
+          .upsert({
+            event_id: event_id,
+            image_url: fallback_image,
+            original_name: "",
+          });
+
+        console.log(error);
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "New event created but unable to upload promotional material. Please try again later or contact support if this error persists ",
+          });
+        }
       }
 
       // void NextResponse.revalidate(`/event/${event_id}`);
@@ -425,6 +445,7 @@ export const eventRouter = createTRPCRouter({
         location,
         fallback_name,
         category,
+        fallback_image,
       } = input;
 
       const { data: insertEventOp, error: insertEventOpError } =
@@ -464,6 +485,24 @@ export const eventRouter = createTRPCRouter({
           message:
             "Unable to create new event. Please try again later or contact support if this error persists",
         });
+      }
+
+      if (fallback_image) {
+        const { error } = await adminServerSupabaseInstance
+          .from("PromotionalMaterial")
+          .insert({
+            event_id: insertEventOp.event_id,
+            image_url: fallback_image,
+            original_name: "",
+          });
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "New event created but unable to upload promotional material. Please try again later or contact support if this error persists ",
+          });
+        }
       }
 
       if (partner_id.value !== process.env.NEXT_PUBLIC_NONE_PARTNER) {
