@@ -276,19 +276,50 @@ export const partnerRouter = createTRPCRouter({
   getAllPartners: supabaseProtectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;
 
+    // Check if user is an admin
     const { data, error } = await adminServerSupabaseInstance
-      .from("UserPartnerOwnership")
-      .select("*, Partner(*)")
-      .eq("user_id", userId);
+      .from("User")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-    if (error) {
+    if (error || !data) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: error.message,
+        message: "Unable to obtain organization error",
       });
     }
 
-    return data;
+    if (!data.admin) {
+      const { data: UserPartners, error: UserPartnersError } =
+        await adminServerSupabaseInstance
+          .from("UserPartnerOwnership")
+          .select("*, Partner(*)")
+          .eq("user_id", userId);
+
+      if (UserPartnersError) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: UserPartnersError.message,
+        });
+      }
+
+      return UserPartners;
+    }
+
+    const { data: allPartners, error: allPartnersError } =
+      await adminServerSupabaseInstance
+        .from("UserPartnerOwnership")
+        .select("*, Partner(*)");
+
+    if (allPartnersError) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: allPartnersError.message,
+      });
+    }
+
+    return allPartners;
   }),
   deletePartner: supabaseProtectedProcedure
     .input(
