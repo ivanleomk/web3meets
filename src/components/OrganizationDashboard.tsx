@@ -1,6 +1,9 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { ORGANIZATION_FIELDS } from "../config/organization";
+import {
+  ADMIN_ORGANIZATION_FIELDS,
+  ORGANIZATION_FIELDS,
+} from "../config/organization";
 import { useOrganizationContext } from "../context/OrganizationContext";
 import { type UserPartnerOwnershipWithPartner } from "../types/database";
 
@@ -81,7 +84,7 @@ const OrganizationDashboard = ({ initialMode, setInitialMode }: Props) => {
           data={partners ? partners : []}
           isLoading={isPartnersLoading}
           errorMessage="No User Organizations found"
-          headerFields={ORGANIZATION_FIELDS}
+          headerFields={ADMIN_ORGANIZATION_FIELDS}
           renderComponent={(data: UserPartnerOwnershipWithPartner) => {
             return <OrganizationTableRow data={data} />;
           }}

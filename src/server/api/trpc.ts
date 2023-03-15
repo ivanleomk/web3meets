@@ -69,6 +69,7 @@ import {
 } from "@supabase/auth-helpers-nextjs";
 import { Database } from "../../types/database-raw";
 import { NextApiResponse } from "next";
+import { adminServerSupabaseInstance } from "../supabase/sharedInstance";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -124,4 +125,44 @@ export const isSupabaseAuthed = t.middleware(async (res) => {
   });
 });
 
+export const isSupabaseAdmin = t.middleware(async (res) => {
+  const { next, ctx } = res;
+  const { supabase, res: NextResponse } = ctx;
+  const { data: session } = await supabase.auth.getSession();
+
+  if (!session) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Unauthorized Request",
+    });
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const userId = user?.id as string;
+  const userEmail = user?.email as string;
+
+  const { data, error } = await adminServerSupabaseInstance
+    .from("User")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error || !data || !data.admin) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Unauthorized Request",
+    });
+  }
+
+  const new_ctx = { ...ctx, userId, userEmail, supabase, NextResponse };
+
+  return next({
+    ctx: new_ctx,
+  });
+});
+
 export const supabaseProtectedProcedure = t.procedure.use(isSupabaseAuthed);
+export const supabaseAdminProtectedProcedure = t.procedure.use(isSupabaseAdmin);

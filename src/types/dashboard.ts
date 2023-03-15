@@ -1,2 +1,2 @@
 export type Modes = "View" | "Create";
-export type Tabs = "Events" | "Organizations";
+export type Tabs = "Events" | "Organizations" | "Admin";

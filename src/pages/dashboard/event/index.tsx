@@ -98,7 +98,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       </>
     );
   }
-  debugger;
+
   const processedEventInformation: eventCreationInputType & {
     event_id: string;
   } = {
@@ -235,7 +235,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   if (
     EventInformation.partner_id === process.env.NEXT_PUBLIC_NONE_PARTNER &&
-    EventInformation.user_id != user_id
+    EventInformation.user_id != user_id &&
+    !data?.admin
   ) {
     return {
       redirect: {
