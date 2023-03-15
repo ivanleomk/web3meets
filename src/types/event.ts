@@ -139,7 +139,17 @@ export const eventCreationSchema = eventCreationSchemaMerge
     {
       message:
         "Please provide a banner image to be used for displaying the event.",
-      path: ["fallback_image", "images"],
+      path: ["fallback_image"],
+    }
+  )
+  .refine(
+    (schema) => {
+      return schema.fallback_image || schema.images;
+    },
+    {
+      message:
+        "Please provide a banner image to be used for displaying the event.",
+      path: ["images"],
     }
   )
   .transform((schema) => {

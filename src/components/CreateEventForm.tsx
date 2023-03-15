@@ -48,6 +48,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
 
   const { isAuthenticated } = useUserContext();
   const [uploadImage, setUploadImage] = useState(true);
+  console.log(errors);
 
   const { mutate, isLoading } = api.crawler.getEventDataFromUrl.useMutation({
     onSuccess: (data) => {
@@ -166,6 +167,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
 
       if (data["image"]) {
         setValue("fallback_image", data["image"]);
+        setUploadImage(false);
       }
 
       toast.success("Succesfully crawled data from RSVP link");

@@ -6,13 +6,10 @@ import MobileDropdownMenu from "./MobileDropdownMenu";
 import Logo from "./Logo";
 
 import { useUserContext } from "../context/UserContext";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { toast } from "react-toastify";
 import UserAvatarDropdown from "./UserAvatarDropdown";
 
 export function Header() {
   const { isAuthenticated } = useUserContext();
-  const supabaseClient = useSupabaseClient();
 
   return (
     <header>
