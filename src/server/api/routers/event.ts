@@ -1,11 +1,10 @@
 import { publicProcedure } from "./../trpc";
 import { isEventAdmin } from "./../../utils/auth";
 import { EVENT_IMAGE_BUCKET } from "./../../../types/storage";
-import { City, eventLocation, eventObjectSchema } from "./../../../types/event";
+import { eventObjectSchema } from "./../../../types/event";
 import { TRPCError } from "@trpc/server";
 import { adminServerSupabaseInstance } from "./../../supabase/sharedInstance";
 import { z } from "zod";
-import { eventCreationSchema } from "../../../types/event";
 
 import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
 import { convertDateToTimestamptz } from "../../../utils/date";
@@ -33,7 +32,6 @@ export const eventRouter = createTRPCRouter({
       const hasEventAdminPermission = await isEventAdmin(user_id, event_id);
 
       // We determine if the user is registered as the event id registrar on the backend.
-
       if (!hasAdminRights && !hasEventAdminPermission) {
         // Non-Admin means we need to do more checksl
         await isOrganizationAdmin(partner_id, user_id);
@@ -350,6 +348,7 @@ export const eventRouter = createTRPCRouter({
         location,
         fallback_name,
         category,
+        fallback_image,
       } = input;
 
       const { data: insertEventOp, error: insertEventOpError } =
@@ -385,6 +384,25 @@ export const eventRouter = createTRPCRouter({
             insertEventOpError?.message ??
             "Unable to create new event. Please try again later or contact support if this error persists",
         });
+      }
+
+      // If fallback image then we insert it into our promotional image db
+      if (fallback_image) {
+        const { error } = await adminServerSupabaseInstance
+          .from("PromotionalMaterial")
+          .insert({
+            event_id: insertEventOp.event_id,
+            image_url: fallback_image,
+            original_name: "",
+          });
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "New event created but unable to upload promotional material. Please try again later or contact support if this error persists ",
+          });
+        }
       }
 
       return insertEventOp;

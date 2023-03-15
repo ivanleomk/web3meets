@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FieldError, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useOrganizationContext } from "../context/OrganizationContext";
@@ -17,7 +17,7 @@ import {
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import FormBox from "./FormBox";
-import FormSectionHeader from "./FormSectionHeader";
+import FormToggle from "./FormToggle";
 import Input from "./Input";
 import InputDatePicker from "./InputDatePicker";
 import InputFileUpload from "./InputFileUpload";
@@ -47,9 +47,10 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
   });
 
   const { isAuthenticated } = useUserContext();
+  const [uploadImage, setUploadImage] = useState(true);
 
   const { mutate, isLoading } = api.crawler.getEventDataFromUrl.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       if (data?.organizer) {
         setValue("partner_id", {
           value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
@@ -164,12 +165,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
       }
 
       if (data["image"]) {
-        const response = await fetch(data["image"]);
-        const blob = await response.blob();
-        const file = new File([blob], `${data?.name}_promo_image.jpeg`, {
-          type: blob.type,
-        });
-        setValue("images", [file]);
+        setValue("fallback_image", data["image"]);
       }
 
       toast.success("Succesfully crawled data from RSVP link");
@@ -277,7 +273,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
             process.env.NEXT_PUBLIC_NONE_PARTNER || !isAuthenticated ? (
             <Input
               subtitle="Please provide a name for the organization that will be organising this event."
-              label="Organisation name"
+              label="Organisation Name"
               errorMessage={undefined}
               htmlFor="fallback name"
               autocomplete=""
@@ -318,7 +314,7 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
 
           <Input
             subtitle="Where is the event being held?"
-            label="Event Location"
+            label="Address"
             errorMessage={errors?.location}
             htmlFor="Location"
             autocomplete=""
@@ -399,14 +395,35 @@ const CreateEventForm = ({ initialValue, onSubmit, buttonText }: Props) => {
             {...register("event_description")}
             errorMessage={errors?.event_description}
           />
-          <InputFileUpload
-            setValue={setValue}
-            control={control}
-            name="images"
-            errorMessage={errors?.images as FieldError}
-            label="Banner Image"
-            subtitle="Include an image file to promote the event, if available (We only accept .png, .jpg and .jpeg files less than 5 mb.)"
-          />
+
+          <div className="space-y-4">
+            {uploadImage ? (
+              <InputFileUpload
+                setValue={setValue}
+                control={control}
+                name="images"
+                errorMessage={errors?.images as FieldError}
+                label="Banner Image"
+                subtitle="Include an image file to promote the event, if available (We only accept .png, .jpg and .jpeg files less than 5 mb.)"
+              />
+            ) : (
+              <Input
+                subtitle="Please provide a link to a banner image"
+                label="Banner Image"
+                errorMessage={errors?.fallback_image}
+                htmlFor="fallback_image"
+                autocomplete=""
+                type="text"
+                {...register("fallback_image")}
+              />
+            )}
+            <FormToggle
+              labelTitle="Upload File"
+              labelText="Upload a custom banner image or provide a link to one"
+              enabled={uploadImage}
+              setEnabled={setUploadImage}
+            />
+          </div>
         </FormBox>
 
         <SubmitButton isSubmitting={isSubmitting} buttonText={buttonText} />

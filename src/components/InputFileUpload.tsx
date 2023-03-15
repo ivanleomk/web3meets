@@ -20,6 +20,7 @@ type Props<T extends FieldValues> = {
   subtitle: string;
   errorMessage: FieldError | undefined;
   setValue: UseFormSetValue<T>;
+  maxFiles?: number;
 };
 
 const InputFileUpload = <T extends FieldValues>({
@@ -29,6 +30,7 @@ const InputFileUpload = <T extends FieldValues>({
   name,
   errorMessage,
   setValue,
+  maxFiles = 1,
 }: Props<T>) => {
   return (
     <div>
@@ -73,14 +75,16 @@ const InputFileUpload = <T extends FieldValues>({
                     </>
                   );
                 })}
-                <FileDropzone
-                  onChange={(e) => {
-                    onChange([...value, ...e]);
-                  }}
-                  onBlur={onBlur}
-                  name={name}
-                  ref={ref}
-                />
+                {value.length < maxFiles ? (
+                  <FileDropzone
+                    onChange={(e) => {
+                      onChange([...value, ...e]);
+                    }}
+                    onBlur={onBlur}
+                    name={name}
+                    ref={ref}
+                  />
+                ) : null}
               </>
             );
           }

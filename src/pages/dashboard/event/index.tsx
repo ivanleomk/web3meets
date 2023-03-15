@@ -38,6 +38,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
   const { event_id } = router.query;
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
+  let fallback_image = null;
   const supabaseClient = useSupabaseClient();
 
   const { mutateAsync: updateEvent } = api.event.updateEvent.useMutation();
@@ -45,6 +46,20 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
   const { mutateAsync: uploadImages } = api.event.uploadImages.useMutation();
 
   useEffect(() => {
+    const non_hosted_images = EventInformation.PromotionalMaterial.filter(
+      (item) => {
+        return !item.image_url.includes(
+          process.env.NEXT_PUBLIC_IMAGE_BUCKET as string
+        );
+      }
+    );
+
+    if (non_hosted_images.length > 0) {
+      // User has chosen to provide a banner image which is not hosted on our servers. Therefore we just set fallback_image to the value;
+      fallback_image = non_hosted_images.at(0)?.image_url;
+      return;
+    }
+
     const existingImages = EventInformation.PromotionalMaterial.map(
       async (item) => {
         const path = `${item.image_url}`;
@@ -109,6 +124,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       value: EventInformation.category,
       label: EventInformation.category,
     },
+    fallback_image,
   };
 
   return (

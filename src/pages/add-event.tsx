@@ -5,7 +5,6 @@ import CreateEventForm from "../components/CreateEventForm";
 import SectionHeader from "../components/SectionHeader";
 import { EVENT_IMAGE_BUCKET } from "../types/storage";
 import { api } from "../utils/api";
-import { uploadFiles } from "../utils/file";
 
 const AddEvent = () => {
   const supabaseClient = useSupabaseClient();
@@ -29,6 +28,7 @@ const AddEvent = () => {
               const res = await createEvent(event);
               const { event_id } = res;
 
+              // Nothing to upload
               if (!event.images) {
                 toast.success("Succesfully created event");
                 return;

@@ -11,7 +11,7 @@ export enum eventLocationFilter {
   any = "Any",
   online = "Online",
   offline = "Offline",
-  hybrid = "Hybrid",
+  hybrid = "Offline/Online",
 }
 
 export const eventFilterSchema = z.object({

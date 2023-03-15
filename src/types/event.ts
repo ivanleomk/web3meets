@@ -62,7 +62,8 @@ export const eventObjectSchema = z.object({
     value: z.string().uuid(),
     label: z.string(),
   }),
-  fallback_name: z.union([z.string(), z.any().nullable()]),
+  fallback_name: z.union([z.string(), z.string().nullable()]),
+  fallback_image: z.union([z.string().nullable(), z.string().url()]),
   online: z.nativeEnum(eventLocation),
   city: z.object({
     label: z.nativeEnum(City),
@@ -99,8 +100,6 @@ export const eventCategories = [
   "Demo Day",
   "Party",
   "Focus Group Discussion",
-  "Education Event",
-  "Social Event",
 ];
 
 export const eventCreationSchemaMerge = eventObjectSchema.merge(
@@ -131,6 +130,16 @@ export const eventCreationSchema = eventCreationSchemaMerge
     {
       message: "Invalid pairs for country and city",
       path: ["city"],
+    }
+  )
+  .refine(
+    (schema) => {
+      return schema.fallback_image || schema.images;
+    },
+    {
+      message:
+        "Please provide a banner image to be used for displaying the event.",
+      path: ["fallback_image", "images"],
     }
   )
   .transform((schema) => {

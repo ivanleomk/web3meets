@@ -67,6 +67,28 @@ const InputSelect = <T extends FieldValues>({
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore
               options={options}
+              styles={{
+                control: (styles) => {
+                  if (value?.value === process.env.NEXT_PUBLIC_NONE_PARTNER) {
+                    return {
+                      ...styles,
+                      backgroundColor: "rgb(209 213 219)",
+                      marginTop: "28px",
+                    };
+                  }
+                  return styles;
+                  // if (
+                  //   state.getValue()?.at(0)?.value ===
+                  //   process.env.NEXT_PUBLIC_NONE_PARTNER
+                  // ) {
+                  //   return {
+                  //     ...state,
+                  //     backgroundColor: "gray",
+                  //   };
+                  // }
+                  // return state;
+                },
+              }}
             />
           );
         }}
