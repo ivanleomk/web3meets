@@ -31,8 +31,9 @@ export const adminRouter = createTRPCRouter({
         status: z.boolean(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { event_id, status } = input;
+      const { NextResponse } = ctx;
 
       // Update event status
       const { data, error } = await adminServerSupabaseInstance
@@ -50,6 +51,8 @@ export const adminRouter = createTRPCRouter({
           message: "Unable to update event status",
         });
       }
+
+      void NextResponse.revalidate("/");
 
       return data;
     }),
