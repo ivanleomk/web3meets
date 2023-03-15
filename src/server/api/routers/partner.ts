@@ -56,7 +56,7 @@ export const partnerRouter = createTRPCRouter({
         user_id: newAdminData.user_id,
       });
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return true;
     }),
@@ -143,7 +143,7 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return;
     }),
@@ -183,7 +183,7 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return data;
     }),
@@ -245,7 +245,7 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/partner/${data.partner_id}`);
+      // void NextResponse.revalidate(`/partner/${data.partner_id}`);
 
       return newPartnerOwnership;
     }),
@@ -276,50 +276,20 @@ export const partnerRouter = createTRPCRouter({
   getAllPartners: supabaseProtectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;
 
-    // Check if user is an admin
-    const { data, error } = await adminServerSupabaseInstance
-      .from("User")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (error || !data) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Unable to obtain organization error",
-      });
-    }
-
-    if (!data.admin) {
-      const { data: UserPartners, error: UserPartnersError } =
-        await adminServerSupabaseInstance
-          .from("UserPartnerOwnership")
-          .select("*, Partner(*)")
-          .eq("user_id", userId);
-
-      if (UserPartnersError) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: UserPartnersError.message,
-        });
-      }
-
-      return UserPartners;
-    }
-
-    const { data: allPartners, error: allPartnersError } =
+    const { data: UserPartners, error: UserPartnersError } =
       await adminServerSupabaseInstance
         .from("UserPartnerOwnership")
-        .select("*, Partner(*)");
+        .select("*, Partner(*)")
+        .eq("user_id", userId);
 
-    if (allPartnersError) {
+    if (UserPartnersError) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: allPartnersError.message,
+        message: UserPartnersError.message,
       });
     }
 
-    return allPartners;
+    return UserPartners;
   }),
   deletePartner: supabaseProtectedProcedure
     .input(
@@ -328,7 +298,7 @@ export const partnerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId, NextResponse } = ctx;
+      const { userId, NextResponse, user } = ctx;
       const { partner_id } = input;
 
       const { data, error } = await adminServerSupabaseInstance
@@ -370,7 +340,7 @@ export const partnerRouter = createTRPCRouter({
         return data;
       }
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return data;
     }),

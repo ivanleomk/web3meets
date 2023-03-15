@@ -2,12 +2,23 @@
 
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
-import { createContext, type ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import { toast } from "react-toastify";
-import { type UserPartnerOwnershipWithPartner } from "../types/database";
+import {
+  Partner,
+  type UserPartnerOwnershipWithPartner,
+} from "../types/database";
 import { api } from "../utils/api";
+import { useUserContext } from "./UserContext";
 
 type OrganizationContextType = {
+  partnerOptions: undefined | Partner[];
   partners: UserPartnerOwnershipWithPartner[];
   isPartnersLoading: boolean;
 };
@@ -17,6 +28,7 @@ type OrganizationContextProps = {
 };
 
 const initialOrganizationContext: OrganizationContextType = {
+  partnerOptions: [],
   partners: [],
   isPartnersLoading: true,
 };
@@ -26,6 +38,7 @@ const OrganizationContext = createContext<OrganizationContextType>(
 );
 export function OrganizationWrapper({ children }: OrganizationContextProps) {
   const user = useUser();
+  const { userMetadata, isAuthenticated } = useUserContext();
   const { data, isLoading } = api.partner.getAllPartners.useQuery(undefined, {
     // Refetch every 2 mins
     refetchInterval: 120000,
@@ -33,8 +46,17 @@ export function OrganizationWrapper({ children }: OrganizationContextProps) {
     enabled: user !== null,
   });
 
+  const { data: allOrganizations } = api.admin.getOrganisation.useQuery(
+    undefined,
+    {
+      enabled: isAuthenticated && userMetadata?.isAdmin,
+      refetchInterval: 120000,
+    }
+  );
+
   const sharedState = {
-    partners: data as UserPartnerOwnershipWithPartner[],
+    partnerOptions: allOrganizations ? allOrganizations : [],
+    partners: data ? (data as UserPartnerOwnershipWithPartner[]) : [],
     isPartnersLoading: isLoading,
   };
 

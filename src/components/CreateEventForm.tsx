@@ -182,7 +182,22 @@ const CreateEventForm = ({
     },
   });
 
-  const { partners } = useOrganizationContext();
+  const { partners, partnerOptions } = useOrganizationContext();
+  const { userMetadata } = useUserContext();
+
+  const partnerList = userMetadata?.isAdmin
+    ? partnerOptions?.map((item) => {
+        return {
+          label: item.partner_name,
+          value: item.partner_id,
+        };
+      })
+    : partners.map((item) => {
+        return {
+          label: item.Partner.partner_name,
+          value: item.partner_id,
+        };
+      });
 
   useEffect(() => {
     if (
@@ -269,14 +284,7 @@ const CreateEventForm = ({
                         label: "Input my own",
                         value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
                       },
-                    ].concat(
-                      partners?.map((item) => {
-                        return {
-                          label: item.Partner.partner_name,
-                          value: item.partner_id,
-                        };
-                      })
-                    )
+                    ].concat(partnerList ?? [])
               }
             />
           ) : null}

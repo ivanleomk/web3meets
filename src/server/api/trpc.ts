@@ -118,7 +118,28 @@ export const isSupabaseAuthed = t.middleware(async (res) => {
   } = await supabase.auth.getUser();
   const userId = user?.id as string;
   const userEmail = user?.email as string;
-  const new_ctx = { ...ctx, userId, userEmail, supabase, NextResponse };
+
+  const { data, error } = await adminServerSupabaseInstance
+    .from("User")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Unable to locate user details",
+    });
+  }
+
+  const new_ctx = {
+    ...ctx,
+    userId,
+    userEmail,
+    supabase,
+    NextResponse,
+    user: data,
+  };
 
   return next({
     ctx: new_ctx,

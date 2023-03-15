@@ -24,7 +24,7 @@ const AdminOrganizationTableRow = ({ data }: Props) => {
     approved: organizationApproved,
   } = data;
 
-  const { mutate: deletePartner } = api.partner.deletePartner.useMutation({
+  const { mutate: deletePartner } = api.admin.deleteOrganization.useMutation({
     onSuccess: () => {
       toast.success(`Succesfully deleted ${partner_name}`);
     },

@@ -74,6 +74,40 @@ export const adminRouter = createTRPCRouter({
 
     return data;
   }),
+  deleteOrganization: supabaseAdminProtectedProcedure
+    .input(
+      z.object({
+        partner_id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { partner_id } = input;
+      const { error } = await adminServerSupabaseInstance
+        .from("Partner")
+        .delete()
+        .eq("partner_id", partner_id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid Partner",
+        });
+      }
+
+      const { error: deletingOwnership } = await adminServerSupabaseInstance
+        .from("UserPartnerOwnership")
+        .delete()
+        .eq("partner_id", partner_id);
+
+      if (deletingOwnership) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid Partner",
+        });
+      }
+
+      return;
+    }),
   toggleOrganizationStatus: supabaseAdminProtectedProcedure
     .input(
       z.object({

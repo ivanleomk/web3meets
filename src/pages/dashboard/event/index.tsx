@@ -34,7 +34,6 @@ type Props = {
 };
 
 const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
-  console.log(EventInformation, PartnerInformation);
   const router = useRouter();
   const { event_id } = router.query;
   const [files, setFiles] = useState<File[]>([]);
