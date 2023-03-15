@@ -9,10 +9,13 @@ import { useUserContext } from "../context/UserContext";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
 import Logo from "./Logo";
+import { router } from "@trpc/server";
+import { useRouter } from "next/router";
 
 const MobileDropdownMenu = () => {
   const { isAuthenticated } = useUserContext();
   const supabaseClient = useSupabaseClient();
+  const router = useRouter();
   return (
     <Popover className="lg:hidden">
       {({ open, close }) => (
@@ -62,7 +65,6 @@ const MobileDropdownMenu = () => {
                         />
                       );
                     })}
-                    <div className="border-b-2"></div>
                     {isAuthenticated ? (
                       <>
                         {PROFILE_LINKS.map((item, idx) => {
@@ -74,11 +76,25 @@ const MobileDropdownMenu = () => {
                             />
                           );
                         })}
-
+                      </>
+                    ) : null}
+                    <div className="border-b-2"></div>
+                    {isAuthenticated ? (
+                      <>
+                        <Button
+                          text="Submit an Event"
+                          variant="solid"
+                          additionalStyling="w-full"
+                          onClickHandler={() => {
+                            close();
+                            void router.push(
+                              "/dashboard?mode=Events&view=create"
+                            );
+                          }}
+                        />
                         <Button
                           text="Sign Out"
-                          variant="solid"
-                          color="gray"
+                          variant="outline"
                           additionalStyling="w-full"
                           onClickHandler={() => {
                             close();
@@ -105,10 +121,10 @@ const MobileDropdownMenu = () => {
                         />
                         <Button
                           postClickHook={() => close()}
-                          text="Sign Up"
+                          text="Submit An Event"
                           variant="solid"
                           color="gray"
-                          href="/signup"
+                          href="/add-event"
                         />
                       </div>
                     )}

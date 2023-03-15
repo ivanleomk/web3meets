@@ -73,7 +73,7 @@ export default function UserDashboard({
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="z-0 mx-auto max-w-7xl">
       <div className="sm:hidden">
         <label htmlFor="tabs" className="sr-only">
           Select a tab
@@ -86,6 +86,7 @@ export default function UserDashboard({
           onChange={(e) => {
             setInitialTab(e.target.value as Tabs);
           }}
+          value={initialTab}
         >
           {tabs.map((tab) => (
             <option key={tab} value={tab}>
@@ -118,8 +119,11 @@ export default function UserDashboard({
               <span
                 key={tab}
                 onClick={() => setInitialTab(tab)}
+                style={{
+                  zIndex: 5,
+                }}
                 className={
-                  "relative z-10 cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+                  "relative cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
                 }
                 aria-current={tab === initialTab ? "page" : undefined}
               >

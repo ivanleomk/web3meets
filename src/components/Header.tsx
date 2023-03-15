@@ -8,6 +8,7 @@ import Logo from "./Logo";
 import { useUserContext } from "../context/UserContext";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
+import UserAvatarDropdown from "./UserAvatarDropdown";
 
 export function Header() {
   const { isAuthenticated } = useUserContext();
@@ -30,43 +31,33 @@ export function Header() {
             {isAuthenticated ? (
               <>
                 <Button
-                  text="Dashboard"
+                  text="Submit An Event"
                   variant="solid"
                   color="gray"
-                  href="/dashboard"
+                  href="/dashboard?mode=Events&view=create"
                   additionalStyling="hidden lg:block"
                 />
                 <Button
                   variant="outline"
-                  onClickHandler={() => {
-                    supabaseClient.auth
-                      .signOut()
-                      .then(() => {
-                        toast.success("Succesfully signed out of account");
-                      })
-                      .catch(() => {
-                        toast.warning(
-                          "Unable to sign user out. Unexpected error encountered."
-                        );
-                      });
-                  }}
-                  text="Sign Out"
+                  href="/dashboard"
+                  text="Dashboard"
                   additionalStyling="hidden lg:block"
                 />
+                <UserAvatarDropdown />
               </>
             ) : (
               <>
                 <Button
-                  text="Log In"
-                  variant="outline"
-                  href="/login"
+                  text="Submit An Event"
+                  variant="solid"
+                  color="gray"
+                  href="/add-event"
                   additionalStyling="hidden lg:block"
                 />
                 <Button
-                  text="Sign Up"
-                  variant="solid"
-                  color="gray"
-                  href="/signup"
+                  text="Log In"
+                  variant="outline"
+                  href="/login"
                   additionalStyling="hidden lg:block"
                 />
               </>
