@@ -22,6 +22,7 @@ const client = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
   NEXT_PUBLIC_IMAGE_BUCKET: z.string(),
+  NEXT_PUBLIC_NONE_PARTNER: z.string(),
 });
 
 /**
@@ -35,6 +36,7 @@ const processEnv = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE,
   NEXT_PUBLIC_IMAGE_BUCKET: process.env.NEXT_PUBLIC_IMAGE_BUCKET,
+  NEXT_PUBLIC_NONE_PARTNER: process.env.NEXT_PUBLIC_NONE_PARTNER,
 };
 
 // Don't touch the part below

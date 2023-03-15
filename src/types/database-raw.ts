@@ -36,72 +36,84 @@ export interface Database {
     Tables: {
       Event: {
         Row: {
-          city: string
-          country: string
+          approved: boolean
+          category: string
+          city: string | null
+          country: string | null
           ends_at: string
-          event_description: string
+          event_description: string | null
           event_id: string
           event_title: string
-          event_type: string
+          event_type: string | null
+          fallback_name: string | null
           featured: boolean
           location: string | null
-          location_id: number
-          online: boolean
+          online: string
           our_pick: boolean
-          partner_id: string | null
+          partner_id: string
           partnered: boolean
+          remarks: string
           rsvp_link: string | null
           scheduled_post: string | null
           starts_at: string
           stripe_event_id: string | null
+          user_id: string | null
         }
         Insert: {
-          city?: string
-          country?: string
+          approved: boolean
+          category?: string
+          city?: string | null
+          country?: string | null
           ends_at: string
-          event_description?: string
+          event_description?: string | null
           event_id?: string
           event_title: string
-          event_type: string
+          event_type?: string | null
+          fallback_name?: string | null
           featured?: boolean
           location?: string | null
-          location_id?: number
-          online: boolean
+          online: string
           our_pick?: boolean
-          partner_id?: string | null
+          partner_id: string
           partnered?: boolean
+          remarks?: string
           rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at: string
           stripe_event_id?: string | null
+          user_id?: string | null
         }
         Update: {
-          city?: string
-          country?: string
+          approved?: boolean
+          category?: string
+          city?: string | null
+          country?: string | null
           ends_at?: string
-          event_description?: string
+          event_description?: string | null
           event_id?: string
           event_title?: string
-          event_type?: string
+          event_type?: string | null
+          fallback_name?: string | null
           featured?: boolean
           location?: string | null
-          location_id?: number
-          online?: boolean
+          online?: string
           our_pick?: boolean
-          partner_id?: string | null
+          partner_id?: string
           partnered?: boolean
+          remarks?: string
           rsvp_link?: string | null
           scheduled_post?: string | null
           starts_at?: string
           stripe_event_id?: string | null
+          user_id?: string | null
         }
       }
       Partner: {
         Row: {
-          active: boolean
-          approved: boolean
-          bio: string
-          open_to_sponsor: boolean
+          active: boolean | null
+          approved: boolean | null
+          bio: string | null
+          open_to_sponsor: boolean | null
           partner_id: string
           partner_name: string
           stripe_account_id: string | null
@@ -110,10 +122,10 @@ export interface Database {
           website: string | null
         }
         Insert: {
-          active?: boolean
-          approved?: boolean
-          bio?: string
-          open_to_sponsor?: boolean
+          active?: boolean | null
+          approved?: boolean | null
+          bio?: string | null
+          open_to_sponsor?: boolean | null
           partner_id?: string
           partner_name: string
           stripe_account_id?: string | null
@@ -122,10 +134,10 @@ export interface Database {
           website?: string | null
         }
         Update: {
-          active?: boolean
-          approved?: boolean
-          bio?: string
-          open_to_sponsor?: boolean
+          active?: boolean | null
+          approved?: boolean | null
+          bio?: string | null
+          open_to_sponsor?: boolean | null
           partner_id?: string
           partner_name?: string
           stripe_account_id?: string | null
@@ -136,39 +148,45 @@ export interface Database {
       }
       PromotionalMaterial: {
         Row: {
-          event_id: string | null
+          event_id: string
           image_url: string
           material_id: number
-          original_name: string | null
+          original_name: string
         }
         Insert: {
-          event_id?: string | null
+          event_id: string
           image_url: string
           material_id?: number
-          original_name?: string | null
+          original_name: string
         }
         Update: {
-          event_id?: string | null
+          event_id?: string
           image_url?: string
           material_id?: number
-          original_name?: string | null
+          original_name?: string
         }
       }
       User: {
         Row: {
           admin: boolean
+          avatar_url: string | null
           email: string
           user_id: string
+          user_name: string | null
         }
         Insert: {
           admin?: boolean
+          avatar_url?: string | null
           email: string
           user_id: string
+          user_name?: string | null
         }
         Update: {
           admin?: boolean
+          avatar_url?: string | null
           email?: string
           user_id?: string
+          user_name?: string | null
         }
       }
       UserPartnerOwnership: {
@@ -299,6 +317,15 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
+      can_insert_object: {
+        Args: {
+          bucketid: string
+          name: string
+          owner: string
+          metadata: Json
+        }
+        Returns: undefined
+      }
       extension: {
         Args: {
           name: string

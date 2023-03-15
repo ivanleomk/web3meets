@@ -23,7 +23,6 @@ const ResetPassword = () => {
 
   const router = useRouter();
   const onSubmit = async (credentials: userResetEmailType) => {
-    console.log("---Triggering on Submit");
     await supabaseClient.auth
       .signInWithOtp({
         email: credentials.email,

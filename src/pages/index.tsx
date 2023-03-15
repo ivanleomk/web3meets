@@ -1,14 +1,36 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { type NextPage } from "next";
-import { Header } from "../components/Header";
-import { Database } from "../types/database-raw";
+import EventPage from "../components/EventPage";
 
-import { api } from "../utils/api";
+import { adminServerSupabaseInstance } from "../server/supabase/sharedInstance";
+import { convertDateToTimestamptz } from "../utils/date";
+import { type EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
 
-const Home: NextPage = () => {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
-  return <>Index Page</>;
+type Props = {
+  events: EventAndPartnerInfoAndPromotionalMaterial[];
 };
+
+const Home = ({ events }: Props) => {
+  return (
+    <>
+      <EventPage events={events} />
+    </>
+  );
+};
+
+export async function getStaticProps() {
+  const { data, error } = await adminServerSupabaseInstance
+    .from("Event")
+    .select("*,Partner(*),PromotionalMaterial(*)")
+    .gt("starts_at", convertDateToTimestamptz(new Date()))
+    .eq("approved", true);
+
+  console.log(error);
+
+  return {
+    props: {
+      events: data,
+    },
+    revalidate: process.env.NODE_ENV === "development" ? true : 600, // every 10 mins
+  };
+}
 
 export default Home;

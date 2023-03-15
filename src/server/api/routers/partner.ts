@@ -16,7 +16,7 @@ export const partnerRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { user_email, partner_id } = input;
 
-      const { userId: user_id } = ctx;
+      const { userId: user_id, NextResponse } = ctx;
 
       // Validate that user is an administrator
       const { data: userAdmin, error: userAdminValidationError } =
@@ -55,6 +55,8 @@ export const partnerRouter = createTRPCRouter({
         partner_id,
         user_id: newAdminData.user_id,
       });
+
+      void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return true;
     }),
@@ -107,7 +109,7 @@ export const partnerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId: user_id } = ctx;
+      const { userId: user_id, NextResponse } = ctx;
       const { user_id_deleting, partner_id } = input;
 
       // Verify that user has admin rights
@@ -140,6 +142,9 @@ export const partnerRouter = createTRPCRouter({
           message: "Unable to delete user. Please try again",
         });
       }
+
+      void NextResponse.revalidate(`/partner/${partner_id}`);
+
       return;
     }),
   updatePartnerDetails: supabaseProtectedProcedure
@@ -148,9 +153,8 @@ export const partnerRouter = createTRPCRouter({
         partner_id: z.string().uuid(),
       })
     )
-    .mutation(async ({ input }) => {
-      // TODO: Figure out a way to deal with naming updates --> We should use an internal id to track all of the various partners....
-
+    .mutation(async ({ input, ctx }) => {
+      const { NextResponse } = ctx;
       const {
         partner_id,
         partner_name,
@@ -179,13 +183,15 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
+      void NextResponse.revalidate(`/partner/${partner_id}`);
+
       return data;
     }),
   createPartner: supabaseProtectedProcedure
     .input(createOrganizationSchema)
     .mutation(async ({ input, ctx }) => {
       const { partner_name, website, telegram_handle, twitter_id } = input;
-      const { userId: user_id } = ctx;
+      const { userId: user_id, NextResponse } = ctx;
 
       // First We try to create the partner org. if it already exists, then we throw an error. We use the name of the organisation as a unique key ( So people cannot create two partner orgs with the same name)
       const { data, error } = await adminServerSupabaseInstance
@@ -239,6 +245,8 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
+      void NextResponse.revalidate(`/partner/${data.partner_id}`);
+
       return newPartnerOwnership;
     }),
   getPartnerInformation: supabaseProtectedProcedure
@@ -289,7 +297,7 @@ export const partnerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId } = ctx;
+      const { userId, NextResponse } = ctx;
       const { partner_id } = input;
 
       const { data, error } = await adminServerSupabaseInstance
@@ -330,6 +338,8 @@ export const partnerRouter = createTRPCRouter({
       if (PartnerDeletionError) {
         return data;
       }
+
+      void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return data;
     }),

@@ -1,9 +1,10 @@
+import { publicProcedure } from "./../trpc";
+import { isEventAdmin } from "./../../utils/auth";
 import { EVENT_IMAGE_BUCKET } from "./../../../types/storage";
-import { City, eventLocation, eventObjectSchema } from "./../../../types/event";
+import { eventObjectSchema } from "./../../../types/event";
 import { TRPCError } from "@trpc/server";
 import { adminServerSupabaseInstance } from "./../../supabase/sharedInstance";
 import { z } from "zod";
-import { eventCreationSchema } from "../../../types/event";
 
 import { createTRPCRouter, supabaseProtectedProcedure } from "../trpc";
 import { convertDateToTimestamptz } from "../../../utils/date";
@@ -12,7 +13,7 @@ import {
   isOrganizationAdmin,
   isOrganizationEvent,
 } from "../../utils/auth";
-import { Database } from "../../../types/database-raw";
+import { type Database } from "../../../types/database-raw";
 
 export const eventRouter = createTRPCRouter({
   updateEvent: supabaseProtectedProcedure
@@ -23,21 +24,24 @@ export const eventRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Validate that user is an admin
-      const { userId: user_id } = ctx;
-      const { event_id, ...eventInformation } = input;
+      const { userId: user_id, NextResponse } = ctx;
+      const { event_id, fallback_image, ...eventInformation } = input;
       const partner_id = eventInformation.partner_id.value;
 
-      const isAdmin = hasAdminPrivileges(user_id);
+      const hasAdminRights = await hasAdminPrivileges(user_id);
+      const hasEventAdminPermission = await isEventAdmin(user_id, event_id);
 
-      if (!isAdmin) {
+      // We determine if the user is registered as the event id registrar on the backend.
+      if (!hasAdminRights && !hasEventAdminPermission) {
         // Non-Admin means we need to do more checksl
-        await isOrganizationAdmin(user_id, partner_id);
+        await isOrganizationAdmin(partner_id, user_id);
         await isOrganizationEvent(partner_id, event_id);
       }
 
       const processedEventInformation: Database["public"]["Tables"]["Event"]["Update"] =
         {
           ...eventInformation,
+          category: eventInformation.category.value,
           city: eventInformation.city.value,
           country: eventInformation.country.value,
           starts_at: convertDateToTimestamptz(eventInformation.starts_at),
@@ -45,7 +49,7 @@ export const eventRouter = createTRPCRouter({
           event_description: eventInformation.event_description
             ? eventInformation.event_description
             : undefined,
-          online: eventInformation.online === eventLocation.online,
+          online: eventInformation.online,
           partner_id: eventInformation.partner_id.value,
         };
 
@@ -57,14 +61,37 @@ export const eventRouter = createTRPCRouter({
         .select("*")
         .maybeSingle();
 
-      console.log(data, error);
-
       if (error || !data) {
+        console.log(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unable to update event. Please try again later",
         });
       }
+
+      if (fallback_image) {
+        const { error } = await adminServerSupabaseInstance
+          .from("PromotionalMaterial")
+          .upsert({
+            event_id: event_id,
+            image_url: fallback_image,
+            original_name: "",
+          });
+
+        console.log(error);
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "New event created but unable to upload promotional material. Please try again later or contact support if this error persists ",
+          });
+        }
+      }
+
+      // void NextResponse.revalidate(`/event/${event_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
+      void NextResponse.revalidate(`/`);
 
       return data;
     }),
@@ -106,11 +133,17 @@ export const eventRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { userId: user_id } = ctx;
       const { partner_id, event_id } = input;
-      // Step 1 : Verify that user has valid permissions
-      await isOrganizationAdmin(partner_id, user_id);
 
-      // Step 2 : Verify that event_id matches the partner_id
-      await isOrganizationEvent(partner_id, event_id);
+      const hasAdminRights = await hasAdminPrivileges(user_id);
+      const hasEventAdminPermission = await isEventAdmin(user_id, event_id);
+
+      // We determine if the user is registered as the event id registrar on the backend.
+
+      if (!hasAdminRights && !hasEventAdminPermission) {
+        // Non-Admin means we need to do more checksl
+        await isOrganizationAdmin(partner_id, user_id);
+        await isOrganizationEvent(partner_id, event_id);
+      }
 
       // Remove all the individual images from db
       const { error: removingImagesError } = await adminServerSupabaseInstance
@@ -145,7 +178,7 @@ export const eventRouter = createTRPCRouter({
 
       return true;
     }),
-  uploadImages: supabaseProtectedProcedure
+  unauthorizedUploadImages: publicProcedure
     .input(
       z.object({
         images: z.array(
@@ -182,6 +215,47 @@ export const eventRouter = createTRPCRouter({
 
       return data;
     }),
+  uploadImages: supabaseProtectedProcedure
+    .input(
+      z.object({
+        images: z.array(
+          z.object({
+            image_url: z.string().url(),
+            file_name: z.string(),
+          })
+        ),
+        event_id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { event_id, images } = input;
+      const { NextResponse } = ctx;
+      const insertionData = images.map((item) => {
+        return {
+          event_id,
+          image_url: item.image_url,
+          original_name: item.file_name,
+        };
+      });
+
+      const { data, error } = await adminServerSupabaseInstance
+        .from("PromotionalMaterial")
+        .insert(insertionData)
+        .select("*");
+
+      if (error) {
+        throw new TRPCError({
+          code: "CLIENT_CLOSED_REQUEST",
+          message:
+            "Unable to update database with all the promotional material",
+        });
+      }
+
+      // void NextResponse.revalidate(`/event/${event_id}`);
+      void NextResponse.revalidate(`/`);
+
+      return data;
+    }),
   deleteEvent: supabaseProtectedProcedure
     .input(
       z.object({
@@ -190,11 +264,19 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId: user_id } = ctx;
+      const { userId: user_id, NextResponse } = ctx;
       const { event_id, partner_id } = input;
 
-      // First we validate that for this specific partner id, user has admin rights
-      await isOrganizationAdmin(partner_id, user_id);
+      const hasAdminRights = await hasAdminPrivileges(user_id);
+      const hasEventAdminPermission = await isEventAdmin(user_id, event_id);
+
+      // We determine if the user is registered as the event id registrar on the backend.
+
+      if (!hasAdminRights && !hasEventAdminPermission) {
+        // Non-Admin means we need to do more checksl
+        await isOrganizationAdmin(partner_id, user_id);
+        await isOrganizationEvent(partner_id, event_id);
+      }
 
       // Now we delete the event - associated images should be deleted accordingly.
       const { data, error } = await adminServerSupabaseInstance
@@ -212,6 +294,9 @@ export const eventRouter = createTRPCRouter({
             "Unable to delete event from database. Please try again later or contact support if this issue persists.",
         });
       }
+
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
+      void NextResponse.revalidate(`/`);
 
       return data;
     }),
@@ -236,7 +321,7 @@ export const eventRouter = createTRPCRouter({
       await adminServerSupabaseInstance
         .from("Event")
         .select()
-        .in("partner_id", partnerIds);
+        .in("partner_id", partnerIds as string[]);
 
     if (eventsError) {
       throw new TRPCError({
@@ -245,9 +330,28 @@ export const eventRouter = createTRPCRouter({
       });
     }
 
-    return events;
+    const { data: userUnapprovedEvents, error: userUnapprovedEventsError } =
+      await adminServerSupabaseInstance
+        .from("Event")
+        .select("*")
+        .eq("user_id", user_id);
+
+    if (userUnapprovedEventsError) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Unable to get list of events",
+      });
+    }
+
+    const userApprovedEvents = events ? events : [];
+    const userUnapprovedEventsCoerced = userUnapprovedEvents
+      ? userUnapprovedEvents
+      : [];
+
+    const res = userApprovedEvents.concat(userUnapprovedEventsCoerced);
+    return res;
   }),
-  createNewEvent: supabaseProtectedProcedure
+  unauthorizedCreateNewEvent: publicProcedure
     .input(eventObjectSchema)
     .mutation(async ({ input }) => {
       const {
@@ -262,6 +366,9 @@ export const eventRouter = createTRPCRouter({
         country,
         event_description,
         location,
+        fallback_name,
+        category,
+        fallback_image,
       } = input;
 
       const { data: insertEventOp, error: insertEventOpError } =
@@ -273,19 +380,104 @@ export const eventRouter = createTRPCRouter({
             starts_at: convertDateToTimestamptz(starts_at),
             ends_at: convertDateToTimestamptz(ends_at),
             rsvp_link: rsvp_link,
-            partner_id: partner_id ? partner_id.value : null,
-            online: online === eventLocation.online,
+            partner_id: partner_id.value,
+            online: online,
             event_description: event_description
               ? event_description
               : undefined,
             city: city.value,
             country: country.value,
             location,
+            category: category.value,
+            fallback_name,
+            user_id: null,
+            approved: false,
           })
           .select("*")
           .maybeSingle();
 
-      console.log(insertEventOp, insertEventOpError);
+      if (insertEventOpError || !insertEventOp) {
+        console.log(insertEventOpError);
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            insertEventOpError?.message ??
+            "Unable to create new event. Please try again later or contact support if this error persists",
+        });
+      }
+
+      // If fallback image then we insert it into our promotional image db
+      if (fallback_image) {
+        const { error } = await adminServerSupabaseInstance
+          .from("PromotionalMaterial")
+          .insert({
+            event_id: insertEventOp.event_id,
+            image_url: fallback_image,
+            original_name: "",
+          });
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "New event created but unable to upload promotional material. Please try again later or contact support if this error persists ",
+          });
+        }
+      }
+
+      return insertEventOp;
+    }),
+  createNewEvent: supabaseProtectedProcedure
+    .input(eventObjectSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { NextResponse, userId: user_id } = ctx;
+      const {
+        event_title,
+        event_type,
+        starts_at,
+        ends_at,
+        rsvp_link,
+        partner_id,
+        online,
+        city,
+        country,
+        event_description,
+        location,
+        fallback_name,
+        category,
+        fallback_image,
+      } = input;
+
+      const { data: insertEventOp, error: insertEventOpError } =
+        await adminServerSupabaseInstance
+          .from("Event")
+          .insert({
+            event_title,
+            event_type,
+            starts_at: convertDateToTimestamptz(starts_at),
+            ends_at: convertDateToTimestamptz(ends_at),
+            rsvp_link: rsvp_link,
+            partner_id: partner_id.value,
+            online: online,
+            event_description: event_description
+              ? event_description
+              : undefined,
+            city: city.value,
+            country: country.value,
+            location,
+            category: category.value,
+            fallback_name,
+            user_id:
+              partner_id.value === process.env.NEXT_PUBLIC_NONE_PARTNER
+                ? user_id
+                : null,
+            approved:
+              partner_id.value === process.env.NEXT_PUBLIC_NONE_PARTNER
+                ? false
+                : true,
+          })
+          .select("*")
+          .maybeSingle();
 
       if (insertEventOpError || !insertEventOp) {
         throw new TRPCError({
@@ -295,6 +487,29 @@ export const eventRouter = createTRPCRouter({
         });
       }
 
+      if (fallback_image) {
+        const { error } = await adminServerSupabaseInstance
+          .from("PromotionalMaterial")
+          .insert({
+            event_id: insertEventOp.event_id,
+            image_url: fallback_image,
+            original_name: "",
+          });
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "New event created but unable to upload promotional material. Please try again later or contact support if this error persists ",
+          });
+        }
+      }
+
+      if (partner_id.value !== process.env.NEXT_PUBLIC_NONE_PARTNER) {
+        // void NextResponse.revalidate(`/event/${insertEventOp.event_id}`);
+        // void NextResponse.revalidate(`/partner/${partner_id}`);
+        void NextResponse.revalidate(`/`);
+      }
       return insertEventOp;
     }),
 });

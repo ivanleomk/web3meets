@@ -7,6 +7,7 @@ type Props = {
   children: ReactNode;
   onClickHandler?: () => void;
   buttonText?: string;
+  topPadding?: boolean;
 };
 
 const SectionHeader = ({
@@ -15,10 +16,11 @@ const SectionHeader = ({
   children,
   onClickHandler,
   buttonText,
+  topPadding = true,
 }: Props) => {
   if (!onClickHandler || !buttonText) {
     return (
-      <div className="mt-20">
+      <div className={topPadding ? "mt-20" : ""}>
         <div className="flex items-center  justify-between">
           <h3 className="text-lg font-medium leading-6 text-gray-900">
             {title}

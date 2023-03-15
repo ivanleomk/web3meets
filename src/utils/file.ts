@@ -19,9 +19,9 @@ export const uploadFiles = async (
   if (!files) {
     return files;
   }
-  const fileUploads = files?.map((file) => {
+  const fileUploads = files?.map((file, idx) => {
     const fileExtension = file.name.split(".").pop();
-    const filePath = `${event_id}/${uuidv4()}.${fileExtension}`;
+    const filePath = `${event_id}/${idx}.${fileExtension}`;
     return supabaseClient.storage
       .from(EVENT_IMAGE_BUCKET)
       .upload(filePath, file);

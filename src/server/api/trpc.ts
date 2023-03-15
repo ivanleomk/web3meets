@@ -23,6 +23,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
  */
 type CreateContextOptions = {
   supabase: SupabaseClient<Database>;
+  res: NextApiResponse;
 };
 
 /**
@@ -51,7 +52,7 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
     res: _opts.res,
   });
 
-  return createInnerTRPCContext({ supabase });
+  return createInnerTRPCContext({ supabase, res: _opts.res });
 };
 
 /**
@@ -67,6 +68,7 @@ import {
   SupabaseClient,
 } from "@supabase/auth-helpers-nextjs";
 import { Database } from "../../types/database-raw";
+import { NextApiResponse } from "next";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -100,7 +102,7 @@ export const publicProcedure = t.procedure;
 
 export const isSupabaseAuthed = t.middleware(async (res) => {
   const { next, ctx } = res;
-  const { supabase } = ctx;
+  const { supabase, res: NextResponse } = ctx;
   const { data: session } = await supabase.auth.getSession();
 
   if (!session) {
@@ -115,7 +117,7 @@ export const isSupabaseAuthed = t.middleware(async (res) => {
   } = await supabase.auth.getUser();
   const userId = user?.id as string;
   const userEmail = user?.email as string;
-  const new_ctx = { ...ctx, userId, userEmail, supabase };
+  const new_ctx = { ...ctx, userId, userEmail, supabase, NextResponse };
 
   return next({
     ctx: new_ctx,

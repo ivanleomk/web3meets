@@ -8,16 +8,20 @@ import { Button } from "./Button";
 import { useUserContext } from "../context/UserContext";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { toast } from "react-toastify";
+import Logo from "./Logo";
+import { router } from "@trpc/server";
+import { useRouter } from "next/router";
 
 const MobileDropdownMenu = () => {
   const { isAuthenticated } = useUserContext();
   const supabaseClient = useSupabaseClient();
+  const router = useRouter();
   return (
-    <Popover className="md:hidden">
+    <Popover className="lg:hidden">
       {({ open, close }) => (
         <>
           <Popover.Button
-            className="relative z-10 -m-2 inline-flex items-center rounded-lg stroke-gray-900 p-2 hover:bg-gray-200/50 hover:stroke-gray-600 active:stroke-gray-900 [&:not(:focus-visible)]:focus:outline-none"
+            className="relative z-20 -m-2 inline-flex items-center rounded-lg stroke-gray-900 p-2 hover:bg-gray-200/50 hover:stroke-gray-600 active:stroke-gray-900 [&:not(:focus-visible)]:focus:outline-none"
             aria-label="Toggle site navigation"
           >
             {({ open }) =>
@@ -37,7 +41,7 @@ const MobileDropdownMenu = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-0 bg-gray-300/60 backdrop-blur"
+                  className="fixed inset-0  bg-gray-300/60 backdrop-blur"
                 />
                 <Popover.Panel
                   static
@@ -49,7 +53,7 @@ const MobileDropdownMenu = () => {
                     y: -32,
                     transition: { duration: 0.2 },
                   }}
-                  className="absolute inset-x-0 top-0 z-0 origin-top rounded-b-2xl bg-gray-50 px-6 pb-6 pt-32 shadow-2xl shadow-gray-900/20"
+                  className="absolute inset-x-0 top-0 z-10 origin-top rounded-b-2xl bg-gray-50 px-6 pb-6 pt-32 shadow-2xl shadow-gray-900/20"
                 >
                   <div className="space-y-4">
                     {LINKS.map((item, idx) => {
@@ -61,7 +65,6 @@ const MobileDropdownMenu = () => {
                         />
                       );
                     })}
-                    <div className="border-b-2"></div>
                     {isAuthenticated ? (
                       <>
                         {PROFILE_LINKS.map((item, idx) => {
@@ -73,11 +76,25 @@ const MobileDropdownMenu = () => {
                             />
                           );
                         })}
-
+                      </>
+                    ) : null}
+                    <div className="border-b-2"></div>
+                    {isAuthenticated ? (
+                      <>
+                        <Button
+                          text="Submit an Event"
+                          variant="solid"
+                          additionalStyling="w-full"
+                          onClickHandler={() => {
+                            close();
+                            void router.push(
+                              "/dashboard?mode=Events&view=create"
+                            );
+                          }}
+                        />
                         <Button
                           text="Sign Out"
-                          variant="solid"
-                          color="gray"
+                          variant="outline"
                           additionalStyling="w-full"
                           onClickHandler={() => {
                             close();
@@ -104,10 +121,10 @@ const MobileDropdownMenu = () => {
                         />
                         <Button
                           postClickHook={() => close()}
-                          text="Sign Up"
+                          text="Submit An Event"
                           variant="solid"
                           color="gray"
-                          href="/signup"
+                          href="/add-event"
                         />
                       </div>
                     )}

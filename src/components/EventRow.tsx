@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { Event } from "../types/database";
 import { api } from "../utils/api";
 import { Button } from "./Button";
+import OrganizationStatus from "./OrganizationStatus";
 import WarningModal from "./WarningModal";
 
 type Props = {
@@ -19,6 +20,7 @@ const EventRow = ({ data }: Props) => {
     rsvp_link,
     event_id,
     partner_id,
+    approved,
   } = data;
   const formattedStart = format(new Date(starts_at), "MMM dd yyyy,hh:mm aa");
   const formattedEnd = format(new Date(ends_at), "MMM dd yyyy, hh:mm aa");
@@ -57,6 +59,9 @@ const EventRow = ({ data }: Props) => {
         {event_title}
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+        <OrganizationStatus active={approved} />
+      </td>
+      <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         {formattedStart}
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
@@ -68,12 +73,17 @@ const EventRow = ({ data }: Props) => {
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         {rsvp_link ? rsvp_link : "No Link Provided"}
       </td>
+
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         <div className="flex flex-col space-y-4 text-left">
           <WarningModal
             variant="outline"
             color="gray"
             onClickHandler={() => {
+              console.log({
+                event_id: event_id,
+                partner_id: partner_id as string,
+              });
               deletePromotionalMaterial({
                 event_id: event_id,
                 partner_id: partner_id as string,

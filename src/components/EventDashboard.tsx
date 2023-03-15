@@ -11,6 +11,7 @@ import OrganizationTable from "./OrganizationTable";
 import { EVENT_FIELDS } from "../config/organization";
 import EventRow from "./EventRow";
 import { EVENT_IMAGE_BUCKET } from "../types/storage";
+import { useOrganizationContext } from "../context/OrganizationContext";
 
 type Props = {
   initialMode: Modes;
@@ -22,6 +23,7 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
   const user = useUser();
   const { mutateAsync: uploadImages } = api.event.uploadImages.useMutation();
   const utils = api.useContext();
+  const { partners } = useOrganizationContext();
 
   const { mutateAsync } = api.event.createNewEvent.useMutation();
   const {
@@ -41,6 +43,12 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
       res = await mutateAsync(submitData);
     } catch (err) {
       toast.warning("Unable to save event data. Please try again.");
+      return;
+    }
+    console.log(res);
+    if (!res) {
+      toast.warning("Unable to update event data. Please try again later");
+
       return;
     }
 
@@ -105,6 +113,22 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
           Unexpected error encountered - please try refreshing the page or
           contact support if this issue persists
         </p>
+      </SectionHeader>
+    );
+  }
+
+  if (partners.filter((item) => item.approved).length == 0) {
+    return (
+      <SectionHeader
+        title={"Event Dashboard"}
+        subtitle={
+          "We've recieved your application to create a new organization. Once we've approved it, you can start creating your first event."
+        }
+        onClickHandler={() => {
+          setInitialMode(initialMode === "Create" ? "View" : "Create");
+        }}
+      >
+        {null}
       </SectionHeader>
     );
   }

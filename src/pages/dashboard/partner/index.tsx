@@ -99,7 +99,7 @@ const PartnerPage = ({
   const hasOrganizationAdminRights = organizationIsApproved && userIsApproved;
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto mb-10 max-w-7xl">
       <Button href="/dashboard" variant="outline" text="Return to Dashboard" />
 
       <h2 className="mt-10 mb-2 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -125,7 +125,7 @@ const PartnerPage = ({
                   // User must submit a valid url for changes to be commited so this will always be non-null
                   website: PartnerMetadata.website,
                   telegram_handle: PartnerMetadata.telegram_handle,
-                  bio: PartnerMetadata.bio,
+                  bio: PartnerMetadata.bio ?? undefined,
                 }
               : undefined
           }
@@ -235,13 +235,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { data, error } = await adminServerSupabaseInstance
     .from("UserPartnerOwnership")
     .select("*,User(*),Partner(*)")
-    .eq("partner_id", partner_id);
+    .eq("partner_id", partner_id)
+    .eq("user_id", user_id);
 
-  const userRights = data?.filter((item) => {
-    return item.user_id === user_id;
-  });
-
-  if (error || userRights?.length == 0 || !userRights) {
+  if (error || !data) {
     return {
       redirect: {
         destination:

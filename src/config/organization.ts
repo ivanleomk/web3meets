@@ -12,6 +12,7 @@ export const ORGANIZATION_FIELDS = [
 
 export const EVENT_FIELDS = [
   "Name",
+  "Approval Status",
   "Start Time",
   "End Time",
   "Online",

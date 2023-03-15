@@ -1,3 +1,4 @@
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ClipLoader } from "react-spinners";
@@ -34,6 +35,8 @@ type ButtonProps = {
   text: string;
   disabled?: boolean;
   isSubmitting?: boolean;
+  submitType?: boolean;
+  showBackArrow?: boolean;
 };
 
 export const Button = ({
@@ -46,6 +49,8 @@ export const Button = ({
   postClickHook,
   disabled = false,
   isSubmitting,
+  submitType,
+  showBackArrow = false,
 }: ButtonProps) => {
   if (variant !== "solid" && variant !== "outline") {
     throw new Error("Invalid Variant Prop");
@@ -74,9 +79,32 @@ export const Button = ({
 
   if (href && !disabled) {
     if (!postClickHook) {
+      const regEx = /^http/;
+
+      if (regEx.test(href)) {
+        return (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styling}
+          >
+            <div className="flex items-center">
+              {showBackArrow ? (
+                <ArrowLeftIcon className="mr-1 h-4 w-4" />
+              ) : null}{" "}
+              {text}
+            </div>
+          </a>
+        );
+      }
+
       return (
         <Link href={href} className={styling} passHref>
-          {text}
+          <div className="flex items-center">
+            {showBackArrow ? <ArrowLeftIcon className="mr-1 h-4 w-4" /> : null}{" "}
+            {text}
+          </div>
         </Link>
       );
     }
@@ -94,6 +122,22 @@ export const Button = ({
     );
   }
 
+  if (submitType) {
+    return (
+      <div className="col-span-2 flex justify-end">
+        <button disabled={isSubmitting} type="submit" className={styling}>
+          {isSubmitting ? (
+            <>
+              <ClipLoader color="white" size={20} />
+            </>
+          ) : (
+            <>{text}</>
+          )}
+        </button>
+      </div>
+    );
+  }
+
   if (!onClickHandler) {
     throw new Error("Please supply an on-click handler");
   }
@@ -108,6 +152,7 @@ export const Button = ({
         }
       }}
       className={styling}
+      type="button"
     >
       {isSubmitting ? (
         <>

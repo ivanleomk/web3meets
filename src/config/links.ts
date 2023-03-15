@@ -6,12 +6,8 @@ export const LINKS: LinkMetadata[] = [
     label: "About Us",
   },
   {
-    href: "/events",
+    href: "/",
     label: "Events",
-  },
-  {
-    href: "/add-event",
-    label: "Submit an Event",
   },
 ];
 
@@ -21,12 +17,8 @@ export const AUTHENTICATED_LINKS: LinkMetadata[] = [
     label: "About Us",
   },
   {
-    href: "/events",
+    href: "/",
     label: "Events",
-  },
-  {
-    href: "/dashboard?mode=Events&view=create",
-    label: "Submit an Event",
   },
 ];
 

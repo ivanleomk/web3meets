@@ -15,7 +15,6 @@ const MobileNavLink = ({ label, href, postClickHook }: Props) => {
       onClick={() => {
         void router.push(href);
         if (postClickHook) {
-          console.log(postClickHook);
           postClickHook();
         }
       }}

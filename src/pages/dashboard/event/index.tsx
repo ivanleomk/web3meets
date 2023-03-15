@@ -22,7 +22,7 @@ import {
   Country,
   eventCreationInputType,
   eventLocation,
-  eventType,
+  eventPaymentType,
 } from "../../../types/event";
 import { EVENT_IMAGE_BUCKET } from "../../../types/storage";
 import { api } from "../../../utils/api";
@@ -34,10 +34,15 @@ type Props = {
 };
 
 const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
+  console.log(EventInformation, PartnerInformation);
   const router = useRouter();
   const { event_id } = router.query;
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialFallbackImage, setInitialFallbackImage] = useState<
+    null | string
+  >(null);
+
   const supabaseClient = useSupabaseClient();
 
   const { mutateAsync: updateEvent } = api.event.updateEvent.useMutation();
@@ -45,6 +50,21 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
   const { mutateAsync: uploadImages } = api.event.uploadImages.useMutation();
 
   useEffect(() => {
+    const non_hosted_images = EventInformation.PromotionalMaterial.filter(
+      (item) => {
+        return !item.image_url.includes(
+          process.env.NEXT_PUBLIC_IMAGE_BUCKET as string
+        );
+      }
+    );
+
+    if (non_hosted_images.length > 0) {
+      // User has chosen to provide a banner image which is not hosted on our servers. Therefore we just set fallback_image to the value;
+      setLoading(false);
+      setInitialFallbackImage(non_hosted_images.at(0)?.image_url ?? null);
+      return;
+    }
+
     const existingImages = EventInformation.PromotionalMaterial.map(
       async (item) => {
         const path = `${item.image_url}`;
@@ -63,7 +83,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        toast.warning(err);
       });
   }, [EventInformation.PromotionalMaterial]);
 
@@ -78,7 +98,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       </>
     );
   }
-
+  debugger;
   const processedEventInformation: eventCreationInputType & {
     event_id: string;
   } = {
@@ -93,15 +113,24 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       value: EventInformation.country as Country,
       label: EventInformation.country as Country,
     },
-    event_type: EventInformation.event_type as eventType,
+    event_type: EventInformation.event_type as eventPaymentType,
     partner_id: {
       value: EventInformation.partner_id,
-      label: PartnerInformation.partner_name,
+      label:
+        EventInformation.partner_id === process.env.NEXT_PUBLIC_NONE_PARTNER
+          ? "Input My Own"
+          : PartnerInformation.partner_name,
     },
     online: EventInformation.online
       ? eventLocation.online
       : eventLocation.offline,
     images: files,
+    category: {
+      value: EventInformation.category,
+      label: EventInformation.category,
+    },
+    fallback_image: initialFallbackImage,
+    fallback_name: EventInformation?.fallback_name,
   };
 
   return (
@@ -111,6 +140,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       <SectionHeader title={"Update Event Information"} subtitle={""}>
         <CreateEventForm
           initialValue={processedEventInformation}
+          initialUploadImage={initialFallbackImage === null}
           onSubmit={async (data) => {
             const responseObj = {
               event_id: event_id as string,
@@ -118,19 +148,28 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
             };
 
             try {
-              await updateEvent(responseObj);
+              // TODO: Optimization here maybe? But it's really just a single SQL query so not much is needed
               await deleteImages({
                 event_id: event_id as string,
                 partner_id: data.partner_id.value,
               });
-              await uploadFiles(
-                data.images,
-                supabaseClient,
-                uploadImages,
-                event_id as string
-              );
+              await updateEvent(responseObj);
+
+              // User has provided images
+              if (data.images) {
+                await uploadFiles(
+                  data.images,
+                  supabaseClient,
+                  uploadImages,
+                  event_id as string
+                );
+              }
             } catch (err) {
-              toast.warning("Unable to update events");
+              console.log(err);
+              toast.warning(
+                "Unable to update event. Please try again later or contact support if this issue persists"
+              );
+              return;
             }
             toast.success("Succesfully updated event details.");
           }}
@@ -167,8 +206,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       .eq("event_id", event_id)
       .maybeSingle();
 
-  console.log(EventInformation, EventInformationError);
-
   if (!EventInformation || EventInformationError) {
     return {
       redirect: {
@@ -184,7 +221,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     .from("User")
     .select("*")
     .eq("user_id", user_id)
-    .single();
+    .maybeSingle();
 
   if (error) {
     return {
@@ -196,7 +233,20 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  if (data?.admin) {
+  if (
+    EventInformation.partner_id === process.env.NEXT_PUBLIC_NONE_PARTNER &&
+    EventInformation.user_id != user_id
+  ) {
+    return {
+      redirect: {
+        destination:
+          "/dashboard?redirected_from=event_page&reason=invalid_credentials",
+        permanent: false,
+      },
+    };
+  }
+
+  if (data?.admin || EventInformation.user_id == user_id) {
     return {
       props: {
         EventInformation,
@@ -205,6 +255,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   const partner_id = EventInformation.partner_id as string;
+
   // Step 2 : Get partner ownership data
   const { data: PartnerOwnershipData, error: PartnerOwnershipDataError } =
     await adminServerSupabaseInstance
