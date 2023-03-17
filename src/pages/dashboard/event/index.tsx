@@ -3,7 +3,6 @@ import {
   SupabaseClient,
 } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { format } from "date-fns";
 import { type GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -12,19 +11,19 @@ import { toast } from "react-toastify";
 import { Button } from "../../../components/Button";
 import CreateEventForm from "../../../components/CreateEventForm";
 import SectionHeader from "../../../components/SectionHeader";
-import {
-  adminServerSupabaseInstance,
-  serverSupabaseInstance,
-} from "../../../server/supabase/sharedInstance";
-import { Event, Partner, PromotionalMaterial } from "../../../types/database";
-import {
+import { adminServerSupabaseInstance } from "../../../server/supabase/sharedInstance";
+import type {
+  Event,
+  Partner,
+  PromotionalMaterial,
+} from "../../../types/database";
+import type {
   City,
   Country,
   eventCreationInputType,
-  eventLocation,
   eventPaymentType,
 } from "../../../types/event";
-import { EVENT_IMAGE_BUCKET } from "../../../types/storage";
+import { eventLocation } from "../../../types/event";
 import { api } from "../../../utils/api";
 import { uploadFiles } from "../../../utils/file";
 

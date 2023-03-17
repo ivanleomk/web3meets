@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserWrapper } from "../context/UserContext";
 import "react-datepicker/dist/react-datepicker.css";
 import { OrganizationWrapper } from "../context/OrganizationContext";
+import Head from "next/head";
 
 function MyApp({
   Component,
@@ -40,6 +41,7 @@ function MyApp({
       <UserWrapper>
         <OrganizationWrapper>
           <Header />
+
           <div className="-pb-10 px-4 md:px-10">
             <Component {...pageProps} />
             <ToastContainer />
