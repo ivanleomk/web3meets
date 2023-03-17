@@ -235,7 +235,7 @@ const CreateEventForm = ({
   }, [setValue, isAuthenticated, partners, initialValue]);
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto mb-10 max-w-7xl">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-20">
         <FormBox sectionHeader="Event Information">
           <div>
