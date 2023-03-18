@@ -49,7 +49,8 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
     try {
       res = await mutateAsync(submitData);
     } catch (err) {
-      toast.warning(err.message);
+      console.log(err);
+      toast.warning("Unable to create new event");
       return;
     }
 
