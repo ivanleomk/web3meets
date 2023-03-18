@@ -57,6 +57,7 @@ const CreateEventForm = ({
 
   const { mutate, isLoading } = api.crawler.getEventDataFromUrl.useMutation({
     onSuccess: (data) => {
+      debugger;
       if (data?.organizer) {
         setValue("partner_id", {
           value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
@@ -85,10 +86,7 @@ const CreateEventForm = ({
           "online",
           online ? eventLocation.online : eventLocation.offline
         );
-        setValue(
-          "location",
-          online ? data?.location["url"] : data?.location["name"]
-        );
+
         if (online) {
           setValue("city", {
             value: City.NA,
@@ -98,14 +96,27 @@ const CreateEventForm = ({
             value: Country.NA,
             label: Country.NA,
           });
+          setValue("location", data?.location["url"]);
         } else {
           const country = data?.location?.address?.addressCountry;
           const city = data?.location?.address?.addressLocality;
+
+          let address = data?.location?.["name"];
+          if (data?.location?.address?.streetAddress) {
+            address += " ";
+            address += data?.location?.address?.streetAddress;
+          }
+          setValue("location", address);
 
           if (country === "SG") {
             setValue("country", {
               value: Country.Singapore,
               label: Country.Singapore,
+            });
+          } else {
+            setValue("country", {
+              value: Country.NA,
+              label: Country.NA,
             });
           }
 
@@ -113,6 +124,11 @@ const CreateEventForm = ({
             setValue("city", {
               value: City.Singapore,
               label: City.Singapore,
+            });
+          } else {
+            setValue("city", {
+              value: City.NA,
+              label: City.NA,
             });
           }
         }
@@ -174,7 +190,7 @@ const CreateEventForm = ({
         setValue("fallback_image", data["image"]);
         setUploadImage(false);
       }
-
+      console.log(data);
       toast.success("Succesfully crawled data from RSVP link");
     },
     onError: () => {
@@ -219,18 +235,9 @@ const CreateEventForm = ({
   }, [setValue, isAuthenticated, partners, initialValue]);
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto mb-10 max-w-7xl">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-20">
         <FormBox sectionHeader="Event Information">
-          <Input
-            subtitle="What is your event called?"
-            label="Event Title"
-            errorMessage={errors?.event_title}
-            htmlFor="Name"
-            autocomplete=""
-            type="text"
-            {...register("event_title")}
-          />
           <div>
             <Input
               subtitle="Where do people RSVP for this event?"
@@ -264,6 +271,16 @@ const CreateEventForm = ({
               ) : null}
             </div>
           </div>
+          <Input
+            subtitle="What is your event called?"
+            label="Event Title"
+            errorMessage={errors?.event_title}
+            htmlFor="Name"
+            autocomplete=""
+            type="text"
+            {...register("event_title")}
+          />
+
           {isAuthenticated ? (
             <InputSelect
               control={control}
