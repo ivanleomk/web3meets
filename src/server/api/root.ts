@@ -4,6 +4,7 @@ import { userRouter } from "./routers/user";
 import { eventRouter } from "./routers/event";
 import { partnerRouter } from "./routers/partner";
 import { crawlerRouter } from "./routers/crawler";
+import { adminRouter } from "./routers/admin";
 
 /**
  * This is the primary router for your server.
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   event: eventRouter,
   user: userRouter,
   crawler: crawlerRouter,
+  admin: adminRouter,
 });
 
 // export type definition of API

@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import React from "react";
 import { toast } from "react-toastify";
-import { Event } from "../types/database";
+import { type Event } from "../types/database";
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import OrganizationStatus from "./OrganizationStatus";
@@ -11,7 +11,7 @@ type Props = {
   data: Event;
 };
 
-const EventRow = ({ data }: Props) => {
+const EventApprovalRow = ({ data }: Props) => {
   const {
     event_title,
     starts_at,
@@ -30,7 +30,7 @@ const EventRow = ({ data }: Props) => {
   const { mutate, isLoading: deletingEventLoading } =
     api.event.deleteEvent.useMutation({
       onSuccess: async () => {
-        await utils.event.getUserEvents.invalidate();
+        await utils.admin.getEvents.invalidate();
         toast.success(`Succesfully deleted ${event_title} from database`);
       },
       onError: (err) => {
@@ -47,6 +47,16 @@ const EventRow = ({ data }: Props) => {
         event_id,
         partner_id: partner_id as string,
       });
+    },
+    onError: (err) => {
+      toast.warning(err.message);
+    },
+  });
+
+  const { mutate: updateEventStatus } = api.admin.setEventStatus.useMutation({
+    onSuccess: () => {
+      toast.success("Succesfully updated event approval status");
+      void utils.admin.getEvents.invalidate();
     },
     onError: (err) => {
       toast.warning(err.message);
@@ -73,13 +83,16 @@ const EventRow = ({ data }: Props) => {
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         {rsvp_link ? rsvp_link : "No Link Provided"}
       </td>
-
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         <div className="flex flex-col space-y-4 text-left">
           <WarningModal
             variant="outline"
             color="gray"
             onClickHandler={() => {
+              console.log({
+                event_id: event_id,
+                partner_id: partner_id as string,
+              });
               deletePromotionalMaterial({
                 event_id: event_id,
                 partner_id: partner_id as string,
@@ -92,11 +105,23 @@ const EventRow = ({ data }: Props) => {
             title="Delete Event "
             subtitle={`Are you sure you wish to delete event ${event_title}. This action is non reversible`}
           />
+
+          <Button
+            variant="solid"
+            color="cyan"
+            href={`/dashboard/event?event_id=${event_id}`}
+            text="Modify Event Details"
+          />
           <Button
             variant="solid"
             color="gray"
-            href={`/dashboard/event?event_id=${event_id}`}
-            text="Update Event"
+            onClickHandler={() => {
+              updateEventStatus({
+                event_id,
+                status: !approved,
+              });
+            }}
+            text={approved ? "Revoke Event Approval" : "Approve Event"}
           />
         </div>
       </td>
@@ -104,4 +129,4 @@ const EventRow = ({ data }: Props) => {
   );
 };
 
-export default EventRow;
+export default EventApprovalRow;

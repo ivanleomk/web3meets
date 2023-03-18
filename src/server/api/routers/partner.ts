@@ -56,7 +56,7 @@ export const partnerRouter = createTRPCRouter({
         user_id: newAdminData.user_id,
       });
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return true;
     }),
@@ -143,7 +143,7 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return;
     }),
@@ -183,7 +183,7 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return data;
     }),
@@ -245,7 +245,7 @@ export const partnerRouter = createTRPCRouter({
         });
       }
 
-      void NextResponse.revalidate(`/partner/${data.partner_id}`);
+      // void NextResponse.revalidate(`/partner/${data.partner_id}`);
 
       return newPartnerOwnership;
     }),
@@ -276,19 +276,20 @@ export const partnerRouter = createTRPCRouter({
   getAllPartners: supabaseProtectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;
 
-    const { data, error } = await adminServerSupabaseInstance
-      .from("UserPartnerOwnership")
-      .select("*, Partner(*)")
-      .eq("user_id", userId);
+    const { data: UserPartners, error: UserPartnersError } =
+      await adminServerSupabaseInstance
+        .from("UserPartnerOwnership")
+        .select("*, Partner(*)")
+        .eq("user_id", userId);
 
-    if (error) {
+    if (UserPartnersError) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: error.message,
+        message: UserPartnersError.message,
       });
     }
 
-    return data;
+    return UserPartners;
   }),
   deletePartner: supabaseProtectedProcedure
     .input(
@@ -297,7 +298,7 @@ export const partnerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId, NextResponse } = ctx;
+      const { userId, NextResponse, user } = ctx;
       const { partner_id } = input;
 
       const { data, error } = await adminServerSupabaseInstance
@@ -339,7 +340,7 @@ export const partnerRouter = createTRPCRouter({
         return data;
       }
 
-      void NextResponse.revalidate(`/partner/${partner_id}`);
+      // void NextResponse.revalidate(`/partner/${partner_id}`);
 
       return data;
     }),

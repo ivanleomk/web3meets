@@ -1,15 +1,11 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { useUserContext } from "../context/UserContext";
-import { Modes, Tabs } from "../types/dashboard";
-import { UserPartnerOwnershipWithPartner } from "../types/database";
-import { api } from "../utils/api";
+import type { Modes, Tabs } from "../types/dashboard";
+import AdminDashboard from "./AdminDashboard";
 import { Button } from "./Button";
 import EventDashboard from "./EventDashboard";
-import InfoComponent from "./InfoComponent";
 
 import OrganizationDashboard from "./OrganizationDashboard";
 
@@ -37,6 +33,41 @@ export default function UserDashboard({
       </div>
     );
   }
+
+  const filteredTabs = userMetadata?.isAdmin
+    ? tabs
+    : tabs.filter((item) => item !== "Admin");
+
+  const renderDashboard = (tab: Tabs) => {
+    switch (tab) {
+      case "Admin": {
+        if (!userMetadata?.isAdmin) {
+          return null;
+        }
+        return <AdminDashboard />;
+      }
+      case "Events": {
+        return (
+          <EventDashboard
+            initialMode={initialMode}
+            setInitialMode={setInitialMode}
+          />
+        );
+      }
+      case "Organizations": {
+        return (
+          <OrganizationDashboard
+            initialMode={initialMode}
+            setInitialMode={setInitialMode}
+          />
+        );
+      }
+      default: {
+        const chosenTab: never = tab;
+        throw new Error(`${chosenTab} should not be rendered at all`);
+      }
+    }
+  };
 
   if (!userMetadata?.user_name) {
     return (
@@ -88,7 +119,7 @@ export default function UserDashboard({
           }}
           value={initialTab}
         >
-          {tabs.map((tab) => (
+          {filteredTabs.map((tab) => (
             <option key={tab} value={tab}>
               {tab}
             </option>
@@ -97,7 +128,7 @@ export default function UserDashboard({
       </div>
       <div className="hidden sm:block">
         <nav className="flex space-x-4" aria-label="Tabs">
-          {tabs.map((tab) => (
+          {filteredTabs.map((tab) => (
             <div
               key={tab}
               className="relative -my-2 -mx-3 rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors delay-150 hover:text-gray-900 hover:delay-[0ms]"
@@ -133,19 +164,7 @@ export default function UserDashboard({
           ))}
         </nav>
       </div>
-      <div className="mt-10 px-1 md:px-4">
-        {initialTab === "Organizations" ? (
-          <OrganizationDashboard
-            initialMode={initialMode}
-            setInitialMode={setInitialMode}
-          />
-        ) : (
-          <EventDashboard
-            initialMode={initialMode}
-            setInitialMode={setInitialMode}
-          />
-        )}
-      </div>
+      <div className="mt-10 px-1 md:px-4">{renderDashboard(initialTab)}</div>
     </div>
   );
 }

@@ -40,6 +40,7 @@ export interface Database {
           category: string
           city: string | null
           country: string | null
+          created_at: string
           ends_at: string
           event_description: string | null
           event_id: string
@@ -64,6 +65,7 @@ export interface Database {
           category?: string
           city?: string | null
           country?: string | null
+          created_at?: string
           ends_at: string
           event_description?: string | null
           event_id?: string
@@ -88,6 +90,7 @@ export interface Database {
           category?: string
           city?: string | null
           country?: string | null
+          created_at?: string
           ends_at?: string
           event_description?: string | null
           event_id?: string
@@ -113,6 +116,7 @@ export interface Database {
           active: boolean | null
           approved: boolean | null
           bio: string | null
+          created_at: string
           open_to_sponsor: boolean | null
           partner_id: string
           partner_name: string
@@ -125,6 +129,7 @@ export interface Database {
           active?: boolean | null
           approved?: boolean | null
           bio?: string | null
+          created_at?: string
           open_to_sponsor?: boolean | null
           partner_id?: string
           partner_name: string
@@ -137,6 +142,7 @@ export interface Database {
           active?: boolean | null
           approved?: boolean | null
           bio?: string | null
+          created_at?: string
           open_to_sponsor?: boolean | null
           partner_id?: string
           partner_name?: string
