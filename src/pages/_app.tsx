@@ -41,6 +41,18 @@ function MyApp({
       <UserWrapper>
         <OrganizationWrapper>
           <Header />
+          <Head>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1"
+            />
+            <meta charSet="utf-8" />
+            <title>Web3 Meets</title>
+            <meta
+              name="description"
+              content="Your one stop shop for all things web3 related in SEA"
+            />
+          </Head>
 
           <div className="-pb-10 px-4 md:px-10">
             <Component {...pageProps} />

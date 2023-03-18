@@ -62,7 +62,8 @@ const AddEvent = () => {
                 event_id,
               });
               toast.success("Succesfully created event.");
-            } catch {
+            } catch (err) {
+              console.log(err);
               toast.warning(
                 "Unable to create new event. Please try again later."
               );
