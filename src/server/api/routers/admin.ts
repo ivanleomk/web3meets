@@ -16,9 +16,12 @@ export const adminRouter = createTRPCRouter({
       });
 
     if (error) {
+      console.log(error);
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "Unable to get all Events",
+        message:
+          error?.message ??
+          "Unable to set event status. Please try again later",
       });
     }
 
@@ -48,16 +51,23 @@ export const adminRouter = createTRPCRouter({
       if (error || !data) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Unable to update event status",
+          message:
+            error?.message ??
+            "Unable to set event status. Please try again later",
         });
       }
-
-      void NextResponse.revalidate("/");
+      try {
+        await NextResponse.revalidate("/events");
+      } catch (err) {
+        console.log(
+          `Error encountered when revalidating / while setting event status : ${err}`
+        );
+      }
 
       return data;
     }),
   getOrganisation: supabaseAdminProtectedProcedure.query(async () => {
-    // Get latest 1000 events
+    // Get latest 1000 partners
     const { data, error } = await adminServerSupabaseInstance
       .from("Partner")
       .select("*")
@@ -68,7 +78,9 @@ export const adminRouter = createTRPCRouter({
     if (error) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "Unable to get all Organisation",
+        message:
+          error?.message ??
+          "Unable to get organisations. Please try again later",
       });
     }
 
@@ -90,7 +102,9 @@ export const adminRouter = createTRPCRouter({
       if (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Invalid Partner",
+          message:
+            error?.message ??
+            "Unable to delete partner organisation. Please try again later",
         });
       }
 
@@ -102,7 +116,9 @@ export const adminRouter = createTRPCRouter({
       if (deletingOwnership) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Invalid Partner",
+          message:
+            deletingOwnership.message ??
+            "Unable to delete partner organisation. Please try again later",
         });
       }
 
@@ -130,7 +146,9 @@ export const adminRouter = createTRPCRouter({
       if (error || !data) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Unable to update partner status",
+          message:
+            error?.message ??
+            "Unable to update partner organisation status. Please try again later.",
         });
       }
 
@@ -148,7 +166,9 @@ export const adminRouter = createTRPCRouter({
         if (!existingUserOwnerships || existingUserOwnershipsError) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Unable to update partner status",
+            message:
+              existingUserOwnershipsError?.message ??
+              "Unable to update partner organisation status. Please try again later.",
           });
         }
 
@@ -171,7 +191,9 @@ export const adminRouter = createTRPCRouter({
           if (!updateUserPartnerOwnership || updateUserPartnerOwnershipError) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "Unable to update partner status",
+              message:
+                updateUserPartnerOwnershipError?.message ??
+                "Unable to update partner organisation status. Please try again later.",
             });
           }
         }
@@ -188,7 +210,9 @@ export const adminRouter = createTRPCRouter({
         if (massDisqualificationError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Unable to update permissions. Please try again later.",
+            message:
+              massDisqualificationError.message ??
+              "Unable to update partner organisation status. Please try again later.",
           });
         }
       }

@@ -1,6 +1,9 @@
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import React, { useState } from "react";
-import { type eventCreationInputType } from "../types/event";
+import {
+  eventCreationSchemaMerge,
+  type eventCreationInputType,
+} from "../types/event";
 import CreateEventForm from "./CreateEventForm";
 import SectionHeader from "./SectionHeader";
 import { v4 as uuidv4 } from "uuid";
@@ -12,6 +15,7 @@ import { EVENT_FIELDS } from "../config/organization";
 import EventRow from "./EventRow";
 import { EVENT_IMAGE_BUCKET } from "../types/storage";
 import { useOrganizationContext } from "../context/OrganizationContext";
+import { TRPCError } from "@trpc/server";
 
 type Props = {
   initialMode: Modes;
@@ -36,16 +40,19 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
   });
 
   const onSubmit = async (data: eventCreationInputType) => {
+    console.log("----Creating new event");
     const submitData = { ...data };
+
+    console.log(eventCreationSchemaMerge.safeParse(submitData));
 
     let res;
     try {
       res = await mutateAsync(submitData);
     } catch (err) {
-      toast.warning("Unable to save event data. Please try again.");
+      toast.warning(err.message);
       return;
     }
-    console.log(res);
+
     if (!res) {
       toast.warning("Unable to update event data. Please try again later");
 

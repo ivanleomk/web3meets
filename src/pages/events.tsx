@@ -29,7 +29,7 @@ export async function getStaticProps() {
     props: {
       events: data,
     },
-    revalidate: process.env.NODE_ENV === "development" ? true : 600, // every 10 mins
+    revalidate: 600, // every 10 mins
   };
 }
 

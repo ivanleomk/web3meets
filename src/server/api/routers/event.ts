@@ -78,8 +78,6 @@ export const eventRouter = createTRPCRouter({
             original_name: "",
           });
 
-        console.log(error);
-
         if (error) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
@@ -89,9 +87,13 @@ export const eventRouter = createTRPCRouter({
         }
       }
 
-      // void NextResponse.revalidate(`/event/${event_id}`);
-      // void NextResponse.revalidate(`/partner/${partner_id}`);
-      void NextResponse.revalidate(`/`);
+      try {
+        await NextResponse.revalidate("/events");
+      } catch (err) {
+        console.log(
+          `Error encountered when trying to revalidate after updating event : ${err}`
+        );
+      }
 
       return data;
     }),
@@ -229,7 +231,6 @@ export const eventRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const { event_id, images } = input;
-      const { NextResponse } = ctx;
       const insertionData = images.map((item) => {
         return {
           event_id,
@@ -250,10 +251,6 @@ export const eventRouter = createTRPCRouter({
             "Unable to update database with all the promotional material",
         });
       }
-
-      // void NextResponse.revalidate(`/event/${event_id}`);
-      void NextResponse.revalidate(`/`);
-
       return data;
     }),
   deleteEvent: supabaseProtectedProcedure
@@ -296,7 +293,7 @@ export const eventRouter = createTRPCRouter({
       }
 
       // void NextResponse.revalidate(`/partner/${partner_id}`);
-      void NextResponse.revalidate(`/`);
+      await NextResponse.revalidate(`/events`);
 
       return data;
     }),
@@ -430,7 +427,9 @@ export const eventRouter = createTRPCRouter({
   createNewEvent: supabaseProtectedProcedure
     .input(eventObjectSchema)
     .mutation(async ({ input, ctx }) => {
+      console.log("Made it into themutation");
       const { NextResponse, userId: user_id } = ctx;
+
       const {
         event_title,
         event_type,
@@ -483,6 +482,7 @@ export const eventRouter = createTRPCRouter({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
+            insertEventOpError?.message ??
             "Unable to create new event. Please try again later or contact support if this error persists",
         });
       }
@@ -500,15 +500,20 @@ export const eventRouter = createTRPCRouter({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message:
+              error?.message ??
               "New event created but unable to upload promotional material. Please try again later or contact support if this error persists ",
           });
         }
       }
 
       if (partner_id.value !== process.env.NEXT_PUBLIC_NONE_PARTNER) {
-        // void NextResponse.revalidate(`/event/${insertEventOp.event_id}`);
-        // void NextResponse.revalidate(`/partner/${partner_id}`);
-        void NextResponse.revalidate(`/`);
+        try {
+          await NextResponse.revalidate("/events");
+        } catch (err) {
+          console.log(
+            `Error encountered when revalidating / while updating  event : ${err}`
+          );
+        }
       }
       return insertEventOp;
     }),

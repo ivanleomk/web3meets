@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -26,6 +27,14 @@ export const crawlerRouter = createTRPCRouter({
       const { url } = input;
       const response = await fetch(url);
       const body = await response.text();
+
+      if (body === "") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Unable to fetch data from url. Please try again later or contact support if this error persists",
+        });
+      }
 
       const root = HTMLParser.parse(body);
       const jsonData = root

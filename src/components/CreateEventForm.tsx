@@ -57,7 +57,6 @@ const CreateEventForm = ({
 
   const { mutate, isLoading } = api.crawler.getEventDataFromUrl.useMutation({
     onSuccess: (data) => {
-      debugger;
       if (data?.organizer) {
         setValue("partner_id", {
           value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   ADMIN_ORGANIZATION_FIELDS,
-  ORGANIZATION_FIELDS,
   SUBMITTED_EVENT_FIELDS,
 } from "../config/organization";
 import { api } from "../utils/api";
