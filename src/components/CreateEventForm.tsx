@@ -15,6 +15,7 @@ import {
   eventCategories,
 } from "../types/event";
 import { api } from "../utils/api";
+import { eventResponse } from "../utils/crawler";
 import { Button } from "./Button";
 import FormBox from "./FormBox";
 import FormToggle from "./FormToggle";
@@ -57,138 +58,86 @@ const CreateEventForm = ({
 
   const { mutate, isLoading } = api.crawler.getEventDataFromUrl.useMutation({
     onSuccess: (data) => {
-      if (data?.organizer) {
+      const {
+        cover_url,
+        category,
+        city,
+        address,
+        country,
+        onlineEvent,
+        title,
+        description,
+        endsAt,
+        startsAt,
+        eventOrganiserName,
+        eventPaymentType,
+      } = data as eventResponse;
+
+      if (cover_url) {
+        setValue("fallback_image", cover_url);
+        setUploadImage(false);
+      }
+
+      if (onlineEvent) {
+        setValue("online", onlineEvent);
+      }
+
+      if (eventOrganiserName && eventOrganiserName?.length > 0) {
         setValue("partner_id", {
           value: process.env.NEXT_PUBLIC_NONE_PARTNER as string,
           label: "Input my own",
         });
-        setValue("fallback_name", data?.organizer?.name);
-      }
-      if (data?.startDate) {
-        setValue("starts_at", new Date(data?.startDate));
-      }
-      if (data?.endDate) {
-        setValue("ends_at", new Date(data?.endDate));
+        setValue("fallback_name", eventOrganiserName);
       }
 
-      if (data?.description) {
-        setValue("event_description", data?.description);
+      if (description) {
+        setValue("event_description", description);
       }
 
-      if (data?.name) {
-        setValue("event_title", data?.name);
+      if (startsAt) {
+        setValue("starts_at", new Date(startsAt));
       }
 
-      if (data?.location) {
-        const online = data?.location["@type"] == "VirtualLocation";
-        setValue(
-          "online",
-          online ? eventLocation.online : eventLocation.offline
-        );
-
-        if (online) {
-          setValue("city", {
-            value: City.NA,
-            label: City.NA,
-          });
-          setValue("country", {
-            value: Country.NA,
-            label: Country.NA,
-          });
-          setValue("location", data?.location["url"]);
-        } else {
-          const country = data?.location?.address?.addressCountry;
-          const city = data?.location?.address?.addressLocality;
-
-          let address = data?.location?.["name"];
-          if (data?.location?.address?.streetAddress) {
-            address += " ";
-            address += data?.location?.address?.streetAddress;
-          }
-          setValue("location", address);
-
-          if (country === "SG") {
-            setValue("country", {
-              value: Country.Singapore,
-              label: Country.Singapore,
-            });
-          } else {
-            setValue("country", {
-              value: Country.NA,
-              label: Country.NA,
-            });
-          }
-
-          if (city === "Singapore") {
-            setValue("city", {
-              value: City.Singapore,
-              label: City.Singapore,
-            });
-          } else {
-            setValue("city", {
-              value: City.NA,
-              label: City.NA,
-            });
-          }
-        }
+      if (endsAt) {
+        setValue("ends_at", new Date(endsAt));
       }
-      if (data["@type"]) {
-        const category = data["@type"] as string;
-        let found = false;
 
-        eventCategories.forEach((item) => {
-          if (
-            item.toLowerCase().toLowerCase() === category.toLowerCase() ||
-            (item.toLowerCase().replace(/\s/g, "") === category.toLowerCase() &&
-              !found)
-          ) {
-            found = true;
-            setValue("category", {
-              value: item,
-              label: item,
-            });
-          }
+      if (title) {
+        setValue("event_title", title);
+      }
+
+      if (country) {
+        setValue("country", {
+          value: country,
+          label: country,
         });
-
-        if (!found) {
-          setValue("category", {
-            value: "Networking",
-            label: "Networking",
-          });
-        }
       }
 
-      if (data["offers"]) {
-        // We need to see if there are any prices at all
-        let paidOffersCount = 0;
-        let freeOffersCount = 0;
-        // Offer is not being parsed correctly - fix this. We are getting 0,1,2,3,4,5
-        const offers = data["offers"];
-
-        for (let i = 0; i < offers.length; i++) {
-          const item = offers[i];
-          if (item?.price !== undefined) {
-            freeOffersCount += 1;
-          } else if (item?.highPrice == 0 && item?.lowPrice == 0) {
-            freeOffersCount += 1;
-          } else {
-            paidOffersCount += 1;
-          }
-        }
-
-        if (freeOffersCount === data["offers"].length) {
-          setValue("event_type", eventPaymentType.free);
-        } else if (paidOffersCount === data["offers"].length) {
-          setValue("event_type", eventPaymentType.paid);
-        } else {
-          setValue("event_type", eventPaymentType.mix);
-        }
+      if (city) {
+        setValue("city", {
+          value: city,
+          label: city,
+        });
       }
 
-      if (data["image"]) {
-        setValue("fallback_image", data["image"]);
-        setUploadImage(false);
+      if (category) {
+        setValue("category", {
+          value: category,
+          label: category,
+        });
       }
+      if (eventPaymentType) {
+        setValue("event_type", eventPaymentType);
+      }
+
+      if (cover_url) {
+        setValue("fallback_image", cover_url);
+      }
+
+      if (address) {
+        setValue("location", address);
+      }
+
       console.log(data);
       toast.success("Succesfully crawled data from RSVP link");
     },
@@ -256,7 +205,11 @@ const CreateEventForm = ({
                   text="Retrieve Data from RSVP Link"
                   onClickHandler={() => {
                     const rsvp_link = getValues("rsvp_link");
-                    if (!rsvp_link?.includes("eventbrite")) {
+                    console.log(rsvp_link);
+                    if (
+                      !rsvp_link?.includes("eventbrite") &&
+                      !rsvp_link?.includes("lu.ma")
+                    ) {
                       toast.warning("Unable to retrieve data from given url");
                       return;
                     }

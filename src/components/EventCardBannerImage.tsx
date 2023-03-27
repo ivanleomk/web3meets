@@ -22,21 +22,12 @@ const EventCardBannerImage = ({ PromotionalMaterial, eventName }: Props) => {
     );
   }
   return (
-    <div className="h-48 w-full overflow-hidden rounded-t-lg sm:h-52 sm:rounded-none">
+    <div className="relative h-48 w-full overflow-hidden rounded-t-lg sm:h-52 sm:rounded-none">
       {/* We disable nextjs optimization for now */}
       <img
         alt={`Banner Image for ${eventName}`}
         src={PromotionalMaterial.at(0)?.image_url as string}
-        className="h-full w-full object-fill object-center sm:object-cover"
       />
-      {/* <div className="">
-        <Image
-          alt={`Banner Image for ${eventName}`}
-          src={PromotionalMaterial.at(0)?.image_url as string}
-          width={400}
-          height={400}
-        />
-      </div> */}
     </div>
   );
 };

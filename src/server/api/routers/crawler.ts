@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import HTMLParser from "node-html-parser";
-import { json } from "stream/consumers";
+import { getEventBriteDetails, getLumaDetails } from "../../../utils/crawler";
 
 const EVENT_CATEGORIES = [
   "Hackathon",
@@ -37,16 +37,32 @@ export const crawlerRouter = createTRPCRouter({
       }
 
       const root = HTMLParser.parse(body);
-      const jsonData = root
-        .getElementsByTagName("script")
-        .find((div) => div.rawAttrs === 'type="application/ld+json"')?.text;
 
-      if (!jsonData) {
-        return {};
+      if (url.includes("eventbrite")) {
+        const jsonData = root
+          .getElementsByTagName("script")
+          .find((div) => div.rawAttrs === 'type="application/ld+json"')?.text;
+
+        if (!jsonData) {
+          return {};
+        }
+
+        const responseObj = JSON.parse(jsonData);
+        const parsedDetails = getEventBriteDetails(responseObj);
+
+        return parsedDetails;
       }
 
-      const responseObj = JSON.parse(jsonData);
+      if (url.includes("lu.ma")) {
+        const jsonData = root.getElementById("__NEXT_DATA__").text;
 
-      return responseObj;
+        if (!jsonData) {
+          return {};
+        }
+
+        const responseObj = JSON.parse(jsonData);
+
+        return getLumaDetails(responseObj);
+      }
     }),
 });
