@@ -208,9 +208,12 @@ const CreateEventForm = ({
                     console.log(rsvp_link);
                     if (
                       !rsvp_link?.includes("eventbrite") &&
-                      !rsvp_link?.includes("lu.ma")
+                      !rsvp_link?.includes("lu.ma") &&
+                      !rsvp_link?.includes("https://www.meetup.com/")
                     ) {
-                      toast.warning("Unable to retrieve data from given url");
+                      toast.warning(
+                        `Unable to retrieve data from given url of ${rsvp_link}`
+                      );
                       return;
                     }
                     mutate({

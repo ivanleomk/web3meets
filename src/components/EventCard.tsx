@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
+import { type EventAndPartnerInfoAndPromotionalMaterial } from "../types/database";
 import EventCardBannerImage from "./EventCardBannerImage";
 import EventCardDateTime from "./EventCardDateTime";
 import EventCardLocation from "./EventCardLocation";
@@ -19,13 +19,13 @@ const EventCard = ({ event }: Props) => {
       target="_blank"
     >
       <div className="my-4 grid cursor-pointer grid-cols-12">
-        <div className="col-span-12 sm:col-span-5">
+        <div className="col-span-12 sm:col-span-3">
           <EventCardBannerImage
             eventName={event.event_title}
             PromotionalMaterial={event.PromotionalMaterial}
           />
         </div>
-        <div className="col-span-12 sm:py-4  md:col-span-7">
+        <div className="col-span-12 sm:py-4  md:col-span-9">
           <div className="my-4 h-full sm:my-0 sm:ml-8 sm:flex sm:flex-col sm:px-0 md:px-4">
             <div className="flex w-full items-start justify-between">
               <div className="flex flex-col pr-2">

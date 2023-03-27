@@ -6,6 +6,85 @@ import {
   eventPaymentType,
 } from "../types/event";
 
+export const getMeetupDetails = (jsonObj: any): eventResponse => {
+  const data = jsonObj?.props?.pageProps?.event;
+
+  if (!data) {
+    return {
+      cover_url: undefined,
+      category: undefined,
+      city: City.NA,
+      country: Country.NA,
+      address: undefined,
+      onlineEvent: eventLocation.online,
+      title: undefined,
+      description: undefined,
+      endsAt: undefined,
+      startsAt: undefined,
+      eventOrganiserName: undefined,
+      eventPaymentType: eventPaymentType.free,
+    };
+  }
+
+  const startsAt = data?.dateTime;
+  const endsAt = data?.endTime;
+
+  const title = data?.title;
+  const imageUrl = data?.imageUrl;
+  const name = data?.venue?.name;
+  const address = data?.venue?.address;
+  const { city, country } = getMeetupCountryAndCity(data);
+  const eventOrganiserName = data?.group?.name;
+  const price = data?.feeSettings
+    ? eventPaymentType.paid
+    : eventPaymentType.free;
+  const onlineEvent =
+    name === "Online event" ? eventLocation.online : eventLocation.offline;
+
+  return {
+    startsAt: startsAt,
+    endsAt: endsAt,
+    title: title,
+    address:
+      name === "Online event"
+        ? "This is an online event"
+        : `${name},${address}`,
+    cover_url: imageUrl,
+    category: undefined,
+    city: city,
+    country: country,
+    onlineEvent: onlineEvent,
+    description: undefined,
+    eventOrganiserName: eventOrganiserName,
+    eventPaymentType: price,
+  };
+};
+
+const getMeetupCountryAndCity = (data: any) => {
+  const country = data?.venue?.country;
+  const city = data?.venue?.city;
+  if (!country || !city) {
+    return {
+      country: Country.NA,
+      city: City.NA,
+    };
+  }
+  let parsedCountry = Country.NA;
+  let parsedCity = City.NA;
+
+  if (country === "sg") {
+    parsedCountry = Country.Singapore;
+  }
+  if (city === "Singapore") {
+    parsedCity = City.Singapore;
+  }
+
+  return {
+    country: parsedCountry,
+    city: parsedCity,
+  };
+};
+
 export const getLumaDetails = (jsonObj: any): eventResponse => {
   const data = jsonObj?.props?.pageProps?.initialData?.data;
   const eventData = data?.event;

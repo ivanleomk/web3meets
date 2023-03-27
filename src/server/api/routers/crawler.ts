@@ -1,3 +1,4 @@
+import { getMeetupDetails } from "./../../../utils/crawler";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -27,6 +28,7 @@ export const crawlerRouter = createTRPCRouter({
       const { url } = input;
       const response = await fetch(url);
       const body = await response.text();
+      console.log("....");
 
       if (body === "") {
         throw new TRPCError({
@@ -64,5 +66,19 @@ export const crawlerRouter = createTRPCRouter({
 
         return getLumaDetails(responseObj);
       }
+
+      if (url.includes("https://www.meetup.com")) {
+        const jsonData = root.getElementById("__NEXT_DATA__").text;
+
+        if (!jsonData) {
+          return {};
+        }
+
+        const responseObj = JSON.parse(jsonData);
+
+        return getMeetupDetails(responseObj);
+      }
+
+      return {};
     }),
 });
