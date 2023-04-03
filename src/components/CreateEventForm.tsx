@@ -182,6 +182,8 @@ const CreateEventForm = ({
     }
   }, [setValue, isAuthenticated, partners, initialValue]);
 
+  console.log(errors);
+
   return (
     <div className="mx-auto mb-10 max-w-7xl">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-20">

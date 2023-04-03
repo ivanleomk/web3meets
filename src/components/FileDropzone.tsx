@@ -1,9 +1,9 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import type { Noop, RefCallBack } from "react-hook-form";
+import type { Noop } from "react-hook-form";
 
 type Props = {
-  ref: RefCallBack;
+  // ref: RefCallBack;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (...event: any[]) => void;
   name: string;
@@ -19,9 +19,13 @@ const FileDropzone = ({ onChange, name, onBlur }: Props) => {
       "image/jpg": [".jpg"],
     },
   });
+
   return (
-    <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-      <div {...getRootProps()} className="space-y-1 text-center">
+    <div
+      {...getRootProps()}
+      className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6"
+    >
+      <div className="space-y-1 text-center">
         <svg
           className="mx-auto h-12 w-12 text-gray-400"
           stroke="currentColor"
@@ -36,15 +40,7 @@ const FileDropzone = ({ onChange, name, onBlur }: Props) => {
             strokeLinejoin="round"
           />
         </svg>
-        <input
-          {...getInputProps()}
-          id="file-upload"
-          name={name}
-          onBlur={onBlur}
-          onChange={onChange}
-          type="file"
-          className="sr-only"
-        />
+        <input {...getInputProps({ onChange })} />
         {
           <>
             <div className="flex text-sm text-gray-600">

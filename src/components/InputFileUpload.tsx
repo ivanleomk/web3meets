@@ -8,7 +8,6 @@ import type {
 } from "react-hook-form";
 
 import { Controller } from "react-hook-form";
-import { toast } from "react-toastify";
 import { Button } from "./Button";
 import FileDropzone from "./FileDropzone";
 
@@ -82,7 +81,6 @@ const InputFileUpload = <T extends FieldValues>({
                     }}
                     onBlur={onBlur}
                     name={name}
-                    ref={ref}
                   />
                 ) : null}
               </>
@@ -96,12 +94,7 @@ const InputFileUpload = <T extends FieldValues>({
           }
 
           return (
-            <FileDropzone
-              onChange={onChange}
-              onBlur={onBlur}
-              name={name}
-              ref={ref}
-            />
+            <FileDropzone onChange={onChange} onBlur={onBlur} name={name} />
           );
         }}
       />
