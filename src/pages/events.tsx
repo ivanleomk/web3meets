@@ -23,8 +23,6 @@ export async function getStaticProps() {
     .gt("starts_at", convertDateToTimestamptz(new Date()))
     .eq("approved", true);
 
-  console.log(error);
-
   return {
     props: {
       events: data,

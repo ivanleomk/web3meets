@@ -18,6 +18,8 @@ import { UserWrapper } from "../context/UserContext";
 import "react-datepicker/dist/react-datepicker.css";
 import { OrganizationWrapper } from "../context/OrganizationContext";
 import Head from "next/head";
+import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
 
 function MyApp({
   Component,
@@ -39,8 +41,24 @@ function MyApp({
       initialSession={pageProps.initialSession}
     >
       <UserWrapper>
+        <Analytics />
         <OrganizationWrapper>
           <Header />
+          <Script src="https://www.googletagmanager.com/gtag/js?id=G-WVF22WMN2E" />
+          <Script
+            id="Google Tag"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+            
+              gtag('config', 'G-WVF22WMN2E');
+              `,
+            }}
+          />
+
           <Head>
             <meta
               name="viewport"
