@@ -65,7 +65,7 @@ function MyApp({
               content="width=device-width, initial-scale=1"
             />
             <meta charSet="utf-8" />
-            <title>Web3 Meets</title>
+            <title>Web3Meets</title>
             <meta
               name="description"
               content="Your one stop shop for all things web3 related in SEA"

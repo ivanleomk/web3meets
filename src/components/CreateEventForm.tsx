@@ -403,7 +403,7 @@ const CreateEventForm = ({
               <Input
                 subtitle="Please provide a link to a banner image"
                 label="Banner Image"
-                errorMessage={errors?.fallback_image}
+                errorMessage={errors?.fallback_image as FieldError}
                 htmlFor="fallback_image"
                 autocomplete=""
                 type="text"
