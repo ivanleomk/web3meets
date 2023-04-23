@@ -97,6 +97,8 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
     );
   }
 
+  console.log("EventInformation", EventInformation);
+
   const processedEventInformation: eventCreationInputType & {
     event_id: string;
   } = {
@@ -117,7 +119,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
       label:
         EventInformation.partner_id === process.env.NEXT_PUBLIC_NONE_PARTNER
           ? "Input My Own"
-          : PartnerInformation.partner_name,
+          : PartnerInformation?.partner_name,
     },
     online: EventInformation.online
       ? eventLocation.online

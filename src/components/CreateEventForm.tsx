@@ -45,7 +45,7 @@ const CreateEventForm = ({
     handleSubmit,
     setValue,
     getValues,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting, errors, ...formValues },
     watch,
     control,
   } = useForm<eventCreationInputType>({

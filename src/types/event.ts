@@ -33,13 +33,13 @@ export const eventMediaFilesSchema = z.object({
         if (!files) {
           return false;
         }
-        return files.every((item) => item.size <= MAX_FILE_SIZE);
+        return files?.every((item) => item.size <= MAX_FILE_SIZE);
       }, `Max image size for each file is 5MB.`)
       .refine((files) => {
         if (!files) {
           return false;
         }
-        return files.every((file: File) =>
+        return files?.every((file: File) =>
           ACCEPTED_IMAGE_TYPES.includes(file?.type)
         );
       }, "Only .jpg, .jpeg, .png and .webp formats are supported."),
@@ -62,8 +62,8 @@ export const eventObjectSchema = z.object({
     value: z.string().uuid(),
     label: z.string(),
   }),
-  fallback_name: z.union([z.string(), z.string().nullable()]),
-  fallback_image: z.union([z.string().nullable(), z.string().url()]),
+  fallback_name: z.union([z.string(), z.any().nullable()]),
+  fallback_image: z.union([z.any().nullable(), z.string().url()]),
   online: z.nativeEnum(eventLocation),
   city: z.object({
     label: z.nativeEnum(City),
@@ -130,26 +130,6 @@ export const eventCreationSchema = eventCreationSchemaMerge
     {
       message: "Invalid pairs for country and city",
       path: ["city"],
-    }
-  )
-  .refine(
-    (schema) => {
-      return schema.fallback_image || schema.images;
-    },
-    {
-      message:
-        "Please provide a banner image to be used for displaying the event.",
-      path: ["fallback_image"],
-    }
-  )
-  .refine(
-    (schema) => {
-      return schema.fallback_image || schema.images;
-    },
-    {
-      message:
-        "Please provide a banner image to be used for displaying the event.",
-      path: ["images"],
     }
   )
   .transform((schema) => {
