@@ -5,7 +5,7 @@ import LogoCloud from "../components/Logocloud";
 
 const HomePage = () => {
   return (
-    <div className="mx-auto max-w-6xl px-4">
+    <div className="mx-auto mb-10 max-w-6xl px-4">
       <HeroSection />
       <LogoCloud />
       <ContactUs />

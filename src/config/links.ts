@@ -35,19 +35,15 @@ export const PROFILE_LINKS: LinkMetadata[] = [
 
 export const LANDING_PAGE_LINKS: LinkMetadata[] = [
   {
-    href: "https://t.me/+V-OoNM0bUfVIWJI",
+    href: "https://t.me/web3meets",
     label: "Our Events Telegram Channel",
   },
   {
-    href: "https://t.me/web3meets",
+    href: "https://t.me/web3meetscommunity",
     label: "SG Web3Meets Community",
   },
   {
     href: "https://t.me/web3meetsmycommunity",
     label: "MY Web3Meets Community",
-  },
-  {
-    href: "https://t.me/+V-OoNM0bUfVIWJI",
-    label: "Poker Community",
   },
 ];
