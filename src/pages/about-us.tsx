@@ -4,7 +4,7 @@ import React from "react";
 const people = [
   {
     name: "Ivan",
-    role: "Tech Lead",
+    role: "Tech ",
     imageUrl: "/ivan.jpeg",
     bio: "Exploring a new interest in web3 and looking for funky projects such as these to work on in my spare time. I write at ivanleo.com sometimes",
     twitterUrl: "https://twitter.com/ivanleomk",
@@ -12,7 +12,7 @@ const people = [
   },
   {
     name: "Jones",
-    role: "Product Lead",
+    role: "Product",
     imageUrl: "/jones.jpeg",
     bio: "Product Manager @ collection.xyz. PM by day, nft degen by night",
     twitterUrl: "https://twitter.com/0xtraderjones",
@@ -20,7 +20,7 @@ const people = [
   },
   {
     name: "Andrea",
-    role: "Business Lead",
+    role: "Business",
     imageUrl: "/andrea.jpeg",
     bio: "Consultant",
     twitterUrl: "#",
@@ -49,7 +49,7 @@ const AboutUs = () => {
                 className="flex flex-col items-center justify-center"
               >
                 <Image
-                  className="mx-auto h-24 w-24 rounded-full"
+                  className="mx-auto h-44 w-44 rounded-full"
                   src={person.imageUrl}
                   height={200}
                   width={200}
