@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
@@ -14,6 +14,7 @@ type Props = {
   userActionText: string;
   disabled?: boolean;
   isSubmitting?: boolean;
+  children?: ReactNode;
 };
 
 const WarningModal = ({
@@ -26,6 +27,7 @@ const WarningModal = ({
   userActionText,
   disabled = false,
   isSubmitting,
+  children,
 }: Props) => {
   const [open, setOpen] = useState(false);
   const cancelButtonRef = useRef(null);
@@ -90,6 +92,7 @@ const WarningModal = ({
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">{subtitle}</p>
                       </div>
+                      {children}
                     </div>
                   </div>
                   <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">

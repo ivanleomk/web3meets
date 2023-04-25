@@ -8,6 +8,7 @@ import { Button } from "./Button";
 import EventDashboard from "./EventDashboard";
 
 import OrganizationDashboard from "./OrganizationDashboard";
+import ScheduledDashboard from "./ScheduledDashboard";
 
 type Props = {
   initialTab: Tabs;
@@ -36,7 +37,7 @@ export default function UserDashboard({
 
   const filteredTabs = userMetadata?.isAdmin
     ? tabs
-    : tabs.filter((item) => item !== "Admin");
+    : tabs.filter((item) => item !== "Admin" && item !== "Scheduled");
 
   const renderDashboard = (tab: Tabs) => {
     switch (tab) {
@@ -61,6 +62,9 @@ export default function UserDashboard({
             setInitialMode={setInitialMode}
           />
         );
+      }
+      case "Scheduled": {
+        return <ScheduledDashboard />;
       }
       default: {
         const chosenTab: never = tab;

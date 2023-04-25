@@ -36,11 +36,11 @@ export interface Database {
     Tables: {
       Event: {
         Row: {
-          approved: boolean
+          approved: boolean | null
           category: string
           city: string | null
           country: string | null
-          created_at: string
+          created_at: string | null
           ends_at: string
           event_description: string | null
           event_id: string
@@ -61,11 +61,11 @@ export interface Database {
           user_id: string | null
         }
         Insert: {
-          approved: boolean
-          category?: string
+          approved?: boolean | null
+          category: string
           city?: string | null
           country?: string | null
-          created_at?: string
+          created_at?: string | null
           ends_at: string
           event_description?: string | null
           event_id?: string
@@ -86,11 +86,11 @@ export interface Database {
           user_id?: string | null
         }
         Update: {
-          approved?: boolean
+          approved?: boolean | null
           category?: string
           city?: string | null
           country?: string | null
-          created_at?: string
+          created_at?: string | null
           ends_at?: string
           event_description?: string | null
           event_id?: string
@@ -170,6 +170,58 @@ export interface Database {
           image_url?: string
           material_id?: number
           original_name?: string
+        }
+      }
+      Registration: {
+        Row: {
+          event_id: string
+          registration_id: number
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          event_id: string
+          registration_id?: number
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          event_id?: string
+          registration_id?: number
+          user_email?: string
+          user_id?: string | null
+        }
+      }
+      scheduledMessages: {
+        Row: {
+          event_id: string
+          id: number
+          message_datetime_sent: string | null
+          message_id: number | null
+          message_text_sent: string | null
+          scheduled_date: string
+          sent: boolean
+          wasScheduled: boolean
+        }
+        Insert: {
+          event_id: string
+          id?: number
+          message_datetime_sent?: string | null
+          message_id?: number | null
+          message_text_sent?: string | null
+          scheduled_date: string
+          sent?: boolean
+          wasScheduled?: boolean
+        }
+        Update: {
+          event_id?: string
+          id?: number
+          message_datetime_sent?: string | null
+          message_id?: number | null
+          message_text_sent?: string | null
+          scheduled_date?: string
+          sent?: boolean
+          wasScheduled?: boolean
         }
       }
       User: {
@@ -294,6 +346,7 @@ export interface Database {
           owner: string | null
           path_tokens: string[] | null
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           bucket_id?: string | null
@@ -305,6 +358,7 @@ export interface Database {
           owner?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           bucket_id?: string | null
@@ -316,6 +370,7 @@ export interface Database {
           owner?: string | null
           path_tokens?: string[] | null
           updated_at?: string | null
+          version?: string | null
         }
       }
     }
@@ -348,7 +403,7 @@ export interface Database {
         Args: {
           name: string
         }
-        Returns: string[]
+        Returns: unknown
       }
       get_size_by_bucket: {
         Args: Record<PropertyKey, never>

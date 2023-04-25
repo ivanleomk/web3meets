@@ -57,7 +57,3 @@ const InputDatePicker = <T extends FieldValues>({
 };
 
 export default InputDatePicker;
-
-{
-  /* <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} /> */
-}

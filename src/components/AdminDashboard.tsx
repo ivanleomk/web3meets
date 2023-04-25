@@ -77,7 +77,7 @@ const AdminDashboard = () => {
           errorMessage="No Events Found"
           headerFields={SUBMITTED_EVENT_FIELDS}
           renderComponent={(data) => {
-            return <EventApprovalRow data={data} />;
+            return <EventApprovalRow key={data.event_id} data={data} />;
           }}
         />
       </SectionHeader>

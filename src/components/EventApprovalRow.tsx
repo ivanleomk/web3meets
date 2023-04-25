@@ -1,11 +1,13 @@
 import { format } from "date-fns";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { type Event } from "../types/database";
 import { api } from "../utils/api";
 import { Button } from "./Button";
 import OrganizationStatus from "./OrganizationStatus";
 import WarningModal from "./WarningModal";
+import ReactDatePicker from "react-datepicker";
+import { formatTelegramMessage } from "src/utils/string";
 
 type Props = {
   data: Event;
@@ -14,24 +16,50 @@ type Props = {
 const EventApprovalRow = ({ data }: Props) => {
   const {
     event_title,
-    starts_at,
-    ends_at,
-    online,
-    rsvp_link,
+    scheduled_post,
     event_id,
     partner_id,
     approved,
+
+    starts_at,
+    ends_at,
+    category,
+    rsvp_link,
+    location,
   } = data;
-  const formattedStart = format(new Date(starts_at), "MMM dd yyyy,hh:mm aa");
-  const formattedEnd = format(new Date(ends_at), "MMM dd yyyy, hh:mm aa");
+  const [showModal, setShowModal] = useState(false);
 
   const utils = api.useContext();
+  const formattedPostDate = scheduled_post ? new Date(scheduled_post) : null;
+  const [currPostDate, setCurrPostDate] = useState<Date | null>(
+    formattedPostDate
+  );
+
+  const { mutate: sendMessage, isLoading: isSendingMessage } =
+    api.admin.sendMessage.useMutation({
+      onSuccess: () => {
+        toast.success(`Succesfully sent message to group!`);
+      },
+      onError: (err) => {
+        toast.warning(err.message);
+      },
+    });
 
   const { mutate, isLoading: deletingEventLoading } =
     api.event.deleteEvent.useMutation({
       onSuccess: async () => {
         await utils.admin.getEvents.invalidate();
         toast.success(`Succesfully deleted ${event_title} from database`);
+      },
+      onError: (err) => {
+        toast.warning(err.message);
+      },
+    });
+
+  const { mutate: updatePostDate, isLoading: isUpdatingPostDate } =
+    api.admin.updatePostDate.useMutation({
+      onSuccess: () => {
+        toast.success("Succesfully updated scheduled post date");
       },
       onError: (err) => {
         toast.warning(err.message);
@@ -69,20 +97,72 @@ const EventApprovalRow = ({ data }: Props) => {
         {event_title}
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        <OrganizationStatus active={approved} />
+        <OrganizationStatus active={approved ?? false} />
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        {formattedStart}
+        <ReactDatePicker
+          className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          placeholderText="No Date Selected"
+          selected={currPostDate}
+          onChange={(e) => {
+            setCurrPostDate(e);
+          }}
+          showTimeSelect={true}
+          timeIntervals={15}
+          dateFormat="MMMM d, yyyy hh:mm aa"
+        />
+        <div className="mt-4 flex space-x-4">
+          <WarningModal
+            buttonText="Send Now"
+            onClickHandler={() => {
+              sendMessage({
+                event_id,
+                event_title,
+                category: category ?? "",
+                starts_at: new Date(starts_at),
+                ends_at: new Date(ends_at),
+                rsvp_link: rsvp_link ?? "To be Confirmed",
+                location: location ?? "To Be Confirmed upon signup",
+              });
+            }}
+            title={"Warning"}
+            subtitle="Are you sure you wish to send this message now?"
+            userActionText="Send Now"
+            isSubmitting={isSendingMessage}
+            variant="outline"
+            color="gray"
+          >
+            <div className="my-6 ml-2 rounded-md bg-slate-100 px-4 py-4 text-sm leading-6">
+              <p className="whitespace-pre-wrap">
+                {formatTelegramMessage(
+                  event_title,
+                  category ?? "Networking",
+                  new Date(starts_at),
+                  new Date(ends_at),
+                  rsvp_link ?? "To be Confirmed",
+                  location ?? "To Be Confirmed upon signup"
+                )}
+              </p>
+            </div>
+          </WarningModal>
+
+          <Button
+            text="Save"
+            isSubmitting={isUpdatingPostDate}
+            disabled={currPostDate == formattedPostDate}
+            onClickHandler={() => {
+              if (!currPostDate) {
+                return;
+              }
+              updatePostDate({
+                date: currPostDate,
+                event_id: event_id,
+              });
+            }}
+          />
+        </div>
       </td>
-      <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        {formattedEnd}
-      </td>
-      <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        {online ? "Yes" : "No"}
-      </td>
-      <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        {rsvp_link ? rsvp_link : "No Link Provided"}
-      </td>
+
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         <div className="flex flex-col space-y-4 text-left">
           <WarningModal

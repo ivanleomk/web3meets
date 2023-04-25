@@ -10,6 +10,8 @@ const server = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
   SUPABASE_SERVICE_ROLE: z.string(),
+  TELEGRAM_BOT_KEY: z.string(),
+  GROUP_ID: z.string(),
 });
 
 /**
@@ -30,13 +32,15 @@ const client = z.object({
  * edge runtimes (e.g. middlewares) or client-side so we need to destruct manually.
  * @type {Record<keyof z.infer<typeof server> | keyof z.infer<typeof client>, string | undefined>}
  */
-const processEnv = {
+export const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE,
   NEXT_PUBLIC_IMAGE_BUCKET: process.env.NEXT_PUBLIC_IMAGE_BUCKET,
   NEXT_PUBLIC_NONE_PARTNER: process.env.NEXT_PUBLIC_NONE_PARTNER,
+  TELEGRAM_BOT_KEY: process.env.TELEGRAM_BOT_KEY,
+  GROUP_ID: process.env.GROUP_ID,
 };
 
 // Don't touch the part below

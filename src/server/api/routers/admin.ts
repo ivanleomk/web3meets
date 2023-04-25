@@ -1,11 +1,141 @@
 import { TRPCError } from "@trpc/server";
-import { adminServerSupabaseInstance } from "./../../supabase/sharedInstance";
+import {
+  adminServerSupabaseInstance,
+  serverSupabaseInstance,
+} from "./../../supabase/sharedInstance";
 import { supabaseAdminProtectedProcedure } from "./../trpc";
 import { z } from "zod";
 
 import { createTRPCRouter } from "../trpc";
+import { convertDateToTimestamptz } from "../../../utils/date";
+import { formatTelegramMessage } from "src/utils/string";
+import { bot } from "src/utils/telebot";
 
 export const adminRouter = createTRPCRouter({
+  sendMessage: supabaseAdminProtectedProcedure
+    .input(
+      z.object({
+        event_id: z.string(),
+        event_title: z.string(),
+        category: z.string(),
+        starts_at: z.date(),
+        ends_at: z.date(),
+        rsvp_link: z.string(),
+        location: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const {
+        event_title,
+        category,
+        starts_at,
+        ends_at,
+        rsvp_link,
+        location,
+        event_id,
+      } = input;
+
+      const formattedMessage = formatTelegramMessage(
+        event_title,
+        category,
+        starts_at,
+        ends_at,
+        rsvp_link,
+        location
+      );
+      const res = await bot.sendMessage(
+        process.env.GROUP_ID as string,
+        formattedMessage
+      );
+
+      const { message_id } = res;
+
+      // Add to the db to track messages sent
+      const { error } = await adminServerSupabaseInstance
+        .from("scheduledMessages")
+        .insert({
+          event_id,
+          message_datetime_sent: convertDateToTimestamptz(new Date()),
+          message_text_sent: formattedMessage,
+          wasScheduled: false,
+          sent: true,
+          message_id,
+          scheduled_date: convertDateToTimestamptz(new Date()),
+        });
+
+      if (error) {
+        console.log(error);
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            error?.message ??
+            "Unable to set event status. Please try again later",
+        });
+      }
+
+      return;
+    }),
+  editMessage: supabaseAdminProtectedProcedure
+    .input(
+      z.object({
+        message_id: z.number(),
+        new_text: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { message_id, new_text } = input;
+
+      const res = await bot.editMessageText(new_text, { message_id });
+      const { data, error } = await adminServerSupabaseInstance
+        .from("scheduledMessages")
+        .update({
+          message_text_sent: new_text,
+        })
+        .eq("message_id", message_id);
+
+      if (error) {
+        console.log(error);
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            error?.message ??
+            "Unable to edit message text. Please try again later",
+        });
+      }
+
+      return;
+    }),
+  updatePostDate: supabaseAdminProtectedProcedure
+    .input(
+      z.object({
+        date: z.date(),
+        event_id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { date, event_id } = input;
+
+      // TODO: fix up
+      const { data, error } = await adminServerSupabaseInstance
+        .from("scheduledMessages")
+        .insert({
+          scheduled_date: convertDateToTimestamptz(date),
+          event_id,
+          wasScheduled: true,
+        });
+
+      if (error) {
+        console.log(error);
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            error?.message ??
+            "Unable to set event status. Please try again later",
+        });
+      }
+
+      return data;
+    }),
   getEvents: supabaseAdminProtectedProcedure.query(async () => {
     // Get latest 1000 events
     const { data, error } = await adminServerSupabaseInstance

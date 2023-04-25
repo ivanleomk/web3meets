@@ -97,8 +97,6 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
     );
   }
 
-  console.log("EventInformation", EventInformation);
-
   const processedEventInformation: eventCreationInputType & {
     event_id: string;
   } = {
@@ -115,7 +113,9 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
     },
     event_type: EventInformation.event_type as eventPaymentType,
     partner_id: {
-      value: EventInformation.partner_id,
+      value:
+        EventInformation?.partner_id ??
+        (process.env.NEXT_PUBLIC_NONE_PARTNER as string),
       label:
         EventInformation.partner_id === process.env.NEXT_PUBLIC_NONE_PARTNER
           ? "Input My Own"
