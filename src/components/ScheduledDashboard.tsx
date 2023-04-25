@@ -4,6 +4,7 @@ import { api } from "src/utils/api";
 
 import { toast } from "react-toastify";
 import ScheduledPostRow, { type MessageAndEvent } from "./ScheduledPostRow";
+import { ClipLoader } from "react-spinners";
 
 const ScheduledDashboard = () => {
   const { data, isLoading } = api.post.getAllPosts.useQuery(undefined, {
@@ -27,6 +28,11 @@ const ScheduledDashboard = () => {
           Upcoming Posts
         </h2>
         <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+          {isLoading && (
+            <div className="mt-20 flex items-center justify-center">
+              <ClipLoader color="black" size={30} />
+            </div>
+          )}
           {data
             ?.filter((item) => {
               if (showPendingApprovals) {

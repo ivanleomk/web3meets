@@ -1,5 +1,9 @@
 import { adminServerSupabaseInstance } from "src/server/supabase/sharedInstance";
-import { createTRPCRouter, supabaseAdminProtectedProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  supabaseAdminProtectedProcedure,
+} from "../trpc";
 import { sub } from "date-fns";
 import { TRPCError } from "@trpc/server";
 import { convertDateToTimestamptz } from "src/utils/date";
