@@ -9,7 +9,7 @@ import { z } from "zod";
 import { createTRPCRouter } from "../trpc";
 import { convertDateToTimestamptz } from "../../../utils/date";
 import { formatTelegramMessage } from "src/utils/string";
-import { bot } from "src/utils/telebot";
+import { bot, sendTelegramMessage } from "src/utils/telebot";
 
 export const adminRouter = createTRPCRouter({
   sendMessage: supabaseAdminProtectedProcedure
@@ -43,11 +43,7 @@ export const adminRouter = createTRPCRouter({
         rsvp_link,
         location
       );
-      const res = await bot.sendMessage(
-        process.env.GROUP_ID as string,
-        formattedMessage,
-        { parse_mode: "MarkdownV2" }
-      );
+      const res = await sendTelegramMessage(formattedMessage);=
 
       const { message_id } = res;
 
