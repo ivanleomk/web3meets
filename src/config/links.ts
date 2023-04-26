@@ -9,6 +9,10 @@ export const LINKS: LinkMetadata[] = [
     href: "/events",
     label: "Events",
   },
+  {
+    href: "/changelog",
+    label: "Changelog",
+  },
 ];
 
 export const AUTHENTICATED_LINKS: LinkMetadata[] = [
@@ -19,6 +23,10 @@ export const AUTHENTICATED_LINKS: LinkMetadata[] = [
   {
     href: "/events",
     label: "Events",
+  },
+  {
+    href: "/changelog",
+    label: "Changelog",
   },
 ];
 

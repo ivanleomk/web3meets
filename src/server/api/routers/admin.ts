@@ -45,7 +45,8 @@ export const adminRouter = createTRPCRouter({
       );
       const res = await bot.sendMessage(
         process.env.GROUP_ID as string,
-        formattedMessage
+        formattedMessage,
+        { parse_mode: "MarkdownV2" }
       );
 
       const { message_id } = res;

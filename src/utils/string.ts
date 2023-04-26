@@ -30,10 +30,15 @@ export const formatTelegramMessage = (
 
   const formattedDate =
     dateStart === dateEnd
-      ? `🗓 Date: ${dateStart}\n⏰ Time: ${timeStart} - ${timeEnd}`
-      : `🗓 Date : ${dateStart} ${timeStart} - ${dateEnd} ${timeEnd}`;
+      ? `🗓 *Date*: ${dateStart}\n⏰ *Time*: ${timeStart} - ${timeEnd}`
+      : `🗓 *Date* : ${dateStart} ${timeStart} - ${dateEnd} ${timeEnd}`;
 
-  const formattedMessage = `🎤 Event: ${title}\n💡 Type: ${event_type}\n${formattedDate}\n\n🚀 RSVP: ${rsvp_link}\n\n📍 Location: ${location}\n\n⚠️ Comment below to find other event goers!`;
+  const formattedMessage =
+    `🎤 *Event*: ${title}\n💡 *Type*: ${event_type}\n${formattedDate}\n\n🚀 *RSVP*: ${rsvp_link}\n\n📍 *Location*: ${location}\n\n⚠️ Comment below to find other event goers!`.replace(
+      /[\|\-.!=()#]/g,
+      "\\$&"
+    );
+  console.log(formattedMessage);
 
   return formattedMessage;
 };

@@ -41,7 +41,10 @@ const AboutUs = () => {
             of Singapore&apos;s blockchain events
           </p>
         </div>
-        <ul role="list" className="mx-auto mt-20 grid max-w-2xl grid-cols-3 ">
+        <ul
+          role="list"
+          className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-3 "
+        >
           {people.map((person) => {
             return (
               <li
