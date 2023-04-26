@@ -1,6 +1,7 @@
 import { add, format } from "date-fns";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { adminServerSupabaseInstance } from "src/server/supabase/sharedInstance";
+import { Event } from "src/types/database";
 import { convertDateToTimestamptz } from "src/utils/date";
 import { formatTelegramMessage } from "src/utils/string";
 import { bot } from "src/utils/telebot";
@@ -28,23 +29,19 @@ export default async function handler(
 
   // Now we iterate and send the message via the bot
   for (const post of data) {
-    const {
-      event_title,
-      category,
-      starts_at,
-      ends_at,
-      rsvp_link,
-      location,
-      event_id,
-    } = post.Event;
+    if (!post.Event) {
+      continue;
+    }
+    const { event_title, category, starts_at, ends_at, rsvp_link, location } =
+      post?.Event as unknown as Event;
     const { id } = post;
     const formattedMessage = formatTelegramMessage(
       event_title,
       category,
       new Date(starts_at),
       new Date(ends_at),
-      rsvp_link,
-      location
+      rsvp_link ?? "To Be Announced",
+      location ?? "To Be Confirmed unpon registration"
     );
 
     const res = await bot.sendMessage(
