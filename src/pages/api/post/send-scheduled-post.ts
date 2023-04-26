@@ -4,7 +4,7 @@ import { adminServerSupabaseInstance } from "src/server/supabase/sharedInstance"
 import { Event } from "src/types/database";
 import { convertDateToTimestamptz } from "src/utils/date";
 import { formatTelegramMessage } from "src/utils/string";
-import { bot } from "src/utils/telebot";
+import { bot, sendTelegramMessage } from "src/utils/telebot";
 
 export default async function handler(
   req: NextApiRequest,
@@ -44,10 +44,7 @@ export default async function handler(
       location ?? "To Be Confirmed unpon registration"
     );
 
-    const res = await bot.sendMessage(
-      process.env.GROUP_ID as string,
-      formattedMessage
-    );
+    const res = await sendTelegramMessage(formattedMessage);
     const { message_id } = res;
 
     const { data, error: insertionError } = await adminServerSupabaseInstance
@@ -62,8 +59,7 @@ export default async function handler(
       .select("*");
 
     if (insertionError || !data) {
-      void bot.sendMessage(
-        process.env.DEBUG_GROUP_ID as string,
+      void sendTelegramMessage(
         `Unable to update db for id of ${message_id} at ${currentTime} due to ${
           insertionError?.message ?? "unknown error"
         }`
