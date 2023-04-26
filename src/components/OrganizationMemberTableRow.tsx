@@ -29,7 +29,7 @@ const OrganizationMemberTableRow = ({
           void router.push("/dashboard");
         }
 
-        toast.success("Succesfully deleted administrator from organization");
+        toast.success("Successfully deleted administrator from organization");
         void utils.partner.getPartnerInformation.invalidate();
       },
       onError: (err) => {
@@ -39,7 +39,7 @@ const OrganizationMemberTableRow = ({
 
   const { mutate } = api.partner.deletePartnerAdministrator.useMutation({
     onSuccess: () => {
-      // toast.success("Succesfully deleted administrator from organization");
+      // toast.success("Successfully deleted administrator from organization");
       updateOrganization({ partner_id });
     },
     onError: () => {

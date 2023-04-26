@@ -9,8 +9,8 @@ const EmailConfirm = () => {
         Email Confirmation succesful
       </h1>
       <p className="mx-auto mt-4 max-w-sm text-center sm:mt-6">
-        We&apos;ve succesfully verified your email. Start exploring our site and
-        what it has to offer today.
+        We&apos;ve Successfully verified your email. Start exploring our site
+        and what it has to offer today.
       </p>
       <div className="mt-10 flex justify-center">
         <Link href="/dashboard" className="text-sm font-semibold leading-7 ">

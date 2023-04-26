@@ -38,7 +38,7 @@ const EventApprovalRow = ({ data }: Props) => {
   const { mutate: sendMessage, isLoading: isSendingMessage } =
     api.admin.sendMessage.useMutation({
       onSuccess: () => {
-        toast.success(`Succesfully sent message to group!`);
+        toast.success(`Successfully sent message to group!`);
       },
       onError: (err) => {
         toast.warning(err.message);
@@ -49,7 +49,7 @@ const EventApprovalRow = ({ data }: Props) => {
     api.event.deleteEvent.useMutation({
       onSuccess: async (res) => {
         await utils.admin.getEvents.invalidate();
-        toast.success(`Succesfully deleted ${event_title} from database`);
+        toast.success(`Successfully deleted ${event_title} from database`);
       },
       onError: (err) => {
         toast.warning(err.message);
@@ -59,7 +59,7 @@ const EventApprovalRow = ({ data }: Props) => {
   const { mutate: updatePostDate, isLoading: isUpdatingPostDate } =
     api.admin.updatePostDate.useMutation({
       onSuccess: () => {
-        toast.success("Succesfully updated scheduled post date");
+        toast.success("Successfully updated scheduled post date");
       },
       onError: (err) => {
         toast.warning(err.message);
@@ -83,7 +83,7 @@ const EventApprovalRow = ({ data }: Props) => {
 
   const { mutate: updateEventStatus } = api.admin.setEventStatus.useMutation({
     onSuccess: () => {
-      toast.success("Succesfully updated event approval status");
+      toast.success("Successfully updated event approval status");
       void utils.admin.getEvents.invalidate();
     },
     onError: (err) => {

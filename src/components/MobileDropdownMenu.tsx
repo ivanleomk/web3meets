@@ -102,7 +102,7 @@ const MobileDropdownMenu = () => {
                               .signOut()
                               .then(() => {
                                 toast.success(
-                                  "Succesfully signed out of account"
+                                  "Successfully signed out of account"
                                 );
                               })
                               .catch(() => {

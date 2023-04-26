@@ -19,7 +19,7 @@ export const signInUserWithPassword = (getUserQuery: () => Promise<void>) => {
       toast.error(error?.message ? error?.message : "Error Encountered");
     } else {
       await getUserQuery();
-      toast.success("Succesfully signed user in");
+      toast.success("Successfully signed user in");
 
       if (redirectTo) {
         await router.push(redirectTo);
@@ -43,7 +43,7 @@ export const signUpUserWithPassword = async (
   if (error) {
     toast.error(error?.message ? error?.message : "Error Encountered");
   } else {
-    toast.success("Account succesfully created");
+    toast.success("Account Successfully created");
     if (redirectTo) {
       setTimeout(async () => {
         await router.push(redirectTo);

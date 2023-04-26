@@ -19,7 +19,7 @@ const Settings = () => {
   const { mutate, isLoading } = api.user.updateUserName.useMutation({
     onSuccess: () => {
       toast.success(
-        `Succesfully configured new user name as ${userDisplayName}`
+        `Successfully configured new user name as ${userDisplayName}`
       );
       void utils.user.user.invalidate();
     },
@@ -62,7 +62,7 @@ const Settings = () => {
                       password,
                     })
                     .then(() => {
-                      toast.success("Succesfully updated user password");
+                      toast.success("Successfully updated user password");
                     })
                     .catch((err) => {
                       toast.warning(err);

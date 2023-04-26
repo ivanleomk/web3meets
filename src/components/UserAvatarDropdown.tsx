@@ -58,7 +58,7 @@ export default function UserAvatarDropdown() {
                     supabaseClient.auth
                       .signOut()
                       .then(() => {
-                        toast.success("Succesfully signed out of account");
+                        toast.success("Successfully signed out of account");
                       })
                       .catch(() => {
                         toast.warning(

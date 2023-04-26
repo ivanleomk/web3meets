@@ -38,7 +38,7 @@ const ScheduledPostRow = ({ item }: Props) => {
   const { mutate: sendMessage, isLoading: sendingMessage } =
     api.admin.sendMessage.useMutation({
       onSuccess: () => {
-        toast.success(`Succesfully sent message to group!`);
+        toast.success(`Successfully sent message to group!`);
         void utils.post.getAllPosts.invalidate();
       },
     });

@@ -97,7 +97,7 @@ const EventDashboard = ({ initialMode, setInitialMode }: Props) => {
       }
     }
     void utils.event.getUserEvents.invalidate();
-    toast.success("Succesfully saved event in database.");
+    toast.success("Successfully saved event in database.");
     setInitialMode("View");
   };
 
