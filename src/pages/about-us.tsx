@@ -43,7 +43,7 @@ const AboutUs = () => {
         </div>
         <ul
           role="list"
-          className="mx-auto mt-20 grid max-w-2xl grid-cols-1 space-y-10 sm:grid-cols-2 sm:space-y-0 lg:grid-cols-3 "
+          className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-3 "
         >
           {people.map((person) => {
             return (
