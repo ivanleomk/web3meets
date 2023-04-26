@@ -47,7 +47,7 @@ const EventApprovalRow = ({ data }: Props) => {
 
   const { mutate, isLoading: deletingEventLoading } =
     api.event.deleteEvent.useMutation({
-      onSuccess: async () => {
+      onSuccess: async (res) => {
         await utils.admin.getEvents.invalidate();
         toast.success(`Succesfully deleted ${event_title} from database`);
       },

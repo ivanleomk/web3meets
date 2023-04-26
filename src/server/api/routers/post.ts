@@ -43,8 +43,7 @@ export const postRouter = createTRPCRouter({
         convertDateToTimestamptz(sub(new Date(), { days: 4 }))
       )
       .order("sent", { ascending: false })
-      .order("scheduled_date", { ascending: true })
-      .eq("sent", false);
+      .order("scheduled_date", { ascending: true });
 
     if (error) {
       console.log(error);

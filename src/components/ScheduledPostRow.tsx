@@ -148,6 +148,7 @@ const ScheduledPostRow = ({ item }: Props) => {
                 ends_at: new Date(ends_at),
                 rsvp_link: rsvp_link ?? "To be Confirmed",
                 location: location ?? "To Be Confirmed upon signup",
+                id: item.id,
               });
             }}
             userActionText="Send Message Now"
