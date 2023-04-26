@@ -43,7 +43,7 @@ export const adminRouter = createTRPCRouter({
         rsvp_link,
         location
       );
-      const res = await sendTelegramMessage(formattedMessage);=
+      const res = await sendTelegramMessage(formattedMessage);
 
       const { message_id } = res;
 
