@@ -58,7 +58,8 @@ export default async function handler(
         message_text_sent: formattedMessage,
         sent: true,
       })
-      .eq("id", id);
+      .eq("id", id)
+      .select("*");
 
     if (insertionError || !data) {
       void bot.sendMessage(

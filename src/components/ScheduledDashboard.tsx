@@ -9,7 +9,7 @@ import { ClipLoader } from "react-spinners";
 const ScheduledDashboard = () => {
   const { data, isLoading } = api.post.getAllPosts.useQuery(undefined, {
     refetchInterval: 120000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
   return (
