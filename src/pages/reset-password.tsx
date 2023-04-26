@@ -28,11 +28,11 @@ const ResetPassword = () => {
         email: credentials.email,
       })
       .then((res) => {
-        toast.success("Email Link succesfully sent");
+        toast.success("Email Link Successfully sent");
         void router.push("/email-link");
       })
       .catch(() => {
-        toast.success("Email Link succesfully sent");
+        toast.success("Email Link Successfully sent");
       });
   };
 

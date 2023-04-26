@@ -13,7 +13,10 @@ const LogoCloud = () => {
         <div className="mt-6 grid grid-cols-2 gap-1 md:grid-cols-3 lg:mt-8">
           {PARTNERS.map((item) => {
             return (
-              <div
+              <a
+                href={item.href}
+                rel="noreferrer"
+                target="_blank"
                 key={item.label}
                 className="col-span-1 flex justify-center py-8 px-8"
               >
@@ -25,7 +28,7 @@ const LogoCloud = () => {
                     height={300}
                   />
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>

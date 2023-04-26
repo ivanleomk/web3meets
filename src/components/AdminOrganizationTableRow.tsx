@@ -26,7 +26,7 @@ const AdminOrganizationTableRow = ({ data }: Props) => {
 
   const { mutate: deletePartner } = api.admin.deleteOrganization.useMutation({
     onSuccess: () => {
-      toast.success(`Succesfully deleted ${partner_name}`);
+      toast.success(`Successfully deleted ${partner_name}`);
     },
     onError: () => {
       toast.warning(`Error encountered when trying to delete ${partner_name}`);
@@ -39,7 +39,7 @@ const AdminOrganizationTableRow = ({ data }: Props) => {
       onSuccess: () => {
         void utils.admin.getOrganisation.invalidate();
         void utils.partner.getAllPartners.invalidate();
-        toast.success(`Succesfully updated ${partner_name}`);
+        toast.success(`Successfully updated ${partner_name}`);
       },
       onError: () => {
         toast.warning(

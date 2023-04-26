@@ -63,7 +63,7 @@ const PartnerPage = ({
 
   const { mutate } = api.partner.updatePartnerDetails.useMutation({
     onSuccess: () => {
-      toast.success("Succesfully updated information on Organization");
+      toast.success("Successfully updated information on Organization");
     },
     onError: () => {
       toast.success(

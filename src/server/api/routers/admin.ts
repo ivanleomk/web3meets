@@ -22,6 +22,7 @@ export const adminRouter = createTRPCRouter({
         ends_at: z.date(),
         rsvp_link: z.string(),
         location: z.string(),
+        id: z.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -33,6 +34,7 @@ export const adminRouter = createTRPCRouter({
         rsvp_link,
         location,
         event_id,
+        id,
       } = input;
 
       const formattedMessage = formatTelegramMessage(
@@ -47,28 +49,54 @@ export const adminRouter = createTRPCRouter({
 
       const { message_id } = res;
 
-      // Add to the db to track messages sent
-      const { error } = await adminServerSupabaseInstance
+      if (!id) {
+        // Add to the db to track messages sent
+        const { error } = await adminServerSupabaseInstance
+          .from("scheduledMessages")
+          .insert({
+            event_id,
+            message_datetime_sent: convertDateToTimestamptz(new Date()),
+            message_text_sent: formattedMessage,
+            wasScheduled: false,
+            sent: true,
+            message_id,
+            scheduled_date: convertDateToTimestamptz(new Date()),
+          });
+
+        if (error) {
+          console.log(error);
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              error?.message ??
+              "Unable to set event status. Please try again later",
+          });
+        }
+
+        return;
+      }
+
+      const { error: unableToSendMessage } = await adminServerSupabaseInstance
         .from("scheduledMessages")
-        .insert({
-          event_id,
+        .update({
           message_datetime_sent: convertDateToTimestamptz(new Date()),
           message_text_sent: formattedMessage,
-          wasScheduled: false,
           sent: true,
           message_id,
-          scheduled_date: convertDateToTimestamptz(new Date()),
-        });
+        })
+        .eq("id", id);
 
-      if (error) {
-        console.log(error);
+      if (unableToSendMessage) {
+        console.log(unableToSendMessage);
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
-            error?.message ??
+            unableToSendMessage?.message ??
             "Unable to set event status. Please try again later",
         });
       }
+
+      return;
 
       return;
     }),

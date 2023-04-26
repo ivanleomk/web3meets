@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import SectionHeader from "./SectionHeader";
 import { api } from "src/utils/api";
 
@@ -11,11 +11,18 @@ const ScheduledDashboard = () => {
     refetchInterval: 120000,
     refetchOnWindowFocus: false,
   });
+  const [showAllMessages, setShowAllMessages] = useState(true);
 
   return (
     <SectionHeader
       title="Scheduled Messages"
       subtitle="See what has been scheduled down the line"
+      buttonText={
+        showAllMessages ? "Show All Messages" : "Show Unsent Messages"
+      }
+      onClickHandler={() => {
+        setShowAllMessages(!showAllMessages);
+      }}
     >
       <section className="my-12">
         <h2 className="text-base font-semibold leading-6 text-gray-900">
@@ -27,11 +34,21 @@ const ScheduledDashboard = () => {
               <ClipLoader color="black" size={30} />
             </div>
           )}
-          {data?.map((item) => {
-            return (
-              <ScheduledPostRow key={item.id} item={item as MessageAndEvent} />
-            );
-          })}
+          {data
+            ?.filter((item) => {
+              if (showAllMessages) {
+                return true;
+              }
+              return !item.sent;
+            })
+            .map((item) => {
+              return (
+                <ScheduledPostRow
+                  key={item.id}
+                  item={item as MessageAndEvent}
+                />
+              );
+            })}
         </ol>
       </section>
     </SectionHeader>

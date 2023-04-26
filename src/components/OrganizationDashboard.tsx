@@ -30,7 +30,7 @@ const OrganizationDashboard = ({ initialMode, setInitialMode }: Props) => {
     },
     onSuccess: () => {
       toast.success(
-        "New organization succesfully created. Please wait for confirmation from our team for changes to reflect."
+        "New organization Successfully created. Please wait for confirmation from our team for changes to reflect."
       );
       void utils.partner.getAllPartners.invalidate();
     },

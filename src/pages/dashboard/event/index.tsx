@@ -171,7 +171,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
               );
               return;
             }
-            toast.success("Succesfully updated event details.");
+            toast.success("Successfully updated event details.");
           }}
           buttonText="Update Event Details"
         />

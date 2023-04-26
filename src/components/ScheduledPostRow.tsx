@@ -38,7 +38,7 @@ const ScheduledPostRow = ({ item }: Props) => {
   const { mutate: sendMessage, isLoading: sendingMessage } =
     api.admin.sendMessage.useMutation({
       onSuccess: () => {
-        toast.success(`Succesfully sent message to group!`);
+        toast.success(`Successfully sent message to group!`);
         void utils.post.getAllPosts.invalidate();
       },
     });
@@ -148,6 +148,7 @@ const ScheduledPostRow = ({ item }: Props) => {
                 ends_at: new Date(ends_at),
                 rsvp_link: rsvp_link ?? "To be Confirmed",
                 location: location ?? "To Be Confirmed upon signup",
+                id: item.id,
               });
             }}
             userActionText="Send Message Now"

@@ -26,7 +26,7 @@ const OrganizationTableRow = ({ data }: Props) => {
 
   const { mutate: deletePartner } = api.partner.deletePartner.useMutation({
     onSuccess: () => {
-      toast.success(`Succesfully deleted ${partner_name}`);
+      toast.success(`Successfully deleted ${partner_name}`);
     },
     onError: () => {
       toast.warning(`Error encountered when trying to delete ${partner_name}`);

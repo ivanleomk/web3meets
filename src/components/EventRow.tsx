@@ -31,7 +31,7 @@ const EventRow = ({ data }: Props) => {
     api.event.deleteEvent.useMutation({
       onSuccess: async () => {
         await utils.event.getUserEvents.invalidate();
-        toast.success(`Succesfully deleted ${event_title} from database`);
+        toast.success(`Successfully deleted ${event_title} from database`);
       },
       onError: (err) => {
         toast.warning(err.message);

@@ -139,7 +139,7 @@ const CreateEventForm = ({
       }
 
       console.log(data);
-      toast.success("Succesfully crawled data from RSVP link");
+      toast.success("Successfully crawled data from RSVP link");
     },
     onError: () => {
       toast.warning("Unable to generate data from RSVP link");

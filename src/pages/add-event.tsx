@@ -30,7 +30,7 @@ const AddEvent = () => {
 
               // Nothing to upload
               if (!event.images) {
-                toast.success("Succesfully created event");
+                toast.success("Successfully created event");
                 return;
               }
 
@@ -61,7 +61,7 @@ const AddEvent = () => {
                 images: fileNames,
                 event_id,
               });
-              toast.success("Succesfully created event.");
+              toast.success("Successfully created event.");
             } catch (err) {
               console.log(err);
               toast.warning(
