@@ -12,6 +12,7 @@ const server = z.object({
   SUPABASE_SERVICE_ROLE: z.string(),
   TELEGRAM_BOT_KEY: z.string(),
   GROUP_ID: z.string(),
+  DEBUG_GROUP_ID: z.string(),
 });
 
 /**
@@ -41,6 +42,7 @@ export const processEnv = {
   NEXT_PUBLIC_NONE_PARTNER: process.env.NEXT_PUBLIC_NONE_PARTNER,
   TELEGRAM_BOT_KEY: process.env.TELEGRAM_BOT_KEY,
   GROUP_ID: process.env.GROUP_ID,
+  DEBUG_GROUP_ID: process.env.DEBUG_GROUP_ID,
 };
 
 // Don't touch the part below

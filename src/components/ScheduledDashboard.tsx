@@ -9,19 +9,13 @@ import { ClipLoader } from "react-spinners";
 const ScheduledDashboard = () => {
   const { data, isLoading } = api.post.getAllPosts.useQuery(undefined, {
     refetchInterval: 120000,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
-
-  const [showPendingApprovals, setPendingApprovals] = React.useState(false);
 
   return (
     <SectionHeader
       title="Scheduled Messages"
       subtitle="See what has been scheduled down the line"
-      buttonText="Show scheduled messages"
-      onClickHandler={() => {
-        setPendingApprovals(!showPendingApprovals);
-      }}
     >
       <section className="my-12">
         <h2 className="text-base font-semibold leading-6 text-gray-900">
@@ -33,22 +27,11 @@ const ScheduledDashboard = () => {
               <ClipLoader color="black" size={30} />
             </div>
           )}
-          {data
-            ?.filter((item) => {
-              if (showPendingApprovals) {
-                return !item.sent;
-              }
-
-              return true;
-            })
-            .map((item) => {
-              return (
-                <ScheduledPostRow
-                  key={item.id}
-                  item={item as MessageAndEvent}
-                />
-              );
-            })}
+          {data?.map((item) => {
+            return (
+              <ScheduledPostRow key={item.id} item={item as MessageAndEvent} />
+            );
+          })}
         </ol>
       </section>
     </SectionHeader>

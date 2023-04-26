@@ -51,12 +51,22 @@ const ScheduledPostRow = ({ item }: Props) => {
     >
       <div>
         {item.scheduled_date ? (
-          <time
-            dateTime={format(new Date(item.scheduled_date), "EEE, MMM d")}
-            className="w-40 flex-none"
-          >
-            {format(new Date(item.scheduled_date), "EEE, MMM d h:mm aa")}
-          </time>
+          <div>
+            <time
+              dateTime={format(new Date(item.scheduled_date), "EEE, MMM d")}
+              className="w-40 flex-none"
+            >
+              {format(new Date(item.scheduled_date), "EEE, MMM d h:mm aa")}
+            </time>
+            {item.sent && item.message_datetime_sent
+              ? "(Sent at " +
+                format(
+                  new Date(item.message_datetime_sent),
+                  "EEEE, d MMM yyyy hh:mma"
+                ) +
+                ")"
+              : ""}
+          </div>
         ) : (
           <p>No Scheduled Time yet</p>
         )}
@@ -76,7 +86,7 @@ const ScheduledPostRow = ({ item }: Props) => {
 
       <div className="flex  flex-col space-y-2">
         <ReactDatePicker
-          className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-25 sm:text-sm"
           placeholderText="No Date Selected"
           selected={currDate}
           onChange={(e) => {
@@ -104,14 +114,14 @@ const ScheduledPostRow = ({ item }: Props) => {
           />
           <WarningModal
             title="Warning"
-            subtitle="Are you sure you wish to delete this scheduled post?"
+            subtitle="Are you sure you wish to remove this post from the posting schedule?"
             isSubmitting={isDeletingPost}
             disabled={isDeletingPost || item.sent}
             onClickHandler={() => {
               deletePost({ id: item.id });
             }}
             userActionText="Delete Scheduled Post"
-            buttonText="Delete Post"
+            buttonText="Remove From Schedule"
             variant="solid"
             color="red"
           />

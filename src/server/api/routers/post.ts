@@ -42,7 +42,9 @@ export const postRouter = createTRPCRouter({
         "scheduled_date",
         convertDateToTimestamptz(sub(new Date(), { days: 4 }))
       )
-      .order("scheduled_date", { ascending: true });
+      .order("sent", { ascending: false })
+      .order("scheduled_date", { ascending: true })
+      .eq("sent", false);
 
     if (error) {
       console.log(error);
@@ -51,8 +53,6 @@ export const postRouter = createTRPCRouter({
         message: error?.message ?? "Unable to get post. Please try again later",
       });
     }
-
-    console.log(data);
 
     return data;
   }),
