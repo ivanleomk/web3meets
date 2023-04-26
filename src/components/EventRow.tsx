@@ -59,7 +59,7 @@ const EventRow = ({ data }: Props) => {
         {event_title}
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-        <OrganizationStatus active={approved} />
+        <OrganizationStatus active={approved ?? false} />
       </td>
       <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
         {formattedStart}

@@ -4,7 +4,7 @@ import UserDashboard from "../../components/UserDashboardContainer";
 import useAuthCheck from "../../hooks/use-auth-check";
 import type { Modes, Tabs } from "../../types/dashboard";
 
-const tabs: Tabs[] = ["Organizations", "Events", "Admin"];
+const tabs: Tabs[] = ["Organizations", "Events", "Admin", "Scheduled"];
 
 const Dashboard = () => {
   const router = useRouter();

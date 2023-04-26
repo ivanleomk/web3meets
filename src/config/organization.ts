@@ -28,10 +28,7 @@ export const EVENT_FIELDS = [
 export const SUBMITTED_EVENT_FIELDS = [
   "Name",
   "Approval Status",
-  "Start Time",
-  "End Time",
-  "Online",
-  "RSVP Link",
+  "Scheduled Post Date",
   "Edit/Delete",
 ].map((item) => {
   return {
