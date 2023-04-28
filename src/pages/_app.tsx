@@ -4,7 +4,6 @@ import { api } from "../utils/api";
 
 import "../styles/globals.css";
 import { Header } from "../components/Header";
-import Footer from "../components/Footer";
 import {
   createBrowserSupabaseClient,
   type Session,
@@ -19,7 +18,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { OrganizationWrapper } from "../context/OrganizationContext";
 import Head from "next/head";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/react";
 
 function MyApp({
   Component,
@@ -41,7 +39,6 @@ function MyApp({
       initialSession={pageProps.initialSession}
     >
       <UserWrapper>
-        <Analytics />
         <OrganizationWrapper>
           <Header />
           <Script src="https://www.googletagmanager.com/gtag/js?id=G-WVF22WMN2E" />
