@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/post/send-scheduled-post",
-      "schedule": "0 2-12 * * *"
-    }
-  ]
-}

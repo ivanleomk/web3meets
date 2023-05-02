@@ -20,7 +20,6 @@ export default async function handler(
     .eq("sent", false);
 
   if (error) {
-    console.log(error);
     res.status(500).json({ error: error.message });
     return;
   }
