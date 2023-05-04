@@ -101,6 +101,7 @@ const EventPage = ({ EventInformation, PartnerInformation }: Props) => {
     event_id: string;
   } = {
     ...EventInformation,
+    telegram_id: EventInformation.telegram_id ?? "",
     starts_at: new Date(EventInformation.starts_at),
     ends_at: new Date(EventInformation.ends_at),
     city: {

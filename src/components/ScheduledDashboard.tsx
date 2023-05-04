@@ -11,7 +11,7 @@ const ScheduledDashboard = () => {
     refetchInterval: 120000,
     refetchOnWindowFocus: false,
   });
-  const [showAllMessages, setShowAllMessages] = useState(true);
+  const [showAllMessages, setShowAllMessages] = useState(false);
 
   return (
     <SectionHeader
@@ -28,12 +28,18 @@ const ScheduledDashboard = () => {
         <h2 className="text-base font-semibold leading-6 text-gray-900">
           Upcoming Posts
         </h2>
-        <ol className="mt-2 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
+        <ol className="mt-2 space-y-4 divide-y divide-gray-200 text-sm leading-6 text-gray-500">
           {isLoading && (
             <div className="mt-20 flex items-center justify-center">
               <ClipLoader color="black" size={30} />
             </div>
           )}
+          <div className="grid grid-cols-4">
+            <p>Event Title</p>
+            <p>Event Start Time/Date</p>
+            <p>Scheduled Time/Date</p>
+            <p>Config</p>
+          </div>
           {data
             ?.filter((item) => {
               if (showAllMessages) {

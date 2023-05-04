@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 
 export const joinClassNames = (...args: string[]) => {
   return args.join(" ");
@@ -12,14 +13,6 @@ export const formatTelegramMessage = (
   rsvp_link: string,
   location: string
 ) => {
-  console.log({
-    title,
-    event_type,
-    event_start,
-    event_end,
-    rsvp_link,
-    location,
-  });
   const dateStart = format(event_start, "EEEE, d MMM yyyy");
   const dateEnd = format(event_end, "EEEE, d MMM yyyy");
   const timeStart = format(event_start, "ha");
@@ -38,7 +31,6 @@ export const formatTelegramMessage = (
       /[\|\-.!=()#]/g,
       "\\$&"
     );
-  console.log(formattedMessage);
 
   return formattedMessage;
 };

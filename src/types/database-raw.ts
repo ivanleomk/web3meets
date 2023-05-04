@@ -58,6 +58,7 @@ export interface Database {
           scheduled_post: string | null
           starts_at: string
           stripe_event_id: string | null
+          telegram_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -83,6 +84,7 @@ export interface Database {
           scheduled_post?: string | null
           starts_at: string
           stripe_event_id?: string | null
+          telegram_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -108,6 +110,7 @@ export interface Database {
           scheduled_post?: string | null
           starts_at?: string
           stripe_event_id?: string | null
+          telegram_id?: string | null
           user_id?: string | null
         }
       }
@@ -194,6 +197,7 @@ export interface Database {
       }
       scheduledMessages: {
         Row: {
+          chat_id: string
           event_id: string
           id: number
           message_datetime_sent: string | null
@@ -204,6 +208,7 @@ export interface Database {
           wasScheduled: boolean
         }
         Insert: {
+          chat_id?: string
           event_id: string
           id?: number
           message_datetime_sent?: string | null
@@ -214,6 +219,7 @@ export interface Database {
           wasScheduled?: boolean
         }
         Update: {
+          chat_id?: string
           event_id?: string
           id?: number
           message_datetime_sent?: string | null

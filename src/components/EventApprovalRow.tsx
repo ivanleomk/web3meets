@@ -9,6 +9,9 @@ import WarningModal from "./WarningModal";
 import ReactDatePicker from "react-datepicker";
 import { formatTelegramMessage } from "src/utils/string";
 
+import Select from "react-select";
+import { GROUP_TO_ID } from "src/config/telegram";
+
 type Props = {
   data: Event;
 };
@@ -27,12 +30,14 @@ const EventApprovalRow = ({ data }: Props) => {
     rsvp_link,
     location,
   } = data;
-  const [showModal, setShowModal] = useState(false);
 
   const utils = api.useContext();
   const formattedPostDate = scheduled_post ? new Date(scheduled_post) : null;
   const [currPostDate, setCurrPostDate] = useState<Date | null>(
     formattedPostDate
+  );
+  const [selectedGroup, setSelectedGroup] = useState(
+    GROUP_TO_ID[0] as { value: string; label: string }
   );
 
   const { mutate: sendMessage, isLoading: isSendingMessage } =
@@ -111,6 +116,17 @@ const EventApprovalRow = ({ data }: Props) => {
           timeIntervals={15}
           dateFormat="MMMM d, yyyy hh:mm aa"
         />
+        <Select
+          value={selectedGroup}
+          onChange={(e) => {
+            if (!e) {
+              return;
+            }
+            setSelectedGroup(e);
+          }}
+          className="mt-2"
+          options={GROUP_TO_ID}
+        />
         <div className="mt-4 flex space-x-4">
           <WarningModal
             buttonText="Send Now"
@@ -123,6 +139,7 @@ const EventApprovalRow = ({ data }: Props) => {
                 ends_at: new Date(ends_at),
                 rsvp_link: rsvp_link ?? "To be Confirmed",
                 location: location ?? "To Be Confirmed upon signup",
+                group_id: selectedGroup.value,
               });
             }}
             title={"Warning"}
@@ -157,6 +174,7 @@ const EventApprovalRow = ({ data }: Props) => {
               updatePostDate({
                 date: currPostDate,
                 event_id: event_id,
+                group_id: selectedGroup.value,
               });
             }}
           />

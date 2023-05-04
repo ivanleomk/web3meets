@@ -85,6 +85,9 @@ export const eventObjectSchema = z.object({
     value: z.string(),
     label: z.string(),
   }),
+  telegram_id: z
+    .string()
+    .min(4, { message: "Please input a valid telegram id" }),
 });
 
 export const eventCategories = [

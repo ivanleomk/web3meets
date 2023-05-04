@@ -15,7 +15,7 @@ import {
   eventCategories,
 } from "../types/event";
 import { api } from "../utils/api";
-import { eventResponse } from "../utils/crawler";
+import { type eventResponse } from "../utils/crawler";
 import { Button } from "./Button";
 import FormBox from "./FormBox";
 import FormToggle from "./FormToggle";
@@ -45,7 +45,7 @@ const CreateEventForm = ({
     handleSubmit,
     setValue,
     getValues,
-    formState: { isSubmitting, errors, ...formValues },
+    formState: { isSubmitting, errors },
     watch,
     control,
   } = useForm<eventCreationInputType>({
@@ -380,7 +380,6 @@ const CreateEventForm = ({
             })}
             errorMessage={errors?.event_type}
           />
-          {/* <InputSelect /> */}
 
           <InputTextarea
             label="Event Description"
@@ -424,6 +423,17 @@ const CreateEventForm = ({
               }}
             />
           </div>
+        </FormBox>
+        <FormBox sectionHeader="Contact Information">
+          <Input
+            subtitle="Please provide a telegram id which we can contact you at"
+            label="Telegram Id"
+            errorMessage={errors?.telegram_id as FieldError}
+            htmlFor="telegram_id"
+            type="text"
+            autocomplete=""
+            {...register("telegram_id")}
+          />
         </FormBox>
 
         <SubmitButton isSubmitting={isSubmitting} buttonText={buttonText} />

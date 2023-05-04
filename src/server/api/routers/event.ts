@@ -366,6 +366,7 @@ export const eventRouter = createTRPCRouter({
         fallback_name,
         category,
         fallback_image,
+        telegram_id,
       } = input;
 
       const { data: insertEventOp, error: insertEventOpError } =
@@ -389,6 +390,7 @@ export const eventRouter = createTRPCRouter({
             fallback_name,
             user_id: null,
             approved: false,
+            telegram_id: telegram_id,
           })
           .select("*")
           .maybeSingle();
@@ -445,6 +447,7 @@ export const eventRouter = createTRPCRouter({
         fallback_name,
         category,
         fallback_image,
+        telegram_id,
       } = input;
 
       const { data: insertEventOp, error: insertEventOpError } =
@@ -474,6 +477,7 @@ export const eventRouter = createTRPCRouter({
               partner_id.value === process.env.NEXT_PUBLIC_NONE_PARTNER
                 ? false
                 : true,
+            telegram_id,
           })
           .select("*")
           .maybeSingle();

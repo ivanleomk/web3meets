@@ -60,13 +60,16 @@ export const postRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         date: z.date(),
+        chat_id: z.string(),
       })
     )
-    .mutation(async ({ input: { id, date } }) => {
+    .mutation(async ({ input }) => {
+      const { id, date, chat_id } = input;
       const { data, error } = await adminServerSupabaseInstance
         .from("scheduledMessages")
         .update({
           scheduled_date: convertDateToTimestamptz(date),
+          chat_id: chat_id,
         })
         .eq("id", id);
 

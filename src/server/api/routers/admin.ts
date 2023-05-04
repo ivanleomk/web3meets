@@ -23,6 +23,7 @@ export const adminRouter = createTRPCRouter({
         rsvp_link: z.string(),
         location: z.string(),
         id: z.number().optional(),
+        group_id: z.string(),
       })
     )
     .mutation(async ({ input }) => {
@@ -35,6 +36,7 @@ export const adminRouter = createTRPCRouter({
         location,
         event_id,
         id,
+        group_id,
       } = input;
 
       const formattedMessage = formatTelegramMessage(
@@ -45,7 +47,7 @@ export const adminRouter = createTRPCRouter({
         rsvp_link,
         location
       );
-      const res = await sendTelegramMessage(formattedMessage);
+      const res = await sendTelegramMessage(formattedMessage, group_id);
 
       const { message_id } = res;
 
@@ -135,18 +137,19 @@ export const adminRouter = createTRPCRouter({
       z.object({
         date: z.date(),
         event_id: z.string().uuid(),
+        group_id: z.string(),
       })
     )
     .mutation(async ({ input }) => {
-      const { date, event_id } = input;
+      const { date, event_id, group_id } = input;
 
-      // TODO: fix up
       const { data, error } = await adminServerSupabaseInstance
         .from("scheduledMessages")
         .insert({
           scheduled_date: convertDateToTimestamptz(date),
           event_id,
           wasScheduled: true,
+          chat_id: group_id,
         });
 
       if (error) {
