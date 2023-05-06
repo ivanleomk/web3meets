@@ -8,6 +8,8 @@ import ReactDatePicker from "react-datepicker";
 import WarningModal from "./WarningModal";
 import { formatTelegramMessage } from "src/utils/string";
 import MessageStatus from "./MessageStatus";
+import { GROUP_TO_ID } from "src/config/telegram";
+import Select from "react-select";
 
 export type MessageAndEvent = ScheduledMessages & { Event: Event };
 
@@ -44,11 +46,13 @@ const ScheduledPostRow = ({ item }: Props) => {
     });
 
   const [currDate, setCurrDate] = useState(new Date(item.scheduled_date));
+  const selectedGroup = GROUP_TO_ID.find(
+    (group) => group.value === item.chat_id
+  );
+  const [currGroup, setCurrGroup] = useState(selectedGroup);
+
   return (
-    <li
-      key={item.id}
-      className="w-full items-center justify-between py-4 sm:flex"
-    >
+    <li key={item.id} className="grid grid-cols-4 items-start py-4">
       <div>
         {item.scheduled_date ? (
           <div>
@@ -80,8 +84,22 @@ const ScheduledPostRow = ({ item }: Props) => {
           >
             {item?.Event?.event_title as string}{" "}
           </p>
+          <div className="h-4" />
           <MessageStatus active={item.sent} />
         </div>
+      </div>
+      <div>
+        <p className="my-2 ">
+          {format(new Date(item.Event.starts_at), "dd MMM yyyy, hh:mm aa")}
+        </p>
+      </div>
+      <div>
+        <p className="my-2 ">
+          {format(new Date(item.scheduled_date), "dd MMM yyyy, hh:mm aa")}
+        </p>
+        <p className="text-bold font-mono underline">
+          {GROUP_TO_ID.find((group) => group.value === item.chat_id)?.label}
+        </p>
       </div>
 
       <div className="flex  flex-col space-y-2">
@@ -101,6 +119,18 @@ const ScheduledPostRow = ({ item }: Props) => {
           timeIntervals={15}
           dateFormat="MMMM d, yyyy hh:mm aa"
         />
+        <Select
+          value={currGroup}
+          onChange={(e) => {
+            if (!e) {
+              return;
+            }
+            setCurrGroup(e);
+          }}
+          isDisabled={item.sent}
+          className="mt-2"
+          options={GROUP_TO_ID}
+        />
         <div className="flex items-center space-x-2">
           <Button
             text="Update Date"
@@ -108,8 +138,15 @@ const ScheduledPostRow = ({ item }: Props) => {
             isSubmitting={isUpdatingPostDate}
             disabled={isUpdatingPostDate || item.sent}
             onClickHandler={() => {
+              if (!currGroup?.value) {
+                throw new Error("Invalid Group Config");
+              }
               // Should not happen since every event added to this scheduled messages must have a date
-              updatePostDate({ id: item.id, date: currDate });
+              updatePostDate({
+                id: item.id,
+                date: currDate,
+                chat_id: currGroup?.value,
+              });
             }}
           />
           <WarningModal
@@ -149,6 +186,7 @@ const ScheduledPostRow = ({ item }: Props) => {
                 rsvp_link: rsvp_link ?? "To be Confirmed",
                 location: location ?? "To Be Confirmed upon signup",
                 id: item.id,
+                group_id: item.chat_id,
               });
             }}
             userActionText="Send Message Now"

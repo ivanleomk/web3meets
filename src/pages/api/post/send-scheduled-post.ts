@@ -1,4 +1,5 @@
 import { add, format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { adminServerSupabaseInstance } from "src/server/supabase/sharedInstance";
 import { Event } from "src/types/database";
@@ -33,17 +34,18 @@ export default async function handler(
     }
     const { event_title, category, starts_at, ends_at, rsvp_link, location } =
       post?.Event as unknown as Event;
-    const { id } = post;
+    const { id, chat_id } = post;
+    // In case server gives us the timing in a non UTC Time
     const formattedMessage = formatTelegramMessage(
       event_title,
       category,
-      new Date(starts_at),
-      new Date(ends_at),
+      utcToZonedTime(starts_at, "Asia/Singapore"),
+      utcToZonedTime(ends_at, "Asia/Singapore"),
       rsvp_link ?? "To Be Announced",
       location ?? "To Be Confirmed unpon registration"
     );
 
-    const res = await sendTelegramMessage(formattedMessage);
+    const res = await sendTelegramMessage(formattedMessage, chat_id);
     const { message_id } = res;
 
     const { data, error: insertionError } = await adminServerSupabaseInstance
@@ -61,7 +63,8 @@ export default async function handler(
       void sendTelegramMessage(
         `Unable to update db for id of ${message_id} at ${currentTime} due to ${
           insertionError?.message ?? "unknown error"
-        }`
+        }`,
+        "-935273478"
       );
     }
   }
