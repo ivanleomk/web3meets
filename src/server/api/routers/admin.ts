@@ -47,7 +47,21 @@ export const adminRouter = createTRPCRouter({
         rsvp_link,
         location
       );
-      const res = await sendTelegramMessage(formattedMessage, group_id);
+      let res;
+      try {
+        res = await sendTelegramMessage(formattedMessage, group_id);
+      } catch (e) {
+        await sendTelegramMessage(
+          `Unable to send ${formattedMessage} due to ${e}`,
+          // hard code the debug telegram group.
+          "-935273478"
+        );
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unable to send message. Please try again later",
+        });
+        return;
+      }
 
       const { message_id } = res;
 
@@ -97,8 +111,6 @@ export const adminRouter = createTRPCRouter({
             "Unable to set event status. Please try again later",
         });
       }
-
-      return;
 
       return;
     }),

@@ -8,7 +8,7 @@ export const GROUP_TO_ID = [
     label: "ETHEREUM_SG_EVENTS_CHANNEL",
   },
   {
-    value: "-1535158176",
+    value: "-1001535158176",
     label: "WEB3_MEETS_EVENTS",
   },
 ];
