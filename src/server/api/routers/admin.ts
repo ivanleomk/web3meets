@@ -24,6 +24,7 @@ export const adminRouter = createTRPCRouter({
         location: z.string(),
         id: z.number().optional(),
         group_id: z.string(),
+        reply_id: z.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -37,6 +38,7 @@ export const adminRouter = createTRPCRouter({
         event_id,
         id,
         group_id,
+        reply_id,
       } = input;
 
       const formattedMessage = formatTelegramMessage(
@@ -49,13 +51,13 @@ export const adminRouter = createTRPCRouter({
       );
       let res;
       try {
-        res = await sendTelegramMessage(formattedMessage, group_id);
+        res = await sendTelegramMessage(formattedMessage, group_id, reply_id);
       } catch (e) {
         await sendTelegramMessage(
           `Unable to send ${formattedMessage} due to ${e}`,
-          // hard code the debug telegram group.
-          "-935273478"
+          "-1001777408501"
         );
+
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Unable to send message. Please try again later",

@@ -177,6 +177,11 @@ const ScheduledPostRow = ({ item }: Props) => {
                 rsvp_link,
                 location,
               } = item.Event;
+
+              if (!currGroup) {
+                throw new Error("Invalid Group Config");
+              }
+
               sendMessage({
                 event_id,
                 event_title,
@@ -187,6 +192,9 @@ const ScheduledPostRow = ({ item }: Props) => {
                 location: location ?? "To Be Confirmed upon signup",
                 id: item.id,
                 group_id: item.chat_id,
+                reply_id: currGroup["replyId"]
+                  ? currGroup["replyId"]
+                  : undefined,
               });
             }}
             userActionText="Send Message Now"

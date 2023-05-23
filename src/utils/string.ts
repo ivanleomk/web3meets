@@ -5,6 +5,30 @@ export const joinClassNames = (...args: string[]) => {
   return args.join(" ");
 };
 
+const SPECIAL_CHARS = [
+  "\\",
+  "_",
+  "*",
+  "[",
+  "]",
+  "(",
+  ")",
+  "~",
+  "`",
+  ">",
+  "<",
+  "&",
+  "#",
+  "+",
+  "-",
+  "=",
+  "|",
+  "{",
+  "}",
+  ".",
+  "!",
+];
+
 export const formatTelegramMessage = (
   title: string,
   event_type: string,
@@ -26,11 +50,12 @@ export const formatTelegramMessage = (
       ? `🗓 *Date*: ${dateStart}\n⏰ *Time*: ${timeStart} - ${timeEnd}`
       : `🗓 *Date* : ${dateStart} ${timeStart} - ${dateEnd} ${timeEnd}`;
 
-  const formattedMessage =
-    `🎤 *Event*: ${title}\n💡 *Type*: ${event_type}\n${formattedDate}\n\n🚀 *RSVP*: ${rsvp_link}\n\n📍 *Location*: ${location}\n\n⚠️ Comment below to find other event goers!`.replace(
-      /[\|\-.!=()#]/g,
-      "\\$&"
-    );
+  let formattedMessage = `🎤 *Event*: ${title}\n💡 *Type*: ${event_type}\n${formattedDate}\n\n🚀 *RSVP*: ${rsvp_link}\n\n📍 *Location*: ${location}\n\n⚠️ Comment below to find other event goers!`;
+
+  SPECIAL_CHARS.forEach(
+    (char) =>
+      (formattedMessage = formattedMessage.replaceAll(char, `\\${char}`))
+  );
 
   return formattedMessage;
 };

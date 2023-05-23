@@ -1,7 +1,8 @@
 export const GROUP_TO_ID = [
   {
-    value: "-935273478",
-    label: "DEBUG_TELEGRAM",
+    value: "-1001777408501",
+    label: "DEBUG_TELEGRAM EVENTS",
+    replyId: 3,
   },
   {
     value: "-1194186129_2592",
