@@ -8,7 +8,6 @@ export const joinClassNames = (...args: string[]) => {
 const SPECIAL_CHARS = [
   "\\",
   "_",
-  "*",
   "[",
   "]",
   "(",
