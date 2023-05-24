@@ -16,9 +16,7 @@ export const sendTelegramMessage = async (
 
   const res = await bot.sendMessage(group_id, message, {
     parse_mode: "MarkdownV2",
-    reply_to_message_id: parseInt(reply_id),
+    reply_to_message_id: reply_id,
   });
-  return res;
-
   return res;
 };
